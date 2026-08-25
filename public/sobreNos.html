@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monitoramento - Sobre nós</title>
+    <link rel="stylesheet" href="../public/css/estilo.css">
+    <link rel="stylesheet" href="../estilizacoes/sobreNos.css">
+</head>
+
+<body>
+    <header>
+        <div class="conteinerHeader">
+            <div class="conteinerLogoHeader">
+                <img src="../public/assets/imgs/logo.png" alt="logo">
+                <h1>Bombeiro<span>Monitoramento</span></h1>
+            </div>
+            <nav id="menuLinksHeader">
+                <ul>
+                    <li><a href="">Recursos</a></li>
+                    <li><a href="">Benefícios</a></li>
+                    <li><a href="">Impacto</a></li>
+                    <li><a href="">Sobre Nós</a></li>
+                    <div id="conteinerAcoesResponsivas">
+                        <ul id="conteinerMenuLogar">
+                            <li><a href="">Entre</a></li>
+                            <li><a href="">Cadastre-se</a></li>
+                        </ul>
+                    </div>
+                </ul>
+            </nav>
+            <div class="conteinerBotoesHeader">
+                <button class="botaoLogin" onclick="">Entrar</button>
+                <button class="botaoCadastro">Cadastre-se</button>
+            </div>
+            <div class="conteinerMenuResponsivo">
+                <button class="botaoMenu" onclick="mostrarMenu()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor"
+                        class="bi bi-list" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd"
+                            d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+</body>
+
+</html>
+<script>
+    function mostrarMenu() {
+        if (menuLinksHeader.style.display == "flex") {
+            menuLinksHeader.style.display = "none";
+        }else{
+            menuLinksHeader.style.display = "flex"
+        }
+    }
+</script>
