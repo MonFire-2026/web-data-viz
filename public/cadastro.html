@@ -8,12 +8,14 @@
 </head>
 
 <body>
-  Cadastro
+  Cadastro <br>
   Nome: <input type="text" name="" id="nome_input"> <br>
   Email: <input type="text" name="" id="email_input"> <br>
   Senha: <input type="text" name="" id="senha_input"> <br>
-  confirmacaoSenhaVar: <input type="text" name="" id="confirmacao_senha_input"> <br>
-  codigoVar = <input type="text" name="" id="codigo_input">
+  Confirmar senha: <input type="text" name="" id="confirmacao_senha_input"> <br>
+  Cargo: <input type="text" name="" id="cargo_input"> <br>
+  Código da empresa: <input type="text" name="" id="codigo_input"> <br> <br>
+  <button onclick="cadastrar()">Cadastrar</button>
 </body>
 </html>
 
@@ -28,8 +30,8 @@
     var emailVar = email_input.value;
     var senhaVar = senha_input.value;
     var confirmacaoSenhaVar = confirmacao_senha_input.value;
+    var cargoVar = cargo_input.value
     var codigoVar = codigo_input.value;
-    var idEmpresaVincular
 
     // Verificando se há algum campo em branco
     if (
@@ -37,7 +39,8 @@
       emailVar == "" ||
       senhaVar == "" ||
       confirmacaoSenhaVar == "" ||
-      codigoVar == ""
+      cargoVar == "" ||
+      codigoVar == "" 
     ) {
       cardErro.style.display = "block";
       mensagem_erro.innerHTML =
@@ -49,10 +52,10 @@
       setInterval(sumirMensagem, 5000);
     }
 
-    // Verificando se o código de ativação é de alguma empresa cadastrada
+    /* Verificando se o código de ativação é de alguma empresa cadastrada
     for (let i = 0; i < listaEmpresasCadastradas.length; i++) {
       if (listaEmpresasCadastradas[i].codigo_ativacao == codigoVar) {
-        idEmpresaVincular = listaEmpresasCadastradas[i].id
+        idEmpresaVincular = listaEmpresasCadastradas[i].idEmpresa
         console.log("Código de ativação válido.");
         break;
       } else {
@@ -61,6 +64,7 @@
         finalizarAguardar();
       }
     }
+      */
 
     // Enviando o valor da nova input
     fetch("/usuarios/cadastrar", {
@@ -74,7 +78,8 @@
         nomeServer: nomeVar,
         emailServer: emailVar,
         senhaServer: senhaVar,
-        idEmpresaVincularServer: idEmpresaVincular
+        cargoServer: cargoVar,
+        codigoServer: codigoVar
       }),
     })
       .then(function (resposta) {
@@ -104,7 +109,7 @@
     return false;
   }
 
-  // Listando empresas cadastradas 
+  /* Listando empresas cadastradas 
   function listar() {
     fetch("/empresas/listar", {
       method: "GET",
@@ -123,6 +128,7 @@
         console.log(`#ERRO: ${resposta}`);
       });
   }
+      */
 
   function sumirMensagem() {
     cardErro.style.display = "none";

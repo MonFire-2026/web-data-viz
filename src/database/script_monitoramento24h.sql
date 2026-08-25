@@ -8,6 +8,9 @@
     dtHr DATETIME DEFAULT current_timestamp NOT NULL,
     nome_fantasia VARCHAR(50) NOT NULL
     );
+
+    insert into empresa (razao_social, cnpj, nome_fantasia) values
+    ('Sptech Educacao Executiva e Servicos Ltda','26217610000135','São Paulo Tech School');
     
     CREATE TABLE usuario (
     idUsuario INT PRIMARY KEY AUTO_INCREMENT,
