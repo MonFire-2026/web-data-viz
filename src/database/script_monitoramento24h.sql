@@ -38,14 +38,20 @@
     CONSTRAINT maquina_componente FOREIGN KEY componentes(fk_maquina) REFERENCES maquina(idMaquina)
     );
     
-    CREATE TABLE medicao (
-    idMedicao INT PRIMARY KEY AUTO_INCREMENT,
-    valor DOUBLE, 
-    uni_media CHAR(2),
-    situacao VARCHAR(15),
-    dtHr DATETIME DEFAULT current_timestamp NOT NULL, 
-    fk_componentes INT NOT NULL,
-    CONSTRAINT componentes_medicao FOREIGN KEY medicao(fk_componentes) REFERENCES componentes(idComponente)
+    CREATE TABLE captura(
+	id int PRIMARY KEY AUTO_INCREMENT,
+	porcentagem_de_uso INT,
+	qtd_nucleos INT,
+	frequencia Float,
+	memoria_utilizada DOUBLE,
+	memoria_disponivel DOUBLE,
+	memoria_total DOUBLE,
+	espaco_total DOUBLE,
+	espaco_utilizado DOUBLE,
+	espaco_livre DOUBLE,
+	dtHr DATETIME DEFAULT current_timestamp,
+	fk_componentes INT,
+    CONSTRAINT componentes_captura FOREIGN KEY medicao(fk_componentes) REFERENCES componentes(idComponente)
     );
     
     
