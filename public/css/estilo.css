@@ -1,140 +1,401 @@
-@import url('https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+* {
+    margin: 0;
+    padding: 0;
+}
 
 body {
-  margin: 0;
-  padding: 0;
-  font-family: 'Barlow', 'Segoe UI', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: black;
+
+    background-color: #f4f4f4;
 }
 
-:root {
-  --tamanho-header: 80px;
-  --tamanho-banner: calc(100vh - var(--tamanho-header) - var(--tamanho-footer) - 2px);
-  --tamanho-simulador: calc(100vh - var(--tamanho-header) - var(--tamanho-footer) - 2px);
-  --tamanho-login: calc(100vh - var(--tamanho-header) - var(--tamanho-footer) - 2px);
-  --tamanho-footer: 65px;
+.conteinerHeader {
+    width: auto;
+    height: 10dvh;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+    box-shadow: 0px 0px 10px #81807f;
 }
 
-.container {
-  display: flex;
-  width: 80%;
-  margin: auto;
+.conteinerLogoHeader {
+
+    width: 20%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 5%;
+    color: #1D293D;
 }
 
-.header {
-  height: var(--tamanho-header);
-  border-bottom: 2px solid #32b9cd;
+.conteinerLogoHeader h1 {
+    font-size: clamp(6px, 1.5vw + 8px, 25px);
+
 }
 
-.header .container {
-  justify-content: space-between;
-  align-items: center;
-  height: 100%;
+.conteinerLogoHeader span {
+
+    color: #DC2626;
 }
 
-.header a {
-  text-decoration: none;
-  color: #e3b062;
+.conteinerLogoHeader img {
+
+    width: 35px;
+    height: 35px;
 }
 
-.agora {
-  font-weight: 800;
+#menuLinksHeader {
+
+    width: 30%;
+    display: flex;
+    justify-content: center;
+
 }
 
-.navbar {
-  width: 300px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  list-style: none;
-  color: #e3b062;
+
+#menuLinksHeader ul {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
 }
 
-.titulo {
-  color: #32b9cd;
-  width: fit-content;
-  font-weight: 500;
+#menuLinksHeader ul li {
+
+    width: 20%;
+    height: 4dvh;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+
 }
 
-.header h1 {
-  margin: 0;
+#menuLinksHeader ul li:hover {
+
+    transition: 300ms;
+    transform: translateY(-2px);
+    border-bottom: solid 2px #DC2626;
 }
 
-/* BANNER */
+#menuLinksHeader ul li a {
+    color: #62748E;
+    text-decoration: none;
+    font-size: clamp(1px, 3.5vw + 4px, 15px);
 
-.banner {
-  height: var(--tamanho-banner);
-  color: white;
-  background-image: url('../assets/imgs/bg-jelly-fish-para-home.png');
-  background-size: cover;
 }
 
-.banner .container {
-  justify-content: center;
-  align-items: center;
-  height: 100%;
+.conteinerBotoesHeader {
+
+    width: 15%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    gap: 5%;
+
 }
 
-.banner .container p {
-  width: 50%;
-  margin: 0;
-  padding: 0;
-  font-size: 36px;
+.botaoLogin {
+
+    width: 45%;
+    height: 4dvh;
+    color: #45556C;
+    background-color: #ffff;
+    border-color: #E2E8F0;
+    border-radius: 10px;
+    font-weight: bold;
+    font-size: clamp(1px, 6.5vw + 5px, 10px);
 }
 
-.banner .container span {
-  font-weight: 800;
+.botaoLogin:hover {
+    background-color: #DC2626;
+    color: #ffff;
+    transition: 300ms;
+    transform: translateY(-2px);
+
 }
 
-/* MISSÃO VISÃO VALORES */
+.botaoCadastro {
 
-.social {
-  background-color: #e5e5e5;
-  display: flex;
+    width: 50%;
+    height: 4dvh;
+    background-color: #DC2626;
+    color: #ffff;
+    border-radius: 10px;
+    font-weight: bold;
+    font-size: clamp(1px, 6.5vw + 5px, 11px);
+
 }
 
-.social .container {
-  justify-content: center;
+.botaoCadastro:hover {
+
+    color: #fff;
+    background-color: #a80202;
+    border-color: #E2E8F0;
+    transition: 300ms;
+    transform: translateY(-2px);
+
 }
 
-.box img {
-  width: 170px;
+
+.conteinerMenuResponsivo {
+    display: none;
+
 }
 
-.social .container .boxes {
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-  padding: 30px 0;
+#conteinerAcoesResponsivas {
+    display: none;
 }
 
-.social p {
-  text-align: center;
+
+.conteinerTelaPrincipal {
+    width: 100%;
+    height: 100%;
 }
 
-.box {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+.conteinerPrimeiraTela {
+    width: 100%;
+    height: 75dvh;
+    display: flex;
+    justify-content: center;
+    flex-direction: row;
+    align-items: center;
+    gap: 5%;
 }
 
-/* FOOTER */
+.conteinerTextoPrimeiraTela {
 
-.footer {
-  background-color: #32b9cd;
-  height: 150px;
-  color: #fff;
-  display: flex;
-  font-size: 15px;
+    width: 40%;
+    height: 50dvh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    gap: 10%;
 }
 
-.footer .container {
-  justify-content: center;
-  text-align: center;
+.conteinerTextoPrimeiraTela h2 {
+
+    width: 80%;
+    font-size: clamp(5px, 6.5vw + 4px, 35px);
+
 }
 
-.footer .container .version {
-  font-size: 12px;
+.conteinerTextoPrimeiraTela p {
+
+    width: 80%;
+    font-size: clamp(5px, 6.5vw + 6px, 20px);
+
+}
+
+.conteinerTextoPrimeiraTela span {
+    color: #a80202;
+}
+
+#botaoCadastroTelaInicial {
+
+    background-color: #1D293D;
+    color: #FFFFFF;
+    border-radius: 10px;
+    width: 30%;
+    height: 90%;
+    font-size: clamp(4px, 6.5vw + 6px, 12px);
+    font-weight: bolder;
+}
+
+
+
+#botaoCadastroTelaInicial:hover {
+    background-color: #151f2f;
+    color: #ffff;
+    transition: 300ms;
+    transform: translateY(-2px);
+
+}
+
+#botaoLoginTelaInicial {
+
+    background-color: #ffffff;
+    border: #1D293D 2px solid;
+    color: #1D293D;
+    border-radius: 10px;
+    width: 30%;
+    height: 85%;
+    font-size: clamp(4px, 6.5vw + 6px, 12px);
+    font-weight: bold;
+}
+
+
+#botaoLoginTelaInicial:hover {
+    background-color: #151f2f;
+    color: #ffff;
+    transition: 300ms;
+    transform: translateY(-2px);
+    border: solid 2px #45556C;
+}
+
+.botoesTelaPrinicpal {
+
+    width: 80%;
+    height: 5dvh;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 5%;
+
+}
+
+.conteinerImagemTelaPrincipal {
+    background-color: #f4f4f4;
+    width: 40%;
+    height: 50dvh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+.conteinerImagemTelaPrincipal img {
+    background-color: #f4f4f4;
+    width: 80%;
+    height: 80%;
+}
+
+.conteinerInformaçõesTelaInicial {
+    width: 100%;
+    height: 15dvh;
+    background-color: #a80202;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.informacoesPrincipais {
+    height: 80%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: #f4f4f4;
+    gap: 8%;
+}
+
+.informacoesPrincipais h2 {
+    font-size: clamp(2px, 8.5vw + 10px, 25px);
+}
+
+.informacoesPrincipais p {
+    font-size: clamp(2px, 8.5vw + 10px, 15px);
+}
+
+@media (max-width: 1050px) {
+
+
+    .conteinerHeader {
+
+        height: auto;
+        padding: 2dvh;
+        align-items: flex-start;
+        justify-content: space-between;
+
+    }
+
+    .conteinerLogoHeader {
+        padding-left: 8vh;
+    }
+
+    .conteinerMenuResponsivo {
+        display: flex;
+
+    }
+
+    .botaoMenu {
+        border: none;
+        background-color: #f4f4f4;
+    }
+
+    #menuLinksHeader {
+        display: none;
+        position: absolute;
+        top: 10dvh;
+        right: 10px;
+        background-color: #E2E8F0;
+        width: 20%;
+        box-shadow: 0px 0px 10px #81807f;
+        border-radius: 20px;
+
+
+    }
+
+    #menuLinksHeader ul {
+        flex-direction: column;
+        background-color: #FFFFFF;
+        height: 45dvh;
+        padding-left: 5%;
+        border-radius: 15px;
+        justify-content: space-evenly;
+
+
+    }
+
+    #menuLinksHeader ul li {
+
+        width: 100%;
+        display: flex;
+        align-items: flex-end;
+
+
+    }
+
+    #conteinerAcoesResponsivas {
+        width: 95%;
+        height: 10%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 15%;
+    }
+
+    #conteinerMenuLogar {
+        gap: 2dvh;
+        height: 100%;
+        background-color: #1D293D;
+        display: flex;
+        align-items: start;
+        justify-content: center;
+        margin-top: 12px;
+
+    }
+
+    #menuLinksHeader ul li:hover {
+
+        border-bottom: none;
+
+    }
+
+
+    .conteinerBotoesHeader {
+        display: none;
+    }
+
+    
+}
+
+@media(max-width: 850px) {
+
+    
+
+
+    .conteinerImagemTelaPrincipal {
+        display: none;
+    }
+
+    .conteinerTextoPrimeiraTela {
+        width: 90%;
+    }
 }
 
 /* LOGIN */
