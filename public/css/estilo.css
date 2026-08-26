@@ -6,6 +6,7 @@
 body {
 
     background-color: #f4f4f4;
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 }
 
 .conteinerHeader {
@@ -154,6 +155,11 @@ body {
     height: 100%;
 }
 
+conteinerTelaPrincipal2 {
+    width: 100%;
+    height: 100%;
+}
+
 .conteinerPrimeiraTela {
     width: 100%;
     height: 75dvh;
@@ -182,6 +188,7 @@ body {
 
 }
 
+
 .conteinerTextoPrimeiraTela p {
 
     width: 80%;
@@ -191,6 +198,96 @@ body {
 
 .conteinerTextoPrimeiraTela span {
     color: #a80202;
+}
+
+.ultimoContainerPrimeiraTela {
+
+    width: 100%;
+    height: auto;
+    display: flex;
+    justify-content: center;
+    flex-direction: row;
+    align-items: center;
+    padding: 15dvh 0;
+    gap: 5%;
+
+}
+
+.containerTextoSemImagem {
+
+    width: 80%;
+    max-width: 1100px;
+    height: auto;
+    display: flex;
+    justify-content: start;
+    align-items: start;
+    flex-direction: column;
+    gap: 5%;
+
+}
+
+.containerTextoSemImagem h3 {
+
+    width: 80%;
+    color: #1D293D;
+    font-size: clamp(5px, 6.5vw + 4px, 35px);
+
+}
+
+.conteinerCardsImpacto {
+
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: stretch;
+    gap: 2%;
+    margin-top: 3dvh;
+
+}
+
+.cardImpacto {
+
+    width: 32%;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.06);
+    padding: 2.5dvh 2%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    gap: 1.5dvh;
+
+}
+
+.cardImpacto h2 {
+
+    color: #1D293D;
+    font-size: clamp(20px, 2vw + 15px, 32px);
+    font-weight: 800;
+
+}
+
+.cardImpacto p {
+
+    color: #62748E;
+    font-size: clamp(12px, 0.6vw + 10px, 14px);
+    line-height: 1.4;
+
+}
+
+@media (max-width: 850px) {
+
+    .conteinerCardsImpacto {
+        flex-direction: column;
+        gap: 3dvh;
+    }
+
+    .cardImpacto {
+        width: 100%;
+    }
+
 }
 
 #botaoCadastroTelaInicial {
