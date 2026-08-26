@@ -200,6 +200,69 @@ conteinerTelaPrincipal2 {
     color: #a80202;
 }
 
+.segundoContainerPrimeiraTela {
+    width: 100%;
+    background-color: #F8FAFC;
+    height: auto;
+    display: flex;
+    justify-content: center;
+    flex-direction: row;
+    align-items: center;
+    padding: 15dvh 0;
+    gap: 5%;
+}
+
+.conteinerCardsBeneficios {
+
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4%;
+    margin-top: 3dvh;
+
+}
+
+.cardBeneficio {
+
+    width: 100%;
+    box-sizing: border-box;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.06);
+    padding: 2.5dvh 2%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    gap: 1.5dvh;
+
+}
+
+.cardBeneficio h4 {
+
+    color: #1D293D;
+    font-size: clamp(14px, 1vw + 12px, 18px);
+    font-weight: 800;
+
+}
+
+.cardBeneficio p {
+
+    color: #62748E;
+    font-size: clamp(12px, 0.6vw + 10px, 14px);
+    line-height: 1.4;
+
+}
+
+@media (max-width: 850px) {
+
+    .conteinerCardsBeneficios {
+        grid-template-columns: 1fr;
+        gap: 3dvh;
+    }
+
+}
+
 .ultimoContainerPrimeiraTela {
 
     width: 100%;
