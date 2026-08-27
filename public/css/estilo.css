@@ -1,3 +1,6 @@
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,200..900;1,200..900&display=swap');
+
 * {
     margin: 0;
     padding: 0;
@@ -772,6 +775,48 @@ input {
   background-image: url('https://cdn-icons-png.flaticon.com/512/1157/1157000.png');
   background-size: cover;
   animation-iteration-count: infinite;
+}
+.banner {
+  height: 450px;
+  background-color: rgb(30, 41, 59);
+}
+.containerPrimeirotextobanner{
+    font-family: "Barlow Semi Condensed", sans-serif;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    text-align: center;
+    padding-top: 130px;
+    font-size: 50px;
+    color: white;
+    font-weight: 700;
+}
+.containerSegundotextobanner{
+
+    font-family: "Source Sans 3", sans-serif;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    text-align: center;
+    padding-top: 20px;
+    font-size: 20px;
+    color: rgb(144, 161, 185);
+    font-weight: 400;
+    
+}
+
+.containerTextoAbaixoBanner{
+    font-family: "Barlow Semi Condensed", sans-serif;
+    display: flex;
+    align-items: flex-start;
+    flex-direction: column;
+    justify-content: flex-start;
+    text-align: center;
+    padding-top: 80px;
+    font-size: 35px;
+    color: black;
+    font-weight: 700;
+    padding-left: 400px;
 }
 
 @keyframes bell {
