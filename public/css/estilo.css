@@ -356,6 +356,61 @@ conteinerTelaPrincipal2 {
 
 }
 
+.containerFooter{
+
+    background-color: #1E293B;
+    color: #ffffff;
+    width: 100%;
+    height: auto;
+    display: flex;
+    justify-content: center;
+    flex-direction: row;
+    align-items: center;
+    gap: 5%;
+
+}
+
+.containerFooter span{
+    color: #DC2626;
+}
+
+.containerFooter p{
+    color: #90A1B9;
+
+}
+
+.containerEmpresaFooter{
+    height: auto;
+    width: 100%;
+    flex-direction: row;
+    padding-top: 60px;
+    padding-bottom: 45px;
+    padding-left: 45px;
+    padding-right: 45px;
+
+}
+
+.containerConteudoFooter{
+
+    padding-bottom: 45px;
+}
+
+.divisaoFooter{
+    height: 1px;
+    width: auto;
+    background-color: #DC2626;
+}
+
+.botoesFooter {
+
+    display: inline-flex;
+    padding-top: 30px;
+    justify-content: flex-start;
+    align-items: flex-start;
+    gap: 30px;
+
+}
+
 #botaoCadastroTelaInicial {
 
     background-color: #1D293D;
