@@ -826,7 +826,6 @@ conteinerTelaPrincipal2 {
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: #32b9cd;
     font-size: clamp(6px, 1.5vw + 8px, 25px);
 
   }
