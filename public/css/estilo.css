@@ -250,6 +250,8 @@ conteinerTelaPrincipal2 {
 
 }
 
+
+
 .conteinerTextoPrimeiraTela {
 
     width: 40%;
@@ -1438,14 +1440,26 @@ font-weight: 700;
     }
 }
 
-@media (max-width: 850px) {
+@media (max-width: 850px) { 
 
-    .containerSecao {
-      
-        gap: 1dvh;
-    }
+    .containerSecao { 
+        Flex-direction: column; 
+        Align-items: center; 
+        Gap: 5dvh; 
+        Padding-top: 50px; 
+        Padding-bottom: 50px; 
+    } 
 
+    .containerTexto { 
+        Width: 80%; 
+    } 
+    .containerCaixas { 
+        Width: 80%; 
+        Padding-top: 0; 
+    } 
 }
+
+
 /* Fim das Missões*/
 @keyframes bell {
     0% {
