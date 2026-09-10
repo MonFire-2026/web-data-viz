@@ -1410,17 +1410,18 @@ input {
     margin-bottom: 10px;
 }
 
+
 .cardEquipe h2 {
 font-family: "Barlow Semi Condensed", sans-serif;
 color: #FFFFFF;
-font-size: 15px;
+font-size: 20px;
 font-weight: 700;
 }
 
 .cardEquipe p {
     font-family: "Source Sans 3", sans-serif;
     color: #E2E8F0;
-    font-size: 10px;
+    font-size: 15px;
     margin-top: 4px;
 }
 
