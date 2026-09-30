@@ -5,15 +5,52 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MonFire - Login</title>
-    <link rel="stylesheet" href="./css/estilo.css">
+    <link rel="stylesheet" href="./css/global.css">
+    <link rel="stylesheet" href="./css/login.css">
     <link rel="shortcut icon" href="./assets/icon/LogoMonfire.png" type="image/x-icon">
-
+    <script src="./js/navbar.js" defer></script>
 </head>
 
 <body class="paginaCadastro">
+    <header>
+        <div class="conteinerHeader">
+            <div class="conteinerLogoHeader">
+                <a href="./index.html"><img src="./assets/icon/LogoMonfire.png" alt="logo"></a>
+                <h1>Mon<span>Fire</span></h1>
+            </div>
+            <nav id="menuLinksHeader">
+                <ul>
+                    <li><a href="./index.html#sessaoRecursos">Recursos</a></li>
+                    <li><a href="./index.html#sessaoBeneficios">Benefícios</a></li>
+                    <li><a href="./index.html#sessaoImpacto">Impacto</a></li>
+                    <li><a href="./sobreNos.html">Sobre Nós</a></li>
+                    <div id="conteinerAcoesResponsivas">
+                        <ul id="conteinerMenuLogar">
+                            <li><a class="nav-pagina-atual" aria-current="page" href="./login.html">Entre</a></li>
+                            <li><a href="./cadastro.html">Cadastre-se</a></li>
+                        </ul>
+                    </div>
+                </ul>
+            </nav>
+            <div class="conteinerBotoesHeader">
+                <a href="./login.html" class="botaoLogin nav-pagina-atual" aria-current="page">Entrar</a>
+                <a href="./cadastro.html" class="botaoCadastro">Cadastre-se</a>
+            </div>
+            <div class="conteinerMenuResponsivo">
+                <button class="botaoMenu" type="button" aria-label="Abrir menu de navegação"
+                    aria-controls="menuLinksHeader" aria-expanded="false" onclick="mostrarMenu()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor"
+                        class="bi bi-list" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd"
+                            d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
 
-    <div class="cardCadastro">
-        <a href="./index.html" style="color: #dc2626; text-decoration: none;">x</a>
+    <main class="conteudoAutenticacao">
+      <div class="cardCadastro">
         <div class="cabecalhoCadastro">
             <h2>Bem-vindo de volta</h2>
             <p>Use suas credenciais institucionais para acessar</p>
@@ -42,7 +79,8 @@
 
         </div>
         <div class="rodapeCadastro"> <span>Ainda não tem acesso?</span> <a href="cadastro.html">Cadastre-se</a></div>
-    </div>
+      </div>
+    </main>
 
 </body>
 

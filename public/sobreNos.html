@@ -5,10 +5,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MonFire - Sobre nós</title>
-    <link rel="stylesheet" href="./css/estilo.css">
-    <link rel="stylesheet" href="../sobreNos.css">
+    <link rel="stylesheet" href="./css/global.css">
+    <link rel="stylesheet" href="./css/sobre-nos.css">
     <link rel="shortcut icon" href="./assets/icon/LogoMonfire.png" type="image/x-icon">
-
+    <script src="./js/navbar.js" defer></script>
 </head>
 
 <body>
@@ -37,7 +37,8 @@
                 <a href="./cadastro.html" class="botaoCadastro">Cadastre-se</a>
             </div>
             <div class="conteinerMenuResponsivo">
-                <button class="botaoMenu" onclick="mostrarMenu()">
+                <button class="botaoMenu" type="button" aria-label="Abrir menu de navegação"
+                    aria-controls="menuLinksHeader" aria-expanded="false" onclick="mostrarMenu()">
                     <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor"
                         class="bi bi-list" viewBox="0 0 16 16">
                         <path fill-rule="evenodd"
@@ -65,8 +66,8 @@
         <div class="containerTexto">
 
             <div class="containerTextoAbaixoBanner">
-                <p style="color: rgb(30, 41, 59);">POR QUE CRIAMOS A</p>
-                <p style="color: #DC2626;">MONFIRE</p>
+                <p class="titulo-criacao">POR QUE CRIAMOS A</p>
+                <p class="titulo-criacao-destaque">MONFIRE</p>
             </div>
 
             <div class="containerTextoAbaixoTextoBanner">
@@ -99,7 +100,7 @@
                     </svg>
                 </div>
 
-                <h3 style="color: black;">Segurança</h3>
+                <h3 class="titulo-caixa">Segurança</h3>
                 <p>Controle de acesso por perfil</p>
             </div>
 
@@ -111,7 +112,7 @@
                             d="M14 2.5a.5.5 0 0 0-.5-.5h-6a.5.5 0 0 0 0 1h4.793L2.146 13.146a.5.5 0 0 0 .708.708L13 3.707V8.5a.5.5 0 0 0 1 0z" />
                     </svg>
                 </div>
-                <h3 style="color: black;">Precisão</h3>
+                <h3 class="titulo-caixa">Precisão</h3>
                 <p>Métricas coletadas a cada 30 segundos</p>
             </div>
 
@@ -123,7 +124,7 @@
                         <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m7-8A7 7 0 1 1 1 8a7 7 0 0 1 14 0" />
                     </svg>
                 </div>
-                <h3 style="color: black;">Disponibilidade</h3>
+                <h3 class="titulo-caixa">Disponibilidade</h3>
                 <p>SLA de 99,98% de uptime garantido</p>
             </div>
 
@@ -135,7 +136,7 @@
                             d="M15 14s1 0 1-1-1-4-5-4-5 3-5 4 1 1 1 1zm-7.978-1L7 12.996c.001-.264.167-1.03.76-1.72C8.312 10.629 9.282 10 11 10c1.717 0 2.687.63 3.24 1.276.593.69.758 1.457.76 1.72l-.008.002-.014.002zM11 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4m3-2a3 3 0 1 1-6 0 3 3 0 0 1 6 0M6.936 9.28a6 6 0 0 0-1.23-.247A7 7 0 0 0 5 9c-4 0-5 3-5 4q0 1 1 1h4.216A2.24 2.24 0 0 1 5 13c0-1.01.377-2.042 1.09-2.904.243-.294.526-.569.846-.816M4.92 10A5.5 5.5 0 0 0 4 13H1c0-.26.164-1.03.76-1.724.545-.636 1.492-1.256 3.16-1.275ZM1.5 5.5a3 3 0 1 1 6 0 3 3 0 0 1-6 0m3-2a2 2 0 1 0 0 4 2 2 0 0 0 0-4" />
                     </svg>
                 </div>
-                <h3 style="color: black;">Suporte</h3>
+                <h3 class="titulo-caixa">Suporte</h3>
                 <p>Equipe técnica disponível 24/7</p>
             </div>
 
@@ -230,12 +231,3 @@
 </body>
 
 </html>
-<script>
-    function mostrarMenu() {
-        if (menuLinksHeader.style.display == "flex") {
-            menuLinksHeader.style.display = "none";
-        } else {
-            menuLinksHeader.style.display = "flex"
-        }
-    }
-</script>

@@ -1,0 +1,448 @@
+.conteinerTelaPrincipal {
+    width: 100%;
+    overflow: hidden;
+}
+
+.secaoHero {
+    position: relative;
+    background:
+        radial-gradient(circle at 88% 18%, rgba(220, 38, 38, 0.08), transparent 28%),
+        linear-gradient(135deg, #f4f4f4 0%, #eef1f5 100%);
+}
+
+.conteinerPrimeiraTela {
+    width: 86%;
+    max-width: 1280px;
+    height: clamp(450px, 58svh, 580px);
+    margin-inline: auto;
+    padding: 2svh 0;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 5%;
+}
+
+.conteinerTextoPrimeiraTela {
+    width: 42%;
+    height: 44svh;
+    max-height: 480px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10%;
+}
+
+.conteinerTextoPrimeiraTela h2 {
+    width: 90%;
+    font-size: clamp(5px, 6.5vw + 4px, 35px);
+}
+
+.conteinerTextoPrimeiraTela p {
+    width: 90%;
+    font-size: clamp(5px, 6.5vw + 6px, 20px);
+}
+
+.conteinerTextoPrimeiraTela span {
+    color: #a80202;
+}
+
+.botoesTelaPrinicpal {
+    width: 90%;
+    height: 5dvh;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 5%;
+}
+
+#botaoCadastroTelaInicial,
+#botaoLoginTelaInicial {
+    width: 30%;
+    border-radius: 10px;
+    font-size: clamp(4px, 6.5vw + 6px, 12px);
+    font-weight: bold;
+}
+
+#botaoCadastroTelaInicial {
+    height: 90%;
+    background-color: #1d293d;
+    color: #fff;
+}
+
+#botaoCadastroTelaInicial:hover {
+    background-color: #151f2f;
+    color: #fff;
+    transform: translateY(-2px);
+    transition: 300ms;
+}
+
+#botaoLoginTelaInicial {
+    height: 85%;
+    background-color: #fff;
+    color: #1d293d;
+    border: 2px solid #1d293d;
+}
+
+#botaoLoginTelaInicial:hover {
+    background-color: #151f2f;
+    color: #fff;
+    border: 2px solid #45556c;
+    transform: translateY(-2px);
+    transition: 300ms;
+}
+
+.conteinerImagemTelaPrincipal {
+    width: 42%;
+    height: 44svh;
+    max-height: 480px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.conteinerImagemTelaPrincipal img {
+    width: 90%;
+    height: 86%;
+    border-radius: 14px;
+    box-shadow: 0 18px 38px rgba(15, 23, 42, 0.18);
+    object-fit: cover;
+}
+
+.conteinerInformaçõesTelaInicial {
+    width: 80%;
+    height: clamp(110px, 15svh, 135px);
+    margin-top: -64px;
+    margin-inline: auto;
+    position: relative;
+    z-index: 2;
+    box-sizing: border-box;
+    background: linear-gradient(135deg, #8f0000 0%, #c40000 50%, #a80202 100%);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 10px;
+    box-shadow: 0 14px 30px rgba(91, 0, 0, 0.2);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.informacoesPrincipais {
+    height: 80%;
+    color: #f4f4f4;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8%;
+}
+
+.informacoesPrincipais h2 {
+    font-size: clamp(2px, 8.5vw + 10px, 25px);
+}
+
+.informacoesPrincipais p {
+    font-size: clamp(2px, 8.5vw + 10px, 15px);
+}
+
+.RecursosDoSistema {
+    width: 100%;
+    position: relative;
+    background: linear-gradient(180deg, #e9edf2 0%, #f1f4f7 100%);
+    scroll-margin-top: 16px;
+}
+
+.conteudoSecao {
+    width: 80%;
+    max-width: 1180px;
+    margin-inline: auto;
+    padding: clamp(66px, 9svh, 96px) 0 clamp(90px, 11svh, 128px);
+}
+
+.cabecalhoSecao {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.tituloSecao,
+.containerTextoSemImagem .tituloSecao {
+    width: auto;
+    color: #1d293d;
+    font-size: clamp(28px, 2vw + 16px, 38px);
+    line-height: 1.12;
+}
+
+.containerTextoRecurso {
+    width: 100%;
+    margin-top: 30px;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    justify-content: center;
+    gap: 24px;
+}
+
+.Recursos {
+    padding: 28px;
+    background: #fff;
+    border: 1px solid #d5dde6;
+    border-top: 3px solid rgba(220, 38, 38, 0.76);
+    border-radius: 10px;
+    box-shadow: 0 8px 18px rgba(15, 23, 42, 0.07);
+}
+
+.Recursos h2 {
+    margin: 0 0 10px;
+    color: #0f1b2d;
+    font-size: 17px;
+    font-weight: 700;
+}
+
+.Recursos p {
+    margin: 0;
+    color: #8a94a3;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.segundoContainerPrimeiraTela {
+    width: 100%;
+    padding: clamp(92px, 11svh, 132px) 0;
+    position: relative;
+    background:
+        radial-gradient(circle at 0 50%, rgba(220, 38, 38, 0.07), transparent 28%),
+        radial-gradient(circle at 100% 50%, rgba(220, 38, 38, 0.045), transparent 24%),
+        #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    scroll-margin-top: 16px;
+}
+
+.conteinerCardsBeneficios {
+    width: 100%;
+    margin-top: 42px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+}
+
+.cardBeneficio {
+    width: 100%;
+    padding: 30px;
+    box-sizing: border-box;
+    background-color: rgba(248, 250, 252, 0.92);
+    border: 1px solid #e2e8f0;
+    border-left: 4px solid #dc2626;
+    border-radius: 10px;
+    box-shadow: 0 7px 16px rgba(15, 23, 42, 0.06);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 1.5dvh;
+}
+
+.cardBeneficio h4 {
+    color: #1d293d;
+    font-size: clamp(14px, 1vw + 12px, 18px);
+    font-weight: 800;
+}
+
+.cardBeneficio p {
+    color: #62748e;
+    font-size: clamp(12px, 0.6vw + 10px, 14px);
+    line-height: 1.4;
+}
+
+.ultimoContainerPrimeiraTela {
+    width: 80%;
+    max-width: 1180px;
+    margin-inline: auto;
+    padding: clamp(68px, 8svh, 96px);
+    box-sizing: border-box;
+    background: linear-gradient(135deg, #1d293d 0%, #27364d 100%);
+    border-radius: 18px 18px 0 0;
+    box-shadow: 0 -10px 28px rgba(15, 23, 42, 0.14);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.containerTextoSemImagem {
+    width: 80%;
+    max-width: 1180px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 5%;
+}
+
+.conteinerTelaPrincipal2 {
+    width: 100%;
+    padding-top: clamp(92px, 11svh, 132px);
+    background: linear-gradient(180deg, #f5f7fa 0%, #e8edf2 100%);
+    scroll-margin-top: 16px;
+}
+
+.ultimoContainerPrimeiraTela .containerTextoSemImagem {
+    width: 100%;
+    max-width: none;
+}
+
+.cabecalhoSecaoImpacto .tituloSecao {
+    color: #fff;
+}
+
+.conteinerCardsImpacto {
+    width: 100%;
+    margin-top: 42px;
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    justify-content: space-between;
+    gap: 2%;
+}
+
+.cardImpacto {
+    width: 32%;
+    padding: 30px;
+    box-sizing: border-box;
+    background-color: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-top: 3px solid #dc2626;
+    border-radius: 10px;
+    box-shadow: 0 7px 16px rgba(0, 0, 0, 0.14);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 1.5dvh;
+}
+
+.cardImpacto h2 {
+    color: #fff;
+    font-size: clamp(20px, 2vw + 15px, 32px);
+    font-weight: 800;
+}
+
+.cardImpacto p {
+    color: #cbd5e1;
+    font-size: clamp(12px, 0.6vw + 10px, 14px);
+    line-height: 1.4;
+}
+
+@media (max-width: 1050px) {
+    .containerTextoRecurso {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 20px;
+    }
+}
+
+@media (max-width: 850px) {
+    .conteinerPrimeiraTela {
+        width: calc(100% - 32px);
+        height: clamp(470px, 58svh, 520px);
+    }
+
+    .conteinerImagemTelaPrincipal {
+        display: none;
+    }
+
+    .conteinerTextoPrimeiraTela {
+        width: 100%;
+        height: auto;
+        max-height: none;
+    }
+
+    .conteinerTextoPrimeiraTela h2,
+    .conteinerTextoPrimeiraTela p,
+    .botoesTelaPrinicpal {
+        width: 100%;
+    }
+
+    .conteinerInformaçõesTelaInicial {
+        width: calc(100% - 32px);
+        margin-top: -56px;
+    }
+
+    .conteudoSecao,
+    .containerTextoSemImagem {
+        width: calc(100% - 32px);
+    }
+
+    .conteinerCardsBeneficios {
+        grid-template-columns: 1fr;
+        gap: 18px;
+    }
+
+    .ultimoContainerPrimeiraTela {
+        width: calc(100% - 32px);
+        padding: 40px 24px;
+        border-radius: 14px 14px 0 0;
+    }
+
+    .conteinerCardsImpacto {
+        flex-direction: column;
+        gap: 18px;
+    }
+
+    .cardImpacto {
+        width: 100%;
+    }
+}
+
+@media (max-width: 650px) {
+    .containerTextoRecurso {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 530px) {
+    .secaoHero {
+        background:
+            radial-gradient(circle at 100% 10%, rgba(220, 38, 38, 0.07), transparent 34%),
+            linear-gradient(135deg, #f4f4f4 0%, #eef1f5 100%);
+    }
+
+    .botoesTelaPrinicpal {
+        height: auto;
+        gap: 12px;
+    }
+
+    #botaoCadastroTelaInicial,
+    #botaoLoginTelaInicial {
+        width: auto;
+        min-height: 44px;
+        flex: 1;
+    }
+
+    .informacoesPrincipais {
+        width: 25%;
+        font-size: clamp(6px, 1.5vw + 8px, 25px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .informacoesPrincipais p {
+        margin: 0;
+        padding-inline: 3px;
+        text-align: center;
+        line-height: 1.15;
+    }
+
+    .conteudoSecao {
+        padding-top: 52px;
+    }
+
+    .Recursos,
+    .cardBeneficio,
+    .cardImpacto {
+        padding: 24px;
+    }
+}

@@ -1,0 +1,18 @@
+.esqueciSenha {
+    width: 100%;
+    margin-top: -5px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.esqueciSenha a {
+    color: #90a1b9;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 11px;
+    text-decoration: none;
+}
+
+.esqueciSenha a:hover {
+    color: #dc2626;
+    transition: 300ms;
+}

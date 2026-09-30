@@ -1,0 +1,217 @@
+.banner {
+    height: 350px;
+    background-color: rgb(30, 41, 59);
+}
+
+.containerPrimeirotextobanner {
+    padding-top: 100px;
+    color: #fff;
+    font-family: 'Barlow Semi Condensed', sans-serif;
+    font-size: 50px;
+    font-weight: 700;
+    text-align: center;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.containerSegundotextobanner {
+    padding-top: 20px;
+    color: rgb(144, 161, 185);
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 20px;
+    font-weight: 400;
+    text-align: center;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.containerSecao {
+    padding-top: 70px;
+    padding-bottom: 70px;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 80px;
+}
+
+.containerTexto {
+    width: 700px;
+}
+
+.containerTextoAbaixoBanner {
+    padding-top: 80px;
+    padding-left: 0;
+    color: #000;
+    font-family: 'Barlow Semi Condensed', sans-serif;
+    font-size: 35px;
+    font-weight: 700;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+}
+
+.titulo-criacao {
+    color: rgb(30, 41, 59);
+}
+
+.titulo-criacao-destaque {
+    color: #dc2626;
+}
+
+.containerTextoAbaixoTextoBanner {
+    padding-top: 20px;
+    padding-left: 0;
+    color: rgb(98, 116, 142);
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 20px;
+    font-weight: 400;
+    line-height: 1.5;
+    text-align: left;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: flex-start;
+}
+
+.botaoComecarAgora {
+    width: 150px;
+    height: 50px;
+    margin-top: 30px;
+    margin-left: 0;
+    background-color: #dc2626;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: bold;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 300ms;
+}
+
+.containerCaixas {
+    width: 700px;
+    padding-top: 70px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.caixa {
+    min-width: 0;
+    min-height: 150px;
+    padding: 25px;
+    box-sizing: border-box;
+    background-color: rgb(248, 250, 252);
+    color: rgb(98, 116, 142);
+    border: 3px solid rgb(226, 232, 240);
+    border-radius: 15px;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 19px;
+}
+
+.titulo-caixa {
+    color: #000;
+}
+
+.equipeTecnica {
+    width: 100%;
+    padding: 50px 0;
+    background-color: #7a2028;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.equipeTecnica h1 {
+    margin-top: 20px;
+    margin-bottom: 70px;
+    color: #fff;
+    font-family: 'Barlow Semi Condensed', sans-serif;
+    font-size: 35px;
+    font-weight: 700;
+}
+
+.containerEquipe {
+    width: 65%;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.cardEquipe {
+    height: 200px;
+    background-color: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.fotoEquipe {
+    width: 50px;
+    height: 50px;
+    margin-bottom: 10px;
+    color: #fff;
+    border: 2px solid rgba(255, 255, 255, 0.25);
+    border-radius: 50%;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.cardEquipe h2 {
+    color: #fff;
+    font-family: 'Barlow Semi Condensed', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.cardEquipe p {
+    margin-top: 4px;
+    color: #e2e8f0;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 15px;
+}
+
+@media (max-width: 850px) {
+    .containerSecao {
+        padding-top: 50px;
+        padding-bottom: 50px;
+        flex-direction: column;
+        align-items: center;
+        gap: 5dvh;
+    }
+
+    .containerTexto,
+    .containerCaixas {
+        width: 80%;
+    }
+
+    .containerCaixas {
+        padding-top: 0;
+    }
+
+    .containerEquipe {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 530px) {
+    .containerEquipe {
+        width: 85%;
+        grid-template-columns: 1fr;
+    }
+}

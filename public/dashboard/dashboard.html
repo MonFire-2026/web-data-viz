@@ -9,8 +9,8 @@
     <title>AquaTech | Dashboards</title>
 
     
-    <link rel="stylesheet" href="./../css/dashboards.css">
-    <link rel="stylesheet" href="./../css/estilo.css" />
+    <link rel="stylesheet" href="../css/global.css">
+    <link rel="stylesheet" href="../css/dashboard.css">
     <script src="../js/sessao.js"></script>
     <script src="./../js/alerta.js"></script>
 
@@ -28,7 +28,7 @@
 
 <!-- <body onload=" atualizarFeed()"> -->
 
-<body>
+<body class="pagina-dashboard">
 
     <div class="janela">
         <div class="header-left">
@@ -102,7 +102,7 @@
                         <canvas id="myChartCanvas${item.id}"></canvas>
                     </div>
                     <div class="label-captura">
-                        <p id="avisoCaptura${item.id}" style="color: white"></p>
+                        <p id="avisoCaptura${item.id}" class="aviso-captura"></p>
                     </div>
                 </div>
             `
@@ -118,7 +118,7 @@
     function alterarTitulo(idAquario) {
         var tituloAquario = document.getElementById(`tituloAquario${idAquario}`)
         var descricao = JSON.parse(sessionStorage.AQUARIOS).find(item => item.id == idAquario).descricao;
-        tituloAquario.innerHTML = "Últimas medidas do <span style='color: #e6005a'>" + descricao + "</span>"
+        tituloAquario.innerHTML = "Últimas medidas do <span class='titulo-destaque'>" + descricao + "</span>"
     }
 
     function exibirAquario(idAquario) {

@@ -6,11 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MonFire</title>
     <link rel="shortcut icon" href="./assets/icon/LogoMonfire.png" type="image/x-icon">
-    <link rel="stylesheet" href="./css/estilo.css">
-
-    <link rel="stylesheet" href="./css/sobreNos.css">
-
-
+    <link rel="stylesheet" href="./css/global.css">
+    <link rel="stylesheet" href="./css/index.css">
+    <script src="./js/navbar.js" defer></script>
 </head>
 
 <body>
@@ -39,7 +37,8 @@
                 <a href="./cadastro.html" class="botaoCadastro">Cadastre-se</a>
             </div>
             <div class="conteinerMenuResponsivo">
-                <button class="botaoMenu" onclick="mostrarMenu()">
+                <button class="botaoMenu" type="button" aria-label="Abrir menu de navegação"
+                    aria-controls="menuLinksHeader" aria-expanded="false" onclick="mostrarMenu()">
                     <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor"
                         class="bi bi-list" viewBox="0 0 16 16">
                         <path fill-rule="evenodd"
@@ -49,8 +48,9 @@
             </div>
         </div>
     </header>
-    <section class="conteinerTelaPrincipal">
-        <div class="conteinerPrimeiraTela">
+    <main class="conteinerTelaPrincipal">
+        <section class="secaoHero">
+          <div class="conteinerPrimeiraTela">
 
             <div class="conteinerTextoPrimeiraTela">
                 <h2>Visibilidade total
@@ -66,10 +66,13 @@
                 </div>
             </div>
             <div class="conteinerImagemTelaPrincipal">
-                <img src="./assets/imgs/imagemBombeiro.png" alt="">
+                <img src="./assets/imgs/imagemBombeiro.png" alt="Bombeiro em frente a um caminhão de emergência">
             </div>
-        </div>
-        <div class="conteinerInformaçõesTelaInicial">
+          </div>
+        </section>
+
+        <section class="RecursosDoSistema" id="sessaoRecursos">
+          <div class="conteinerInformaçõesTelaInicial">
             <div class="informacoesPrincipais">
                 <h2>47</h2>
                 <p>Servidores Monitorados</p>
@@ -86,10 +89,12 @@
                 <h2>99,9%</h2>
                 <p>Provisão de Tempo</p>
             </div>
-        </div>
+          </div>
 
-        <div class="RecursosDoSistema" id="sessaoRecursos">
-            <h1>Recursos do Sistema</h1>
+          <div class="conteudoSecao">
+            <div class="cabecalhoSecao">
+                <h1 class="tituloSecao">Recursos do Sistema</h1>
+            </div>
             <div class="containerTextoRecurso">
                 <div class="Recursos">
                     <div class="icone">
@@ -168,13 +173,15 @@
                         PDF.</p>
                 </div>
             </div>
-        </div>
+          </div>
+        </section>
 
-    </section>
-    <div class="segundoContainerPrimeiraTela">
+    <section class="segundoContainerPrimeiraTela" id="sessaoBeneficios">
         
         <div class="containerTextoSemImagem">
-            <h3>Benefícios para o seu time</h3>
+            <div class="cabecalhoSecao">
+                <h3 class="tituloSecao">Benefícios para o seu time</h3>
+            </div>
 
             <div class="conteinerCardsBeneficios">
 
@@ -200,15 +207,16 @@
 
             </div>
         </div>
-    </div>
     </section>
     
-    <section class="conteinerTelaPrincipal2" id="sessaoBeneficios">
+    <section class="conteinerTelaPrincipal2" id="sessaoImpacto">
 
-        <div class="ultimoContainerPrimeiraTela" id="sessaoImpacto">
+        <div class="ultimoContainerPrimeiraTela">
 
             <div class="containerTextoSemImagem">
-                <h3>Impacto positivo na operação</h3>
+                <div class="cabecalhoSecao cabecalhoSecaoImpacto">
+                    <h3 class="tituloSecao">Impacto positivo na operação</h3>
+                </div>
 
                 <div class="conteinerCardsImpacto">
                     <div class="cardImpacto">
@@ -228,6 +236,7 @@
 
         </div>
     </section>
+    </main>
 
     <div class="containerFooter">
 
@@ -259,26 +268,6 @@
     </div>
 
 
-
-    <script>
-        function mostrarMenu() {
-            if (menuLinksHeader.style.display == "flex") {
-                menuLinksHeader.style.display = "none";
-            } else {
-                menuLinksHeader.style.display = "flex"
-            }
-        }
-    </script>
-
-    <script>
-        function mostrarMenu() {
-            if (menuLinksHeader.style.display == "flex") {
-                menuLinksHeader.style.display = "none";
-            } else {
-                menuLinksHeader.style.display = "flex"
-            }
-        }
-    </script>
 
 </body>
 

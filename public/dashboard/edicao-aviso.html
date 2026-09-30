@@ -9,8 +9,8 @@
     <title>AquaTech | Página Inicial</title>
 
     
-    <link rel="stylesheet" href="./../css/dashboards.css">
-    <link rel="stylesheet" href="./../css/estilo.css" />
+    <link rel="stylesheet" href="../css/global.css">
+    <link rel="stylesheet" href="../css/edicao-aviso.css">
     <script src="../js/sessao.js"></script>
 
     <link rel="preconnect" href="https://fonts.gstatic.com">
@@ -19,7 +19,7 @@
         rel="stylesheet">
 </head>
 
-<body onload="validarSessao(), listarInfosDeUm()" style="background-color: #161618;">
+<body class="pagina-edicao-aviso" onload="validarSessao(), listarInfosDeUm()">
     <!-- <body onload="validarSessao()"> -->
 
     <div class="janela">
@@ -66,18 +66,18 @@
                         <label>
                             ID:
                             <br>
-                            <input id="input_id" maxlength="100" type="text" style="color: rgb(196, 196, 196)" disabled>
+                            <input id="input_id" class="campo-edicao" maxlength="100" type="text" disabled>
                         </label>
                         <label>
                             Autor:
                             <br>
-                            <input id="input_nome" maxlength="100" type="text" style="color: rgb(196, 196, 196)"
+                            <input id="input_nome" class="campo-edicao" maxlength="100" type="text"
                                 disabled>
                         </label>
                         <label>
                             Título:
                             <br>
-                            <input id="input_titulo" maxlength="100" type="text" style="color: rgb(196, 196, 196)"
+                            <input id="input_titulo" class="campo-edicao" maxlength="100" type="text"
                                 disabled>
                         </label>
                         <br>
