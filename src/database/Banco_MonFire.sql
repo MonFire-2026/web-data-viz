@@ -10,27 +10,20 @@ CREATE TABLE empresa (
     nome_fantasia VARCHAR(50) NOT NULL
 );
     
+    CREATE TABLE cargo (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    funcao VARCHAR(50) NOT NULL
+);
+    
     CREATE TABLE usuario(
     id INT PRIMARY KEY AUTO_INCREMENT,
     nome VARCHAR(50) NOT NULL,
     email VARCHAR(50) NOT NULL,
     senha VARCHAR(50) NOT NULL,
-    fk_empresa INT NOT NULL, 
-	CONSTRAINT empresa_usuario FOREIGN KEY (fk_empresa) REFERENCES empresa(id)
-);
-
-CREATE TABLE cargo (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    funcao VARCHAR(50) NOT NULL
-);
-
-
-CREATE TABLE usuario_cargo (
-    fk_usuario INT NOT NULL,
-    fk_cargo INT NOT NULL,
-    PRIMARY KEY (fk_usuario, fk_cargo),
-    CONSTRAINT fk_usuario_cargo_usuario FOREIGN KEY (fk_usuario) REFERENCES usuario(id),
-    CONSTRAINT fk_usuario_cargo_cargo FOREIGN KEY (fk_cargo) REFERENCES cargo(id)
+    fk_empresa INT NOT NULL,
+    fk_cargo INT NOT NULL, 
+	CONSTRAINT empresa_usuario FOREIGN KEY (fk_empresa) REFERENCES empresa(id),
+    CONSTRAINT cargo_usuario FOREIGN KEY (fk_cargo) REFERENCES cargo(id)
 );
     
     CREATE TABLE maquina (
