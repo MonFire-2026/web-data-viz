@@ -186,30 +186,70 @@
     font-size: 15px;
 }
 
-@media (max-width: 850px) {
-    .containerSecao {
-        padding-top: 50px;
-        padding-bottom: 50px;
-        flex-direction: column;
-        align-items: center;
-        gap: 5dvh;
+
+/* Notebook */
+@media (max-width: 1199px){
+    .containerSecao{
+        width: 100%;
+        display: flex;
+        flex-flow: row nowrap;
+        justify-content: space-evenly;
     }
 
-    .containerTexto,
-    .containerCaixas {
-        width: 80%;
+    .containerTexto {
+        width: 40%;
     }
 
-    .containerCaixas {
-        padding-top: 0;
-    }
-
-    .containerEquipe {
-        grid-template-columns: repeat(2, 1fr);
+    .containerCaixas{
+        width: 45%;
     }
 }
 
-@media (max-width: 530px) {
+/* Tablet */
+@media (max-width: 991px) {
+    .containerSecao{
+        width: 100%;
+        display: flex;
+        flex-flow: row nowrap;
+        justify-content: space-evenly;
+    }
+
+    .containerTexto {
+        width: 40%;
+    }
+
+    .containerCaixas{
+        width: 45%;
+    }
+}
+
+/* Celular OK */
+@media (max-width: 767px){
+    .containerSecao{
+        width: 100%;
+        display: flex;
+        flex-flow: column nowrap;
+        align-items: center;
+        justify-content: space-evenly;
+    }
+
+    .containerTexto {
+        width: 95%;
+    }
+
+    .containerCaixas{
+        width: 95%;
+    }
+}
+
+/* Celular pequeno */
+@media (max-width: 576px) {
+    .containerSegundotextobanner{
+        width: 95%;
+        text-align: center;
+        margin: 0 auto;
+        font-size: 20px;
+    }
     .containerEquipe {
         width: 85%;
         grid-template-columns: 1fr;

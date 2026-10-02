@@ -612,7 +612,8 @@ body {
     cursor: pointer;
 }
 
-@media (max-width: 1050px) {
+/* Notebook */
+@media (max-width: 1199px) {
     .conteinerHeader {
         height: auto;
         padding: 2dvh;
@@ -698,7 +699,8 @@ body {
     }
 }
 
-@media (max-width: 850px) {
+/* Tablet */
+@media (max-width: 991px) {
     .botoesFooter {
         width: 80%;
         display: grid;
@@ -708,11 +710,12 @@ body {
     }
 }
 
-@media (max-width: 500px) {
+/* Calular */
+@media (max-width: 767px) {
     .conteudoAutenticacao {
         padding: 20px;
     }
-
+    
     .cardCadastro {
         width: 100%;
     }

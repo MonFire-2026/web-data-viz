@@ -64,6 +64,7 @@
     border-radius: 10px;
     font-size: clamp(4px, 6.5vw + 6px, 12px);
     font-weight: bold;
+    font-size: 15px;
 }
 
 #botaoCadastroTelaInicial {
@@ -144,7 +145,7 @@
 }
 
 .informacoesPrincipais p {
-    font-size: clamp(2px, 8.5vw + 10px, 15px);
+    font-size: clamp(2px, 6.5vw + 5px, 14px);
 }
 
 .RecursosDoSistema {
@@ -322,6 +323,11 @@
     align-items: flex-start;
     justify-content: flex-start;
     gap: 1.5dvh;
+    transition: ease-in-out 0.3s;
+}
+
+.cardImpacto:hover{
+    transform: scale(1.03);
 }
 
 .cardImpacto h2 {
@@ -336,17 +342,45 @@
     line-height: 1.4;
 }
 
-@media (max-width: 1050px) {
+/* Notebook */
+@media (max-width: 1199px) {
+    .secaoHero{
+        margin-bottom: 40px;
+    }
+
     .containerTextoRecurso {
         grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 20px;
     }
+
+    #botaoCadastroTelaInicial,
+    #botaoLoginTelaInicial {
+        width: auto;
+        margin-top: 30px;
+        min-height: 44px;
+        flex: 1;
+        font-size: 15px;
+    }
 }
 
-@media (max-width: 850px) {
+/* Tablet OK */
+@media (max-width: 991px) {
     .conteinerPrimeiraTela {
         width: calc(100% - 32px);
         height: clamp(470px, 58svh, 520px);
+    }
+
+    #botaoCadastroTelaInicial,
+    #botaoLoginTelaInicial {
+        width: auto;
+        margin-top: 30px;
+        min-height: 44px;
+        flex: 1;
+        font-size: 18px;
+    }
+
+    .informacoesPrincipais p{
+        font-size: 18px;
     }
 
     .conteinerImagemTelaPrincipal {
@@ -396,22 +430,34 @@
     }
 }
 
-@media (max-width: 650px) {
+/* Celular OK */
+@media (max-width: 767px) {
     .containerTextoRecurso {
         grid-template-columns: 1fr;
     }
+
+    #botaoCadastroTelaInicial,
+    #botaoLoginTelaInicial {
+        width: auto;
+        margin-top: 30px;
+        min-height: 44px;
+        flex: 1;
+        font-size: 15px;
+    }
 }
 
-@media (max-width: 530px) {
+/* Celular Pequeno OK */
+@media (max-width: 576px) {
     .secaoHero {
         background:
-            radial-gradient(circle at 100% 10%, rgba(220, 38, 38, 0.07), transparent 34%),
-            linear-gradient(135deg, #f4f4f4 0%, #eef1f5 100%);
+        radial-gradient(circle at 88% 18%, rgba(220, 38, 38, 0.08), transparent 28%),
+        linear-gradient(135deg, #f4f4f4 0%, #eef1f5 100%);
     }
-
+    
     .botoesTelaPrinicpal {
         height: auto;
         gap: 12px;
+        margin-top: 10px;
     }
 
     #botaoCadastroTelaInicial,
@@ -423,7 +469,7 @@
 
     .informacoesPrincipais {
         width: 25%;
-        font-size: clamp(6px, 1.5vw + 8px, 25px);
+        font-size: clamp(6px, 1.5vw + 6px, 25px);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -431,6 +477,7 @@
 
     .informacoesPrincipais p {
         margin: 0;
+        padding: 5px;
         padding-inline: 3px;
         text-align: center;
         line-height: 1.15;
