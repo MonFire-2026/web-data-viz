@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MonFire | Cadastrar usuário</title>
+    <link rel="shortcut icon" href="../assets/icon/LogoMonfire.png" type="image/x-icon">
+    <link rel="stylesheet" href="../css/global.css">
+    <link rel="stylesheet" href="../css/cadastro-usuarios.css">
+    <script src="../js/sessao.js" defer></script>
+    <script src="../js/cadastro-usuarios.js" defer></script>
+</head>
+
+<body class="pagina-cadastro-usuarios">
+    <div class="layout-interno">
+        <aside class="menu-lateral-usuarios" aria-label="Navegação principal">
+            <a class="marca-dashboard" href="../index.html" aria-label="MonFire - Página inicial">
+                <img src="../assets/icon/LogoMonfire.png" alt="">
+                <strong>Mon<span>Fire</span></strong>
+            </a>
+
+            <nav class="navegacao-dashboard" aria-label="Menu da dashboard">
+                <span class="rotulo-menu">Painel</span>
+                <a href="./cards.html">Visão geral</a>
+                <a href="./dashboard.html">Servidores</a>
+                <a href="./mural.html">Alertas</a>
+                <span class="item-menu item-menu-indisponivel" aria-disabled="true">Histórico</span>
+                <a class="ativo" href="./cadastro-usuarios.html" aria-current="page">Usuários</a>
+            </nav>
+
+            <div class="rodape-menu-usuarios">
+                <p id="b_usuario">Usuário administrador</p>
+                <button type="button" onclick="limparSessao()">Sair</button>
+            </div>
+        </aside>
+
+        <main class="conteudo-cadastro-usuarios">
+            <header class="topo-cadastro-usuarios">
+                <div>
+                    <span class="etiqueta-pagina">Gestão de usuários</span>
+                    <h1>Cadastrar novo usuário</h1>
+                    <p>Adicione um integrante da sua unidade.</p>
+                </div>
+                <a class="link-voltar" href="./cards.html">Voltar</a>
+            </header>
+
+            <section class="cartao-cadastro-usuarios" aria-labelledby="titulo-formulario-usuario">
+                <div class="cabecalho-formulario-usuario">
+                    <div>
+                        <span>MonFire</span>
+                        <h2 id="titulo-formulario-usuario">Dados do novo usuário</h2>
+                    </div>
+                </div>
+
+                <form id="form_cadastro_usuario" novalidate>
+                    <div class="grade-formulario-usuarios">
+                        <div class="campo-usuario campo-largo">
+                            <label for="nome_usuario_input">Nome completo</label>
+                            <input id="nome_usuario_input" type="text" maxlength="50" autocomplete="name"
+                                placeholder="Nome e sobrenome" required>
+                        </div>
+
+                        <div class="campo-usuario campo-largo">
+                            <label for="email_usuario_input">E-mail institucional</label>
+                            <input id="email_usuario_input" type="email" maxlength="50" autocomplete="email"
+                                placeholder="usuario@instituicao.com" required>
+                        </div>
+
+                        <div class="campo-usuario">
+                            <label for="empresa_usuario_input">Unidade</label>
+                            <input id="empresa_usuario_input" type="text" value="Unidade atual" readonly
+                                aria-readonly="true" onkeyup="validar()">
+                        </div>  
+
+                        <div class="campo-usuario">
+                            <label for="nivel_usuario_select">Nível de acesso</label>
+                            <select id="nivel_usuario_select" required></select>
+                        </div>
+
+                        <div class="campo-usuario">
+                            <label for="senha_usuario_input">Senha provisória</label>
+                            <input id="senha_usuario_input" type="password" autocomplete="new-password"
+                                aria-describedby="requisitos_senha" placeholder="Crie uma senha forte" required>
+                        </div>
+
+                        <div class="campo-usuario">
+                            <label for="confirmacao_senha_usuario_input">Confirmar senha</label>
+                            <input id="confirmacao_senha_usuario_input" type="password" autocomplete="new-password"
+                                placeholder="Repita a senha" required>
+                        </div>
+                    </div>
+
+                    <p id="requisitos_senha" class="requisitos-senha">
+                        Use pelo menos 8 caracteres, com letra maiúscula, minúscula, número e símbolo.
+                    </p>
+
+                    <div id="mensagem_cadastro_usuario" class="mensagem-cadastro-usuario" role="status"
+                        aria-live="polite" hidden></div>
+
+                    <div class="acoes-cadastro-usuario">
+                        <a class="botao-usuario botao-secundario-usuario" href="./cards.html">Cancelar</a>
+                        <button class="botao-usuario botao-primario-usuario" type="submit">Cadastrar usuário</button>
+                    </div>
+                </form>
+            </section>
+        </main>
+    </div>
+</body>
+
+</html>
