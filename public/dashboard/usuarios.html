@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <link rel="shortcut icon" href="../assets/icon/favicon2.ico" type="image/x-icon">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MonFire | Usuários</title>
+
+    <link rel="stylesheet" href="./../css/dashboard.css">
+
+    <script src="../js/sessao.js"></script>
+    <script src="./../js/alerta.js"></script>
+
+    <script src="https://kit.fontawesome.com/9f7414eb10.js" crossorigin="anonymous"></script>
+
+    <style>
+        .selo.inativo { background: #e2e5ea; color: #5a6b85; }
+        .div-form label { display: block; margin-bottom: 14px; font-size: 14px; font-weight: 600; color: #1a2438; }
+        .div-form input, .div-form textarea {
+            width: 100%; margin-top: 6px; padding: 10px 12px;
+            border: 1px solid #e2e5ea; border-radius: 8px;
+            font-family: inherit; font-size: 14px;
+        }
+        .div-form textarea { resize: vertical; }
+        .div-form button {
+            background: #1a2438; color: #fff; border: 0; border-radius: 8px;
+            padding: 12px 24px; font-size: 15px; font-weight: 700; cursor: pointer;
+        }
+        .div-form button:hover { background: #d62222; }
+
+        .feed-container { display: flex; flex-direction: column; gap: 12px; }
+        .publicacao {
+            display: flex; flex-direction: column; gap: 6px;
+            padding: 16px; font-size: 14px;
+            border: 1px solid #e2e5ea; border-left: 6px solid #1a2438; border-radius: 8px;
+        }
+        .publicacao-titulo { font-size: 16px; color: #1a2438; }
+        .publicacao-nome { color: #5a6b85; }
+        .publicacao-descricao { margin-top: 4px; }
+        .div-buttons { display: flex; gap: 8px; margin-top: 8px; }
+        .publicacao-btn-editar {
+            background: #1a2438; color: #fff; border: 0; border-radius: 6px;
+            padding: 8px 16px; font-size: 13px; font-weight: 600; cursor: pointer;
+        }
+        .publicacao-btn-editar:hover { background: #d62222; }
+    </style>
+</head>
+
+<!-- <body class="pagina-mural" onload="validarSessao(), atualizarFeed()"> -->
+<body class="pagina-mural" onload="atualizarFeed()">
+
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="brand-logo"><i class="fa-solid fa-fire"></i></div>
+            <span class="brand-name">Mon<span>Fire</span></span>
+        </div>
+
+        <nav class="nav">
+            <a href="../dashboard/dashboard.html">Visão Geral</a>
+            <a href="../dashboard/visaoEspecifica.html">Visão Específica</a>
+            <a href="../dashboard/usuarios.html" class="ativo">Usuários</a>
+            <a href="../dashboard/maquinas.html">Máquinas</a>
+            <a href="../dashboard/alertas.html">Alertas</a>
+        </nav>
+
+        <button class="btn-sair" type="button" onclick="limparSessao()">Sair</button>
+    </aside>
+
+    <main class="conteudo">
+        <header class="topo">
+            <h1>Usuários</h1>
+            <p>Pessoas com acesso ao MonFire no sistema 193.</p>
+            <p>Olá, <strong id="b_usuario">usuário</strong>!</p>
+        </header>
+
+        <div id="alerta"></div>
+
+        <section class="kpis" id="k"></section>
+
+        <section class="painel">
+            <h2>Usuários cadastrados</h2>
+            <div class="tabela-wrap" id="tab"></div>
+        </section>
+
+        <section class="painel">
+            <h2>Cadastro de novo usuário</h2>
+            <div class="div-form">
+                <form id="form_postagem" method="post" onsubmit="return publicar()">
+                    <label>
+                        Nome:
+                        <input name="titulo" id="titulo" maxlength="100" type="text">
+                    </label>
+                    <label>
+                        Informações sobre o novo usuário:
+                        <textarea name="descricao" id="textarea_descricao" maxlength="250" rows="5"></textarea>
+                    </label>
+                    <button>Cadastrar</button>
+                </form>
+            </div>
+        </section>
+
+        <section class="painel">
+            <div class="div-results">
+                <div id="feed_container" class="feed-container">
+                </div>
+            </div>
+        </section>
+    </main>
+
+</body>
+
+</html>
+
+<script>
+
+    b_usuario.innerHTML = sessionStorage.NOME_USUARIO;
+
+
+    function limparFormulario() {
+        document.getElementById("form_postagem").reset();
+    }
+
+    function publicar() {
+        var idUsuario = sessionStorage.ID_USUARIO;
+
+        var corpo = {
+            titulo: form_postagem.titulo.value,
+            descricao: form_postagem.descricao.value
+        }
+
+        fetch(`/avisos/publicar/${idUsuario}`, {
+            method: "post",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(corpo)
+        }).then(function (resposta) {
+
+            console.log("resposta: ", resposta);
+
+            if (resposta.ok) {
+                window.alert("Post realizado com sucesso pelo usuario de ID: " + idUsuario + "!");
+                window.location = "/dashboard/mural.html";
+                limparFormulario();
+                finalizarAguardar();
+            } else if (resposta.status == 404) {
+                window.alert("Deu 404!");
+            } else {
+                throw ("Houve um erro ao tentar realizar a postagem! Código da resposta: " + resposta.status);
+            }
+        }).catch(function (resposta) {
+            console.log(`#ERRO: ${resposta}`);
+            finalizarAguardar();
+        });
+
+        return false;
+
+    }
+
+    function editar(idAviso) {
+        sessionStorage.ID_POSTAGEM_EDITANDO = idAviso;
+        console.log("cliquei em editar - " + idAviso);
+        window.alert("Você será redirecionado à página de edição do aviso de id número: " + idAviso);
+        window.location = "/dashboard/edicao-aviso.html"
+
+    }
+
+    function deletar(idAviso) {
+        console.log("Criar função de apagar post escolhido - ID" + idAviso);
+        fetch(`/avisos/deletar/${idAviso}`, {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        }).then(function (resposta) {
+
+            if (resposta.ok) {
+                window.alert("Post deletado com sucesso pelo usuario de email: " + sessionStorage.getItem("EMAIL_USUARIO") + "!");
+                window.location = "/dashboard/mural.html"
+            } else if (resposta.status == 404) {
+                window.alert("Deu 404!");
+            } else {
+                throw ("Houve um erro ao tentar realizar a postagem! Código da resposta: " + resposta.status);
+            }
+        }).catch(function (resposta) {
+            console.log(`#ERRO: ${resposta}`);
+        });
+    }
+
+    function atualizarFeed() {
+        fetch("/avisos/listar").then(function (resposta) {
+            if (resposta.ok) {
+                if (resposta.status == 204) {
+                    var feed = document.getElementById("feed_container");
+                    var mensagem = document.createElement("span");
+                    mensagem.innerHTML = "Nenhum resultado encontrado."
+                    feed.appendChild(mensagem);
+                    throw "Nenhum resultado encontrado!!";
+                }
+
+                resposta.json().then(function (resposta) {
+                    console.log("Dados recebidos: ", JSON.stringify(resposta));
+
+                    var feed = document.getElementById("feed_container");
+                    feed.innerHTML = "";
+                    for (let i = 0; i < resposta.length; i++) {
+                        var publicacao = resposta[i];
+
+                        // criando e manipulando elementos do HTML via JavaScript
+                        var divPublicacao = document.createElement("div");
+                        var spanID = document.createElement("span");
+                        var spanTitulo = document.createElement("span");
+                        var spanNome = document.createElement("span");
+                        var divDescricao = document.createElement("div");
+                        var divButtons = document.createElement("div");
+                        var btnEditar = document.createElement("button");
+                        var btnDeletar = document.createElement("button");
+
+
+                        spanID.innerHTML = "ID: <b>" + publicacao.idAviso + "</b>";
+                        spanTitulo.innerHTML = "Título: <b>" + publicacao.titulo + "</b>";
+                        spanNome.innerHTML = "Autor: <b>" + publicacao.nome + "</b>";
+                        divDescricao.innerHTML = "Descrição: <b>" + publicacao.descricao + "</b>";
+                        btnEditar.innerHTML = "Editar";
+                        btnDeletar.innerHTML = "Deletar";
+
+                        divPublicacao.className = "publicacao";
+                        spanTitulo.id = "inputNumero" + publicacao.idAviso;
+                        spanNome.className = "publicacao-nome";
+                        spanTitulo.className = "publicacao-titulo";
+                        divDescricao.className = "publicacao-descricao";
+
+                        divButtons.className = "div-buttons"
+
+                        btnEditar.className = "publicacao-btn-editar"
+                        btnEditar.id = "btnEditar" + publicacao.idAviso;
+                        btnEditar.setAttribute("onclick", `editar(${publicacao.idAviso})`);
+
+                        btnDeletar.className = "publicacao-btn-editar"
+                        btnDeletar.id = "btnDeletar" + publicacao.idAviso;
+                        btnDeletar.setAttribute("onclick", `deletar(${publicacao.idAviso})`);
+
+                        divPublicacao.appendChild(spanID);
+                        divPublicacao.appendChild(spanNome);
+                        divPublicacao.appendChild(spanTitulo);
+                        divPublicacao.appendChild(divDescricao);
+                        divPublicacao.appendChild(divButtons);
+                        divButtons.appendChild(btnEditar);
+                        divButtons.appendChild(btnDeletar);
+                        feed.appendChild(divPublicacao);
+                    }
+
+                    finalizarAguardar();
+                });
+            } else {
+                throw ('Houve um erro na API!');
+            }
+        }).catch(function (resposta) {
+            console.error(resposta);
+            finalizarAguardar();
+        });
+    }
+
+    // Dados de exemplo
+    const U = [
+        ['Alexandre Tabacchi',    'alexandre@sptech.school',    'Administrador',  'TI / Infraestrutura', 'Hoje, 09:12',  'Ativo'],
+        ['Felipe Amoroso',  'felipe@sptech.school',  'Analista de TI', 'TI / Infraestrutura', 'Hoje, 08:47',  'Ativo'],
+        ['Gabryel Moura',   'gabryel@sptech.school',   'Operador',       'Centro de Operações', 'Hoje, 07:30',  'Ativo'],
+        ['Helena Caporicci', 'helena@sptech.school', 'Operador',       'Centro de Operações', 'Ontem, 22:05', 'Ativo'],
+        ['Maria Luiza Vieira',  'marialuiza@sptech.school',  'Analista de TI', 'TI / Infraestrutura', '25/09, 14:20', 'Inativo'],
+        ['Pedro Caparroz',   'pedro@sptech.school',   'Operador',       'Centro de Operações', '18/09, 10:02', 'Inativo']
+    ];
+
+    // Cards dos nossos indicadores
+    function montarKpis() {
+        let ativos = 0;
+        let admins = 0;
+
+        for (let i = 0; i < U.length; i++) {
+            if (U[i][5] == 'Ativo') {
+                ativos++;
+            }
+            if (U[i][2] == 'Administrador') {
+                admins++;
+            }
+        }
+
+        document.getElementById('k').innerHTML = `
+            <div class="kpi">
+                <div class="kpi-valor">${U.length}</div>
+                <div class="kpi-rotulo">Usuários cadastrados</div>
+            </div>
+            <div class="kpi">
+                <div class="kpi-valor">${ativos}</div>
+                <div class="kpi-rotulo">Usuários ativos</div>
+            </div>
+            <div class="kpi">
+                <div class="kpi-valor">${admins}</div>
+                <div class="kpi-rotulo">Administradores</div>
+            </div>
+        `;
+    }
+
+    function selo(situacao) {
+        let classe = 'inativo';
+
+        if (situacao == 'Ativo') {
+            classe = 'ok';
+        }
+
+        return `<span class="selo ${classe}">${situacao}</span>`;
+    }
+
+
+    function montarTabela() {
+        let linhas = '';
+
+        for (let i = 0; i < U.length; i++) {
+            let u = U[i];
+
+            linhas += `
+                <tr>
+                    <td><b>${u[0]}</b></td>
+                    <td>${u[1]}</td>
+                    <td>${u[2]}</td>
+                    <td>${u[3]}</td>
+                    <td>${u[4]}</td>
+                    <td>${selo(u[5])}</td>
+                </tr>
+            `;
+        }
+
+        document.getElementById('tab').innerHTML = `
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>E-mail</th>
+                        <th>Perfil</th>
+                        <th>Setor</th>
+                        <th>Último acesso</th>
+                        <th>Situação</th>
+                    </tr>
+                </thead>
+                <tbody>${linhas}</tbody>
+            </table>
+        `;
+    }
+
+    montarKpis();
+    montarTabela();
+</script>

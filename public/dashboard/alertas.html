@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MonFire | Alertas</title>
+<link rel="stylesheet" href="./../css/dashboard.css">
+<script src="layout.js"></script>
+<style>
+   .btn-servidor {
+            padding: 6px 14px; border-radius: 6px; cursor: pointer;
+            border: 1px solid #1a2438; background: #fff; color: #1a2438;
+            font-family: inherit; font-size: 13px;
+        }
+</style>
+</head>
+<body>
+<aside class="sidebar">
+        <div class="brand">
+            <div class="brand-logo"><i class="fa-solid fa-fire"></i></div>
+            <span class="brand-name">Mon<span>Fire</span></span>
+        </div>
+
+         <nav class="nav">
+            <a href="../dashboard/dashboard.html" class="ativo">Visão Geral</a>
+            <a href="../dashboard/visaoEspecifica.html">Visão Específica</a>
+            <a href="../dashboard/usuarios.html">Usuários</a>
+            <a href="../dashboard/maquinas.html">Máquinas</a>
+            <a href="../dashboard/alertas.html">Alertas</a>
+        </nav>
+
+        <button class="btn-sair" type="button" onclick="sair()">Sair</button>
+    </aside>
+
+<main class="conteudo">
+  <header class="topo"><h1>Alertas</h1><p>Ocorrências de consumo acima do limite nos servidores do sistema 193.</p></header>
+  <section class="kpis" id="k"></section>
+  <section class="painel"><h2>Histórico de alertas</h2><div class="tabela-wrap" id="tab"></div></section>
+</main>
+<script>
+// Dados de exemplo 
+const A = [
+  ['Crítico', 'SRV-193-DB-01',  'Disco', 'Ocupação de disco em 92% (limite crítico: 90%)',   'Hoje, 10:48', 'Aberto'],
+  ['Crítico', 'SRV-193-VOZ-01', 'CPU',   'Uso de CPU em 91% por mais de 10 minutos',          'Hoje, 10:42', 'Aberto'],
+  ['Atenção', 'SRV-193-DB-01',  'RAM',   'Uso de memória em 84% (limite de atenção: 75%)',    'Hoje, 10:30', 'Aberto'],
+  ['Atenção', 'SRV-193-CAD-01', 'RAM',   'Uso de memória em 78% (limite de atenção: 75%)',    'Hoje, 10:15', 'Aberto'],
+  ['Atenção', 'SRV-193-VOZ-01', 'Rede',  'Tráfego de rede em crescimento contínuo (70%)',     'Hoje, 09:55', 'Aberto'],
+  ['Atenção', 'SRV-193-GEO-01', 'CPU',   'Pico de CPU em 79% durante 3 minutos',              'Hoje, 08:20', 'Resolvido'],
+  ['Crítico', 'SRV-193-CAD-01', 'Disco', 'Ocupação de disco em 91%, liberado após limpeza',   'Ontem, 19:40', 'Resolvido']
+];
+const abertos = A.filter(a => a[5] == 'Aberto');
+kpis('k', [[abertos.length, 'Alertas em aberto', true], [abertos.filter(a => a[0] == 'Crítico').length, 'Críticos em aberto'], [A.length - abertos.length, 'Resolvidos']]);
+tabela('tab', ['Gravidade', 'Servidor', 'Componente', 'Descrição', 'Horário', 'Situação'], A.map(a => [selo(a[0]), `<b>${a[1]}</b>`, a[2], a[3], a[4], a[5]]), r => r[5] == 'Aberto' && r[0].includes('Crítico') ? 'critico' : '');
+</script>
+</body>
+</html>

@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <link rel="shortcut icon" href="../assets/icon/favicon2.ico" type="image/x-icon">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MonFire | Máquinas</title>
+
+    <link rel="stylesheet" href="./../css/dashboard.css">
+
+    <script src="../js/sessao.js"></script>
+
+    <script src="https://kit.fontawesome.com/9f7414eb10.js" crossorigin="anonymous"></script>
+
+    <style>
+        .selo.manutencao { background: #e2e5ea; color: #5a6b85; }
+
+        .div-form label { display: block; margin-bottom: 14px; font-size: 14px; font-weight: 600; color: #1a2438; }
+        .campo-edicao, .div-form textarea {
+            width: 100%; margin-top: 6px; padding: 10px 12px;
+            border: 1px solid #e2e5ea; border-radius: 8px;
+            font-family: inherit; font-size: 14px;
+        }
+        .campo-edicao:disabled { background: #f4f4f4; color: #5a6b85; }
+        .div-form textarea { resize: vertical; }
+        .div-form button {
+            background: #1a2438; color: #fff; border: 0; border-radius: 8px;
+            padding: 12px 24px; font-size: 15px; font-weight: 700; cursor: pointer;
+        }
+        .div-form button:hover { background: #d62222; }
+    </style>
+</head>
+
+<!-- <body class="pagina-edicao-aviso" onload="validarSessao(), listarInfosDeUm()"> -->
+<body class="pagina-edicao-aviso" onload="listarInfosDeUm()">
+
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="brand-logo"><i class="fa-solid fa-fire"></i></div>
+            <span class="brand-name">Mon<span>Fire</span></span>
+        </div>
+
+        <nav class="nav">
+            <a href="../dashboard/dashboard.html">Visão Geral</a>
+            <a href="../dashboard/visaoEspecifica.html">Visão Específica</a>
+            <a href="../dashboard/usuarios.html">Usuários</a>
+            <a href="../dashboard/maquinas.html" class="ativo">Máquinas</a>
+            <a href="../dashboard/alertas.html">Alertas</a>
+        </nav>
+
+        <button class="btn-sair" type="button" onclick="limparSessao()">Sair</button>
+    </aside>
+
+    <main class="conteudo">
+        <header class="topo">
+            <h1>Máquinas</h1>
+            <p>Servidores que compõem a infraestrutura do sistema 193.</p>
+            <p>Olá, <strong id="b_usuario">usuário</strong>!</p>
+        </header>
+
+        <section class="kpis" id="k"></section>
+
+        <section class="painel">
+            <h2>Máquinas monitoradas</h2>
+            <div class="tabela-wrap" id="tab"></div>
+        </section>
+
+        <section class="painel">
+            <h2>Cadastro de nova máquina:</h2>
+            <div class="div-form">
+                <label>
+                    ID:
+                    <input id="input_id" class="campo-edicao" maxlength="100" type="text" disabled>
+                </label>
+                <label>
+                    Componentes para monitoramento:
+                    <input id="input_nome" class="campo-edicao" maxlength="100" type="text" disabled>
+                </label>
+                <label>
+                <label>
+                    Mais informações sobre a máquina:
+                    <textarea id="textarea_descricao" maxlength="250" rows="5"></textarea>
+                </label>
+                <button onclick="editar()">Cadastrar</button>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        function listarInfosDeUm() {
+            console.log("Criar função de trazer informações de post escolhido");
+        }
+
+        function editar() {
+            fetch(`/avisos/editar/${sessionStorage.getItem("ID_POSTAGEM_EDITANDO")}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    descricao: textarea_descricao.value
+                })
+            }).then(function (resposta) {
+
+                if (resposta.ok) {
+                    window.alert("Post atualizado com sucesso pelo usuario de email: " + sessionStorage.getItem("EMAIL_USUARIO") + "!");
+                    window.location = "/dashboard/mural.html"
+                } else if (resposta.status == 404) {
+                    window.alert("Deu 404!");
+                } else {
+                    throw ("Houve um erro ao tentar realizar a postagem! Código da resposta: " + resposta.status);
+                }
+            }).catch(function (resposta) {
+                console.log(`#ERRO: ${resposta}`);
+            });
+        }
+
+        // Dados de exemplo
+        const M = [
+            ['SRV-193-CAD-01', 'Responsável pelas ocorrências',   '10.193.0.11', 'Ubuntu Server 22.04', '42 dias', 'Atenção'],
+            ['SRV-193-CAD-02',  'Responsável pelo Banco de dados',            '10.193.0.12', 'Ubuntu Server 22.04', '42 dias', 'Crítico'],
+            ['SRV-193-CAD-03', 'Responsável pela geolocalização',    '10.193.0.13', 'Ubuntu Server 22.04', '17 dias', 'Normal'],
+            ['SRV-193-CAD-04', 'Responsável pela Telefonia 193',  '10.193.0.14', 'Windows Server 2022', '9 dias',  'Crítico'],
+            ['SRV-193-CAD-05', 'Responsável pela Aplicação web',       '10.193.0.15', 'Ubuntu Server 22.04', '30 dias', 'Normal'],
+            ['SRV-193-CAD-06', 'Responsável pelo Backup',                    '10.193.0.16', 'Ubuntu Server 22.04', '—',       'Manutenção']
+        ];
+
+        // Cards de indicadores
+        function montarKpis() {
+            let normais = 0;
+            let atencao = 0;
+
+            for (let i = 0; i < M.length; i++) {
+                if (M[i][5] == 'Normal') {
+                    normais++;
+                }
+                if (M[i][5] == 'Crítico' || M[i][5] == 'Atenção') {
+                    atencao++;
+                }
+            }
+
+            document.getElementById('k').innerHTML = `
+                <div class="kpi">
+                    <div class="kpi-valor">${M.length}</div>
+                    <div class="kpi-rotulo">Total de máquinas</div>
+                </div>
+                <div class="kpi">
+                    <div class="kpi-valor">${normais}</div>
+                    <div class="kpi-rotulo">Operando normalmente</div>
+                </div>
+                <div class="kpi destaque">
+                    <div class="kpi-valor">${atencao}</div>
+                    <div class="kpi-rotulo">Exigem atenção</div>
+                </div>
+            `;
+        }
+
+        function selo(situacao) {
+            let classe = '';
+
+            if (situacao == 'Normal') {
+                classe = 'ok';
+            } else if (situacao == 'Atenção') {
+                classe = 'atencao';
+            } else if (situacao == 'Crítico') {
+                classe = 'critico';
+            } else {
+                classe = 'manutencao';
+            }
+
+            return `<span class="selo ${classe}">${situacao}</span>`;
+        }
+
+        function montarTabela() {
+            let linhas = '';
+
+            for (let i = 0; i < M.length; i++) {
+                let m = M[i];
+                let classeLinha = m[5] == 'Crítico' ? 'critico' : '';
+
+                linhas += `
+                    <tr class="${classeLinha}">
+                        <td><b>${m[0]}</b></td>
+                        <td>${m[1]}</td>
+                        <td>${m[2]}</td>
+                        <td>${m[3]}</td>
+                        <td>${m[4]}</td>
+                        <td>${selo(m[5])}</td>
+                    </tr>
+                `;
+            }
+
+            document.getElementById('tab').innerHTML = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Servidor</th>
+                            <th>Função</th>
+                            <th>IP</th>
+                            <th>Sistema operacional</th>
+                            <th>Uptime</th>
+                            <th>Situação</th>
+                        </tr>
+                    </thead>
+                    <tbody>${linhas}</tbody>
+                </table>
+            `;
+        }
+
+        montarKpis();
+        montarTabela();
+    </script>
+
+</body>
+
+</html>
