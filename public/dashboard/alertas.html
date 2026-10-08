@@ -5,31 +5,29 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MonFire | Alertas</title>
 <link rel="stylesheet" href="./../css/dashboard.css">
-<script src="layout.js"></script>
-<style>
-   .btn-servidor {
-            padding: 6px 14px; border-radius: 6px; cursor: pointer;
-            border: 1px solid #1a2438; background: #fff; color: #1a2438;
-            font-family: inherit; font-size: 13px;
-        }
-</style>
+<script src="../js/sessao.js"></script>
+<script src="../js/dashboard-layout.js"></script>
 </head>
 <body>
-<aside class="sidebar">
-        <div class="brand">
-            <div class="brand-logo"><i class="fa-solid fa-fire"></i></div>
+<aside class="sidebar" aria-label="Navegação principal">
+        <a class="brand" href="../index.html" aria-label="MonFire - Página inicial">
+            <img class="brand-logo" src="../assets/icon/LogoMonfire.png" alt="">
             <span class="brand-name">Mon<span>Fire</span></span>
-        </div>
+        </a>
 
-         <nav class="nav">
-            <a href="../dashboard/dashboard.html" class="ativo">Visão Geral</a>
-            <a href="../dashboard/visaoEspecifica.html">Visão Específica</a>
-            <a href="../dashboard/usuarios.html">Usuários</a>
-            <a href="../dashboard/maquinas.html">Máquinas</a>
-            <a href="../dashboard/alertas.html">Alertas</a>
+         <nav class="nav" aria-label="Menu da dashboard">
+            <span class="nav-label">Painel</span>
+            <a href="./dashboard.html">Visão Geral</a>
+            <a href="./visaoEspecifica.html">Visão Específica</a>
+            <a href="./usuarios.html">Usuários</a>
+            <a href="./maquinas.html">Máquinas</a>
+            <a href="./alertas.html" class="ativo" aria-current="page">Alertas</a>
         </nav>
 
-        <button class="btn-sair" type="button" onclick="sair()">Sair</button>
+        <div class="sidebar-footer">
+            <p><small>Sessão atual</small><strong data-nome-usuario>Usuário administrador</strong></p>
+            <button class="btn-sair" type="button" onclick="limparSessao()">Sair</button>
+        </div>
     </aside>
 
 <main class="conteudo">

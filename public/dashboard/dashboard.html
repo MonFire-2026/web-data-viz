@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="./../css/dashboard.css">
 
     <script src="../js/sessao.js"></script>
+    <script src="../js/dashboard-layout.js"></script>
     <script src="./../js/alerta.js"></script>
 
 
@@ -19,42 +20,35 @@
 
     <script src="https://kit.fontawesome.com/9f7414eb10.js" crossorigin="anonymous"></script>
 
-    <style>
-        .seletor-servidor { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
-        .btn-servidor {
-            padding: 6px 14px; border-radius: 6px; cursor: pointer;
-            border: 1px solid #1a2438; background: #fff; color: #1a2438;
-            font-family: inherit; font-size: 13px;
-        }
-        .btn-servidor.ativo { background: #1a2438; color: #fff; }
-        .aviso-captura { margin-top: 8px; font-size: 12px; color: #d62222; min-height: 16px; }
-    </style>
 </head>
 
 <body>
 
-    <aside class="sidebar">
-        <div class="brand">
-            <div class="brand-logo"><i class="fa-solid fa-fire"></i></div>
+    <aside class="sidebar" aria-label="Navegação principal">
+        <a class="brand" href="../index.html" aria-label="MonFire - Página inicial">
+            <img class="brand-logo" src="../assets/icon/LogoMonfire.png" alt="">
             <span class="brand-name">Mon<span>Fire</span></span>
-        </div>
+        </a>
 
-        <nav class="nav">
-            <a href="../dashboard/dashboard.html" class="ativo">Visão Geral</a>
-            <a href="../dashboard/visaoEspecifica.html">Visão Específica</a>
-            <a href="../dashboard/usuarios.html">Usuários</a>
-            <a href="../dashboard/maquinas.html">Máquinas</a>
-            <a href="../dashboard/alertas.html">Alertas</a>
+        <nav class="nav" aria-label="Menu da dashboard">
+            <span class="nav-label">Painel</span>
+            <a href="./dashboard.html" class="ativo" aria-current="page">Visão Geral</a>
+            <a href="./visaoEspecifica.html">Visão Específica</a>
+            <a href="./usuarios.html">Usuários</a>
+            <a href="./maquinas.html">Máquinas</a>
+            <a href="./alertas.html">Alertas</a>
         </nav>
 
-        <button class="btn-sair" type="button" onclick="limparSessao()">Sair</button>
+        <div class="sidebar-footer">
+            <p><small>Sessão atual</small><strong id="nome_usuario" data-nome-usuario>Usuário administrador</strong></p>
+            <button class="btn-sair" type="button" onclick="limparSessao()">Sair</button>
+        </div>
     </aside>
 
     <main class="conteudo">
         <header class="topo">
             <h1>Visão Geral</h1>
             <p>Resumo do consumo de hardware dos servidores da unidade.</p>
-            <p>Olá, <strong id="nome_usuario"></strong></p>
         </header>
         <div id="alerta"></div>
 
@@ -70,15 +64,6 @@
             <div class="kpi destaque">
                 <div class="kpi-valor" id="kpiAlertas">5</div>
                 <div class="kpi-rotulo">Alertas em aberto</div>
-
-            <div class="btn-nav-white">
-                <a href="./cadastro-usuarios.html">
-                    <h3>Usuários</h3>
-                </a>
-            </div>
-
-            <div class="btn-logout" onclick="limparSessao()">
-                <h3>Sair</h3>
             </div>
         </section>
 

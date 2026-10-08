@@ -11,68 +11,42 @@
     <link rel="stylesheet" href="./../css/dashboard.css">
 
     <script src="../js/sessao.js"></script>
+    <script src="../js/dashboard-layout.js"></script>
     <script src="./../js/alerta.js"></script>
 
-    <script src="https://kit.fontawesome.com/9f7414eb10.js" crossorigin="anonymous"></script>
-
-    <style>
-        .selo.inativo { background: #e2e5ea; color: #5a6b85; }
-        .div-form label { display: block; margin-bottom: 14px; font-size: 14px; font-weight: 600; color: #1a2438; }
-        .div-form input, .div-form textarea {
-            width: 100%; margin-top: 6px; padding: 10px 12px;
-            border: 1px solid #e2e5ea; border-radius: 8px;
-            font-family: inherit; font-size: 14px;
-        }
-        .div-form textarea { resize: vertical; }
-        .div-form button {
-            background: #1a2438; color: #fff; border: 0; border-radius: 8px;
-            padding: 12px 24px; font-size: 15px; font-weight: 700; cursor: pointer;
-        }
-        .div-form button:hover { background: #d62222; }
-
-        .feed-container { display: flex; flex-direction: column; gap: 12px; }
-        .publicacao {
-            display: flex; flex-direction: column; gap: 6px;
-            padding: 16px; font-size: 14px;
-            border: 1px solid #e2e5ea; border-left: 6px solid #1a2438; border-radius: 8px;
-        }
-        .publicacao-titulo { font-size: 16px; color: #1a2438; }
-        .publicacao-nome { color: #5a6b85; }
-        .publicacao-descricao { margin-top: 4px; }
-        .div-buttons { display: flex; gap: 8px; margin-top: 8px; }
-        .publicacao-btn-editar {
-            background: #1a2438; color: #fff; border: 0; border-radius: 6px;
-            padding: 8px 16px; font-size: 13px; font-weight: 600; cursor: pointer;
-        }
-        .publicacao-btn-editar:hover { background: #d62222; }
-    </style>
 </head>
 
 <!-- <body class="pagina-mural" onload="validarSessao(), atualizarFeed()"> -->
 <body class="pagina-mural" onload="atualizarFeed()">
 
-    <aside class="sidebar">
-        <div class="brand">
-            <div class="brand-logo"><i class="fa-solid fa-fire"></i></div>
+    <aside class="sidebar" aria-label="Navegação principal">
+        <a class="brand" href="../index.html" aria-label="MonFire - Página inicial">
+            <img class="brand-logo" src="../assets/icon/LogoMonfire.png" alt="">
             <span class="brand-name">Mon<span>Fire</span></span>
-        </div>
+        </a>
 
-        <nav class="nav">
-            <a href="../dashboard/dashboard.html">Visão Geral</a>
-            <a href="../dashboard/visaoEspecifica.html">Visão Específica</a>
-            <a href="../dashboard/usuarios.html" class="ativo">Usuários</a>
-            <a href="../dashboard/maquinas.html">Máquinas</a>
-            <a href="../dashboard/alertas.html">Alertas</a>
+        <nav class="nav" aria-label="Menu da dashboard">
+            <span class="nav-label">Painel</span>
+            <a href="./dashboard.html">Visão Geral</a>
+            <a href="./visaoEspecifica.html">Visão Específica</a>
+            <a href="./usuarios.html" class="ativo" aria-current="page">Usuários</a>
+            <a href="./maquinas.html">Máquinas</a>
+            <a href="./alertas.html">Alertas</a>
         </nav>
 
-        <button class="btn-sair" type="button" onclick="limparSessao()">Sair</button>
+        <div class="sidebar-footer">
+            <p><small>Sessão atual</small><strong id="b_usuario" data-nome-usuario>Usuário administrador</strong></p>
+            <button class="btn-sair" type="button" onclick="limparSessao()">Sair</button>
+        </div>
     </aside>
 
     <main class="conteudo">
-        <header class="topo">
-            <h1>Usuários</h1>
-            <p>Pessoas com acesso ao MonFire no sistema 193.</p>
-            <p>Olá, <strong id="b_usuario">usuário</strong>!</p>
+        <header class="topo topo-com-acoes">
+            <div>
+                <h1>Usuários</h1>
+                <p>Pessoas com acesso ao MonFire no sistema 193.</p>
+            </div>
+            <a class="botao-topo" href="./cadastro-usuarios.html">Cadastrar usuário</a>
         </header>
 
         <div id="alerta"></div>

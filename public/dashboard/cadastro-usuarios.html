@@ -7,31 +7,33 @@
     <title>MonFire | Cadastrar usuário</title>
     <link rel="shortcut icon" href="../assets/icon/LogoMonfire.png" type="image/x-icon">
     <link rel="stylesheet" href="../css/global.css">
+    <link rel="stylesheet" href="../css/dashboard.css">
     <link rel="stylesheet" href="../css/cadastro-usuarios.css">
     <script src="../js/sessao.js" defer></script>
+    <script src="../js/dashboard-layout.js" defer></script>
     <script src="../js/cadastro-usuarios.js" defer></script>
 </head>
 
 <body class="pagina-cadastro-usuarios">
     <div class="layout-interno">
-        <aside class="menu-lateral-usuarios" aria-label="Navegação principal">
-            <a class="marca-dashboard" href="../index.html" aria-label="MonFire - Página inicial">
-                <img src="../assets/icon/LogoMonfire.png" alt="">
-                <strong>Mon<span>Fire</span></strong>
+        <aside class="sidebar" aria-label="Navegação principal">
+            <a class="brand" href="../index.html" aria-label="MonFire - Página inicial">
+                <img class="brand-logo" src="../assets/icon/LogoMonfire.png" alt="">
+                <span class="brand-name">Mon<span>Fire</span></span>
             </a>
 
-            <nav class="navegacao-dashboard" aria-label="Menu da dashboard">
-                <span class="rotulo-menu">Painel</span>
-                <a href="./cards.html">Visão geral</a>
-                <a href="./dashboard.html">Servidores</a>
-                <a href="./mural.html">Alertas</a>
-                <span class="item-menu item-menu-indisponivel" aria-disabled="true">Histórico</span>
-                <a class="ativo" href="./cadastro-usuarios.html" aria-current="page">Usuários</a>
+            <nav class="nav" aria-label="Menu da dashboard">
+                <span class="nav-label">Painel</span>
+                <a href="./dashboard.html">Visão Geral</a>
+                <a href="./visaoEspecifica.html">Visão Específica</a>
+                <a class="ativo" href="./usuarios.html">Usuários</a>
+                <a href="./maquinas.html">Máquinas</a>
+                <a href="./alertas.html">Alertas</a>
             </nav>
 
-            <div class="rodape-menu-usuarios">
-                <p id="b_usuario">Usuário administrador</p>
-                <button type="button" onclick="limparSessao()">Sair</button>
+            <div class="sidebar-footer">
+                <p><small>Sessão atual</small><strong id="b_usuario" data-nome-usuario>Usuário administrador</strong></p>
+                <button class="btn-sair" type="button" onclick="limparSessao()">Sair</button>
             </div>
         </aside>
 
@@ -42,7 +44,7 @@
                     <h1>Cadastrar novo usuário</h1>
                     <p>Adicione um integrante da sua unidade.</p>
                 </div>
-                <a class="link-voltar" href="./cards.html">Voltar</a>
+                <a class="link-voltar" href="./usuarios.html">Voltar</a>
             </header>
 
             <section class="cartao-cadastro-usuarios" aria-labelledby="titulo-formulario-usuario">
@@ -99,7 +101,7 @@
                         aria-live="polite" hidden></div>
 
                     <div class="acoes-cadastro-usuario">
-                        <a class="botao-usuario botao-secundario-usuario" href="./cards.html">Cancelar</a>
+                        <a class="botao-usuario botao-secundario-usuario" href="./usuarios.html">Cancelar</a>
                         <button class="botao-usuario botao-primario-usuario" type="submit">Cadastrar usuário</button>
                     </div>
                 </form>

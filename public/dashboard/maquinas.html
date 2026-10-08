@@ -11,53 +11,38 @@
     <link rel="stylesheet" href="./../css/dashboard.css">
 
     <script src="../js/sessao.js"></script>
+    <script src="../js/dashboard-layout.js"></script>
 
-    <script src="https://kit.fontawesome.com/9f7414eb10.js" crossorigin="anonymous"></script>
-
-    <style>
-        .selo.manutencao { background: #e2e5ea; color: #5a6b85; }
-
-        .div-form label { display: block; margin-bottom: 14px; font-size: 14px; font-weight: 600; color: #1a2438; }
-        .campo-edicao, .div-form textarea {
-            width: 100%; margin-top: 6px; padding: 10px 12px;
-            border: 1px solid #e2e5ea; border-radius: 8px;
-            font-family: inherit; font-size: 14px;
-        }
-        .campo-edicao:disabled { background: #f4f4f4; color: #5a6b85; }
-        .div-form textarea { resize: vertical; }
-        .div-form button {
-            background: #1a2438; color: #fff; border: 0; border-radius: 8px;
-            padding: 12px 24px; font-size: 15px; font-weight: 700; cursor: pointer;
-        }
-        .div-form button:hover { background: #d62222; }
-    </style>
 </head>
 
 <!-- <body class="pagina-edicao-aviso" onload="validarSessao(), listarInfosDeUm()"> -->
 <body class="pagina-edicao-aviso" onload="listarInfosDeUm()">
 
-    <aside class="sidebar">
-        <div class="brand">
-            <div class="brand-logo"><i class="fa-solid fa-fire"></i></div>
+    <aside class="sidebar" aria-label="Navegação principal">
+        <a class="brand" href="../index.html" aria-label="MonFire - Página inicial">
+            <img class="brand-logo" src="../assets/icon/LogoMonfire.png" alt="">
             <span class="brand-name">Mon<span>Fire</span></span>
-        </div>
+        </a>
 
-        <nav class="nav">
-            <a href="../dashboard/dashboard.html">Visão Geral</a>
-            <a href="../dashboard/visaoEspecifica.html">Visão Específica</a>
-            <a href="../dashboard/usuarios.html">Usuários</a>
-            <a href="../dashboard/maquinas.html" class="ativo">Máquinas</a>
-            <a href="../dashboard/alertas.html">Alertas</a>
+        <nav class="nav" aria-label="Menu da dashboard">
+            <span class="nav-label">Painel</span>
+            <a href="./dashboard.html">Visão Geral</a>
+            <a href="./visaoEspecifica.html">Visão Específica</a>
+            <a href="./usuarios.html">Usuários</a>
+            <a href="./maquinas.html" class="ativo" aria-current="page">Máquinas</a>
+            <a href="./alertas.html">Alertas</a>
         </nav>
 
-        <button class="btn-sair" type="button" onclick="limparSessao()">Sair</button>
+        <div class="sidebar-footer">
+            <p><small>Sessão atual</small><strong id="b_usuario" data-nome-usuario>Usuário administrador</strong></p>
+            <button class="btn-sair" type="button" onclick="limparSessao()">Sair</button>
+        </div>
     </aside>
 
     <main class="conteudo">
         <header class="topo">
             <h1>Máquinas</h1>
             <p>Servidores que compõem a infraestrutura do sistema 193.</p>
-            <p>Olá, <strong id="b_usuario">usuário</strong>!</p>
         </header>
 
         <section class="kpis" id="k"></section>
