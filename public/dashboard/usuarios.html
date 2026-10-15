@@ -2,23 +2,19 @@
 <html lang="pt-br">
 
 <head>
-    <link rel="shortcut icon" href="../assets/icon/favicon2.ico" type="image/x-icon">
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MonFire | Usuários</title>
-
-    <link rel="stylesheet" href="./../css/dashboard.css">
-
-    <script src="../js/sessao.js"></script>
-    <script src="../js/dashboard-layout.js"></script>
-    <script src="./../js/alerta.js"></script>
-
+    <link rel="shortcut icon" href="../assets/icon/LogoMonfire.png" type="image/x-icon">
+    <link rel="stylesheet" href="../css/dashboard.css">
+    <link rel="stylesheet" href="../css/cadastro-usuarios.css">
+    <script src="../js/sessao.js" defer></script>
+    <script src="../js/dashboard-layout.js" defer></script>
+    <script src="../js/cadastro-usuarios.js" defer></script>
 </head>
 
-<!-- <body class="pagina-mural" onload="validarSessao(), atualizarFeed()"> -->
-<body class="pagina-mural" onload="atualizarFeed()">
-
+<body class="pagina-usuarios">
     <aside class="sidebar" aria-label="Navegação principal">
         <a class="brand" href="../index.html" aria-label="MonFire - Página inicial">
             <img class="brand-logo" src="../assets/icon/LogoMonfire.png" alt="">
@@ -29,7 +25,7 @@
             <span class="nav-label">Painel</span>
             <a href="./dashboard.html">Visão Geral</a>
             <a href="./visaoEspecifica.html">Visão Específica</a>
-            <a href="./usuarios.html" class="ativo" aria-current="page">Usuários</a>
+            <a class="ativo" href="./usuarios.html" aria-current="page">Usuários</a>
             <a href="./maquinas.html">Máquinas</a>
             <a href="./alertas.html">Alertas</a>
         </nav>
@@ -41,288 +37,166 @@
     </aside>
 
     <main class="conteudo">
-        <header class="topo topo-com-acoes">
-            <div>
-                <h1>Usuários</h1>
-                <p>Pessoas com acesso ao MonFire no sistema 193.</p>
-            </div>
-            <a class="botao-topo" href="./cadastro-usuarios.html">Cadastrar usuário</a>
+        <header class="topo">
+            <h1>Usuários</h1>
+            <p>Gerencie as pessoas com acesso ao MonFire na sua unidade.</p>
         </header>
 
-        <div id="alerta"></div>
+        <section class="kpis" id="kpis_usuarios" aria-label="Resumo dos usuários"></section>
 
-        <section class="kpis" id="k"></section>
+        <section class="cadastro-integrado" id="cadastro-usuario" aria-labelledby="titulo-cadastro-usuario">
+            <button class="cadastro-toggle" id="botao_abrir_cadastro" type="button" aria-expanded="false"
+                aria-controls="conteudo_cadastro_usuario">
+                <span>
+                    <strong id="titulo-cadastro-usuario">Cadastrar novo usuário</strong>
+                    <small>Adicione um integrante da sua unidade quando necessário.</small>
+                </span>
+                <span class="icone-toggle" aria-hidden="true">+</span>
+            </button>
 
-        <section class="painel">
-            <h2>Usuários cadastrados</h2>
-            <div class="tabela-wrap" id="tab"></div>
-        </section>
+            <div class="conteudo-cadastro-integrado" id="conteudo_cadastro_usuario" hidden>
+                <form id="form_cadastro_usuario" novalidate>
+                    <div class="grade-formulario-usuarios">
+                        <div class="campo-usuario campo-largo">
+                            <label for="nome_usuario_input">Nome completo</label>
+                            <input id="nome_usuario_input" type="text" maxlength="50" autocomplete="name"
+                                placeholder="Nome e sobrenome" required>
+                        </div>
 
-        <section class="painel">
-            <h2>Cadastro de novo usuário</h2>
-            <div class="div-form">
-                <form id="form_postagem" method="post" onsubmit="return publicar()">
-                    <label>
-                        Nome:
-                        <input name="titulo" id="titulo" maxlength="100" type="text">
-                    </label>
-                    <label>
-                        Informações sobre o novo usuário:
-                        <textarea name="descricao" id="textarea_descricao" maxlength="250" rows="5"></textarea>
-                    </label>
-                    <button>Cadastrar</button>
+                        <div class="campo-usuario campo-largo">
+                            <label for="email_usuario_input">E-mail institucional</label>
+                            <input id="email_usuario_input" type="email" maxlength="50" autocomplete="email"
+                                placeholder="usuario@instituicao.com" required>
+                        </div>
+
+                        <div class="campo-usuario">
+                            <label for="empresa_usuario_input">Unidade</label>
+                            <input id="empresa_usuario_input" type="text" value="Unidade atual" readonly
+                                aria-readonly="true">
+                        </div>
+
+                        <div class="campo-usuario">
+                            <label for="nivel_usuario_select">Nível de acesso</label>
+                            <select id="nivel_usuario_select" required></select>
+                        </div>
+
+                        <div class="campo-usuario">
+                            <label for="senha_usuario_input">Senha provisória</label>
+                            <input id="senha_usuario_input" type="password" autocomplete="new-password"
+                                aria-describedby="requisitos_senha" placeholder="Crie uma senha forte" required>
+                        </div>
+
+                        <div class="campo-usuario">
+                            <label for="confirmacao_senha_usuario_input">Confirmar senha</label>
+                            <input id="confirmacao_senha_usuario_input" type="password" autocomplete="new-password"
+                                placeholder="Repita a senha" required>
+                        </div>
+                    </div>
+
+                    <p id="requisitos_senha" class="requisitos-senha">
+                        Use pelo menos 8 caracteres, com letra maiúscula, minúscula, número e símbolo.
+                    </p>
+
+                    <div id="mensagem_cadastro_usuario" class="mensagem-cadastro-usuario" role="status"
+                        aria-live="polite" hidden></div>
+
+                    <div class="acoes-cadastro-usuario">
+                        <button class="botao-usuario botao-secundario-usuario" id="botao_cancelar_cadastro"
+                            type="button">Cancelar</button>
+                        <button class="botao-usuario botao-primario-usuario" type="submit">Cadastrar usuário</button>
+                    </div>
                 </form>
             </div>
         </section>
 
-        <section class="painel">
-            <div class="div-results">
-                <div id="feed_container" class="feed-container">
+        <section class="painel painel-relatorio-usuarios" aria-labelledby="titulo-relatorio-usuarios">
+            <div class="cabecalho-relatorio-usuarios">
+                <div>
+                    <h2 id="titulo-relatorio-usuarios">Usuários cadastrados</h2>
+                    <p>Reordene os resultados ou selecione quais categorias deseja visualizar.</p>
+                </div>
+
+                <div class="controles-relatorio">
+                    <label class="controle-ordenacao" for="ordenacao_usuarios">
+                        <span>Ordenar por</span>
+                        <select id="ordenacao_usuarios">
+                            <option value="nome">Nome</option>
+                            <option value="email">E-mail</option>
+                            <option value="cargo">Cargo</option>
+                            <option value="setor">Setor</option>
+                            <option value="ultimoAcessoOrdem">Último acesso</option>
+                            <option value="situacao">Situação</option>
+                        </select>
+                    </label>
+
+                    <button class="botao-direcao" id="direcao_ordenacao_usuarios" type="button"
+                        aria-label="Alterar para ordem decrescente" aria-pressed="false">
+                        <span aria-hidden="true">↑</span> Crescente
+                    </button>
+
+                    <div class="area-filtros-usuarios">
+                        <button class="botao-filtros" id="botao_filtros_usuarios" type="button"
+                            aria-expanded="false" aria-controls="painel_filtros_usuarios">
+                            Filtros <span id="quantidade_filtros_usuarios" aria-hidden="true">(0)</span>
+                        </button>
+
+                        <div class="painel-filtros-usuarios" id="painel_filtros_usuarios" hidden>
+                            <fieldset data-grupo-filtro="cargo">
+                                <legend>Cargo</legend>
+                                <label><input type="checkbox" value="administrador" checked> Administrador</label>
+                                <label><input type="checkbox" value="gerente" checked> Gerente</label>
+                                <label><input type="checkbox" value="tecnico" checked> Técnico</label>
+                                <label><input type="checkbox" value="comum" checked> Comum</label>
+                            </fieldset>
+
+                            <fieldset data-grupo-filtro="setor">
+                                <legend>Setor</legend>
+                                <label><input type="checkbox" value="TI / Infraestrutura" checked> TI / Infraestrutura</label>
+                                <label><input type="checkbox" value="Centro de Operações" checked> Centro de Operações</label>
+                            </fieldset>
+
+                            <fieldset data-grupo-filtro="situacao">
+                                <legend>Situação</legend>
+                                <label><input type="checkbox" value="Ativo" checked> Ativo</label>
+                                <label><input type="checkbox" value="Inativo" checked> Inativo</label>
+                            </fieldset>
+
+                            <div class="acoes-filtros-usuarios">
+                                <button class="botao-limpar-filtros" id="botao_limpar_filtros" type="button">Limpar</button>
+                                <button class="botao-aplicar-filtros" id="botao_aplicar_filtros" type="button">Aplicar</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
+
+            <div id="mensagem_usuarios" class="mensagem-operacao-usuarios" role="status" aria-live="polite"></div>
+            <div class="tabela-wrap" id="tabela_usuarios"></div>
+            <p class="resumo-resultados" id="resumo_resultados_usuarios"></p>
         </section>
     </main>
 
+    <dialog class="dialogo-desativacao" id="confirmacao_desativacao" aria-labelledby="titulo_confirmacao_desativacao">
+        <form method="dialog">
+            <div class="cabecalho-dialogo">
+                <div>
+                    <span>Confirmação necessária</span>
+                    <h2 id="titulo_confirmacao_desativacao">Desativar usuário?</h2>
+                </div>
+                <button class="botao-fechar-dialogo" value="cancel" aria-label="Fechar confirmação">×</button>
+            </div>
+
+            <p>O usuário perderá o acesso ao sistema após a confirmação.</p>
+            <div class="usuario-confirmacao" id="usuario_confirmacao_desativacao"></div>
+
+            <div class="acoes-dialogo">
+                <button class="botao-usuario botao-secundario-usuario" value="cancel">Cancelar</button>
+                <button class="botao-usuario botao-perigo-usuario" id="botao_confirmar_desativacao" type="button">
+                    Confirmar desativação
+                </button>
+            </div>
+        </form>
+    </dialog>
 </body>
 
 </html>
-
-<script>
-
-    b_usuario.innerHTML = sessionStorage.NOME_USUARIO;
-
-
-    function limparFormulario() {
-        document.getElementById("form_postagem").reset();
-    }
-
-    function publicar() {
-        var idUsuario = sessionStorage.ID_USUARIO;
-
-        var corpo = {
-            titulo: form_postagem.titulo.value,
-            descricao: form_postagem.descricao.value
-        }
-
-        fetch(`/avisos/publicar/${idUsuario}`, {
-            method: "post",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(corpo)
-        }).then(function (resposta) {
-
-            console.log("resposta: ", resposta);
-
-            if (resposta.ok) {
-                window.alert("Post realizado com sucesso pelo usuario de ID: " + idUsuario + "!");
-                window.location = "/dashboard/mural.html";
-                limparFormulario();
-                finalizarAguardar();
-            } else if (resposta.status == 404) {
-                window.alert("Deu 404!");
-            } else {
-                throw ("Houve um erro ao tentar realizar a postagem! Código da resposta: " + resposta.status);
-            }
-        }).catch(function (resposta) {
-            console.log(`#ERRO: ${resposta}`);
-            finalizarAguardar();
-        });
-
-        return false;
-
-    }
-
-    function editar(idAviso) {
-        sessionStorage.ID_POSTAGEM_EDITANDO = idAviso;
-        console.log("cliquei em editar - " + idAviso);
-        window.alert("Você será redirecionado à página de edição do aviso de id número: " + idAviso);
-        window.location = "/dashboard/edicao-aviso.html"
-
-    }
-
-    function deletar(idAviso) {
-        console.log("Criar função de apagar post escolhido - ID" + idAviso);
-        fetch(`/avisos/deletar/${idAviso}`, {
-            method: "DELETE",
-            headers: {
-                "Content-Type": "application/json"
-            }
-        }).then(function (resposta) {
-
-            if (resposta.ok) {
-                window.alert("Post deletado com sucesso pelo usuario de email: " + sessionStorage.getItem("EMAIL_USUARIO") + "!");
-                window.location = "/dashboard/mural.html"
-            } else if (resposta.status == 404) {
-                window.alert("Deu 404!");
-            } else {
-                throw ("Houve um erro ao tentar realizar a postagem! Código da resposta: " + resposta.status);
-            }
-        }).catch(function (resposta) {
-            console.log(`#ERRO: ${resposta}`);
-        });
-    }
-
-    function atualizarFeed() {
-        fetch("/avisos/listar").then(function (resposta) {
-            if (resposta.ok) {
-                if (resposta.status == 204) {
-                    var feed = document.getElementById("feed_container");
-                    var mensagem = document.createElement("span");
-                    mensagem.innerHTML = "Nenhum resultado encontrado."
-                    feed.appendChild(mensagem);
-                    throw "Nenhum resultado encontrado!!";
-                }
-
-                resposta.json().then(function (resposta) {
-                    console.log("Dados recebidos: ", JSON.stringify(resposta));
-
-                    var feed = document.getElementById("feed_container");
-                    feed.innerHTML = "";
-                    for (let i = 0; i < resposta.length; i++) {
-                        var publicacao = resposta[i];
-
-                        // criando e manipulando elementos do HTML via JavaScript
-                        var divPublicacao = document.createElement("div");
-                        var spanID = document.createElement("span");
-                        var spanTitulo = document.createElement("span");
-                        var spanNome = document.createElement("span");
-                        var divDescricao = document.createElement("div");
-                        var divButtons = document.createElement("div");
-                        var btnEditar = document.createElement("button");
-                        var btnDeletar = document.createElement("button");
-
-
-                        spanID.innerHTML = "ID: <b>" + publicacao.idAviso + "</b>";
-                        spanTitulo.innerHTML = "Título: <b>" + publicacao.titulo + "</b>";
-                        spanNome.innerHTML = "Autor: <b>" + publicacao.nome + "</b>";
-                        divDescricao.innerHTML = "Descrição: <b>" + publicacao.descricao + "</b>";
-                        btnEditar.innerHTML = "Editar";
-                        btnDeletar.innerHTML = "Deletar";
-
-                        divPublicacao.className = "publicacao";
-                        spanTitulo.id = "inputNumero" + publicacao.idAviso;
-                        spanNome.className = "publicacao-nome";
-                        spanTitulo.className = "publicacao-titulo";
-                        divDescricao.className = "publicacao-descricao";
-
-                        divButtons.className = "div-buttons"
-
-                        btnEditar.className = "publicacao-btn-editar"
-                        btnEditar.id = "btnEditar" + publicacao.idAviso;
-                        btnEditar.setAttribute("onclick", `editar(${publicacao.idAviso})`);
-
-                        btnDeletar.className = "publicacao-btn-editar"
-                        btnDeletar.id = "btnDeletar" + publicacao.idAviso;
-                        btnDeletar.setAttribute("onclick", `deletar(${publicacao.idAviso})`);
-
-                        divPublicacao.appendChild(spanID);
-                        divPublicacao.appendChild(spanNome);
-                        divPublicacao.appendChild(spanTitulo);
-                        divPublicacao.appendChild(divDescricao);
-                        divPublicacao.appendChild(divButtons);
-                        divButtons.appendChild(btnEditar);
-                        divButtons.appendChild(btnDeletar);
-                        feed.appendChild(divPublicacao);
-                    }
-
-                    finalizarAguardar();
-                });
-            } else {
-                throw ('Houve um erro na API!');
-            }
-        }).catch(function (resposta) {
-            console.error(resposta);
-            finalizarAguardar();
-        });
-    }
-
-    // Dados de exemplo
-    const U = [
-        ['Alexandre Tabacchi',    'alexandre@sptech.school',    'Administrador',  'TI / Infraestrutura', 'Hoje, 09:12',  'Ativo'],
-        ['Felipe Amoroso',  'felipe@sptech.school',  'Analista de TI', 'TI / Infraestrutura', 'Hoje, 08:47',  'Ativo'],
-        ['Gabryel Moura',   'gabryel@sptech.school',   'Operador',       'Centro de Operações', 'Hoje, 07:30',  'Ativo'],
-        ['Helena Caporicci', 'helena@sptech.school', 'Operador',       'Centro de Operações', 'Ontem, 22:05', 'Ativo'],
-        ['Maria Luiza Vieira',  'marialuiza@sptech.school',  'Analista de TI', 'TI / Infraestrutura', '25/09, 14:20', 'Inativo'],
-        ['Pedro Caparroz',   'pedro@sptech.school',   'Operador',       'Centro de Operações', '18/09, 10:02', 'Inativo']
-    ];
-
-    // Cards dos nossos indicadores
-    function montarKpis() {
-        let ativos = 0;
-        let admins = 0;
-
-        for (let i = 0; i < U.length; i++) {
-            if (U[i][5] == 'Ativo') {
-                ativos++;
-            }
-            if (U[i][2] == 'Administrador') {
-                admins++;
-            }
-        }
-
-        document.getElementById('k').innerHTML = `
-            <div class="kpi">
-                <div class="kpi-valor">${U.length}</div>
-                <div class="kpi-rotulo">Usuários cadastrados</div>
-            </div>
-            <div class="kpi">
-                <div class="kpi-valor">${ativos}</div>
-                <div class="kpi-rotulo">Usuários ativos</div>
-            </div>
-            <div class="kpi">
-                <div class="kpi-valor">${admins}</div>
-                <div class="kpi-rotulo">Administradores</div>
-            </div>
-        `;
-    }
-
-    function selo(situacao) {
-        let classe = 'inativo';
-
-        if (situacao == 'Ativo') {
-            classe = 'ok';
-        }
-
-        return `<span class="selo ${classe}">${situacao}</span>`;
-    }
-
-
-    function montarTabela() {
-        let linhas = '';
-
-        for (let i = 0; i < U.length; i++) {
-            let u = U[i];
-
-            linhas += `
-                <tr>
-                    <td><b>${u[0]}</b></td>
-                    <td>${u[1]}</td>
-                    <td>${u[2]}</td>
-                    <td>${u[3]}</td>
-                    <td>${u[4]}</td>
-                    <td>${selo(u[5])}</td>
-                </tr>
-            `;
-        }
-
-        document.getElementById('tab').innerHTML = `
-            <table>
-                <thead>
-                    <tr>
-                        <th>Nome</th>
-                        <th>E-mail</th>
-                        <th>Perfil</th>
-                        <th>Setor</th>
-                        <th>Último acesso</th>
-                        <th>Situação</th>
-                    </tr>
-                </thead>
-                <tbody>${linhas}</tbody>
-            </table>
-        `;
-    }
-
-    montarKpis();
-    montarTabela();
-</script>

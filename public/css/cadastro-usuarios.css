@@ -438,3 +438,408 @@
         scroll-behavior: auto;
     }
 }
+
+/* Integração do cadastro e do relatório na página de usuários */
+.pagina-usuarios {
+    --usuarios-azul-neutro: #243b5a;
+    --usuarios-azul-medio: #365677;
+    --usuarios-azul-claro: #eaf1f8;
+    --usuarios-azul-borda: #b8cadc;
+}
+
+.pagina-usuarios .conteudo {
+    max-width: none;
+}
+
+.cadastro-integrado,
+.painel-relatorio-usuarios {
+    max-width: 1380px;
+}
+
+.cadastro-integrado {
+    margin-top: 20px;
+    margin-bottom: 24px;
+    overflow: hidden;
+    background: var(--usuarios-azul-claro);
+    border: 1px solid var(--usuarios-azul-borda);
+    border-radius: 10px;
+    box-shadow: 0 8px 22px rgba(29, 41, 61, 0.07);
+}
+
+.cadastro-toggle {
+    display: flex;
+    width: 100%;
+    min-height: 78px;
+    padding: 17px 22px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    color: #fff;
+    background: linear-gradient(135deg, var(--usuarios-azul-neutro), var(--usuarios-azul-medio));
+    border: 0;
+    text-align: left;
+    cursor: pointer;
+}
+
+.cadastro-toggle:hover,
+.cadastro-toggle:focus-visible {
+    background: linear-gradient(135deg, #1c304a, #2f4e70);
+    outline: 3px solid rgba(54, 86, 119, 0.24);
+}
+
+.cadastro-toggle > span:first-child {
+    display: grid;
+    gap: 4px;
+}
+
+.cadastro-toggle strong {
+    font-size: 18px;
+}
+
+.cadastro-toggle small {
+    color: #dce8f4;
+    font-size: 13px;
+}
+
+.icone-toggle {
+    display: grid;
+    width: 34px;
+    height: 34px;
+    flex: 0 0 auto;
+    justify-content:center;
+
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    font-size: 20px;
+    line-height: 1.5;
+}
+
+.conteudo-cadastro-integrado {
+    padding: clamp(20px, 3vw, 30px);
+    border-top: 1px solid var(--usuarios-azul-borda);
+}
+
+.conteudo-cadastro-integrado[hidden],
+.painel-filtros-usuarios[hidden] {
+    display: none;
+}
+
+.pagina-usuarios .campo-usuario input,
+.pagina-usuarios .campo-usuario select {
+    border-color: var(--usuarios-azul-borda);
+}
+
+.pagina-usuarios .campo-usuario input:focus,
+.pagina-usuarios .campo-usuario select:focus {
+    border-color: var(--usuarios-azul-medio);
+    box-shadow: 0 0 0 3px rgba(54, 86, 119, 0.16);
+}
+
+.botao-perigo-usuario {
+    color: #fff;
+    background: var(--usuarios-erro);
+    border-color: var(--usuarios-erro);
+}
+
+.cabecalho-relatorio-usuarios {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 18px;
+}
+
+.cabecalho-relatorio-usuarios h2 {
+    margin-bottom: 5px;
+}
+
+.cabecalho-relatorio-usuarios p {
+    margin: 0;
+    color: var(--dashboard-texto-suave);
+    font-size: 13px;
+}
+
+.controles-relatorio {
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 9px;
+}
+
+.controle-ordenacao {
+    display: grid;
+    gap: 5px;
+    color: var(--dashboard-texto-suave);
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+}
+
+.controle-ordenacao select,
+.botao-direcao,
+.botao-filtros {
+    min-height: 40px;
+    padding: 0 13px;
+    color: var(--dashboard-azul);
+    background: #fff;
+    border: 1px solid var(--dashboard-borda);
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.botao-direcao,
+.botao-filtros {
+    cursor: pointer;
+}
+
+.controle-ordenacao select:focus,
+.botao-direcao:focus-visible,
+.botao-filtros:focus-visible {
+    border-color: var(--usuarios-azul-medio);
+    outline: 3px solid rgba(54, 86, 119, 0.13);
+}
+
+.area-filtros-usuarios {
+    position: relative;
+}
+
+.painel-filtros-usuarios {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    z-index: 12;
+    display: grid;
+    width: min(520px, calc(100vw - 40px));
+    padding: 18px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+    background: #fff;
+    border: 1px solid var(--dashboard-borda);
+    border-radius: 10px;
+    box-shadow: 0 16px 38px rgba(29, 41, 61, 0.18);
+}
+
+.painel-filtros-usuarios fieldset {
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+.painel-filtros-usuarios legend {
+    margin-bottom: 9px;
+    color: var(--dashboard-azul);
+    font-size: 12px;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.painel-filtros-usuarios label {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin-top: 8px;
+    color: var(--dashboard-texto);
+    font-size: 13px;
+}
+
+.painel-filtros-usuarios input {
+    accent-color: var(--dashboard-vermelho);
+}
+
+.acoes-filtros-usuarios {
+    display: flex;
+    justify-content: flex-end;
+    grid-column: 1 / -1;
+    gap: 8px;
+    padding-top: 13px;
+    border-top: 1px solid var(--dashboard-borda);
+}
+
+.botao-limpar-filtros,
+.botao-aplicar-filtros {
+    min-height: 36px;
+    padding: 0 14px;
+    border-radius: 7px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.botao-limpar-filtros {
+    color: var(--dashboard-azul);
+    background: #fff;
+    border: 1px solid var(--dashboard-borda);
+}
+
+.botao-aplicar-filtros {
+    color: #fff;
+    background: var(--usuarios-azul-neutro);
+    border: 1px solid var(--usuarios-azul-neutro);
+}
+
+.mensagem-operacao-usuarios {
+    min-height: 20px;
+    margin-bottom: 8px;
+    color: var(--usuarios-sucesso);
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.acao-desativar-usuario {
+    padding: 7px 11px;
+    color: var(--usuarios-erro);
+    background: #fff;
+    border: 1px solid #efb7b2;
+    border-radius: 7px;
+    font-size: 12px;
+    font-weight: 750;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.acao-desativar-usuario:hover,
+.acao-desativar-usuario:focus-visible {
+    color: #fff;
+    background: var(--usuarios-erro);
+    outline: none;
+}
+
+.acao-indisponivel {
+    color: var(--dashboard-texto-suave);
+    font-size: 12px;
+}
+
+.estado-vazio-usuarios {
+    padding: 34px 18px;
+    color: var(--dashboard-texto-suave);
+    background: #f7f9fc;
+    border: 1px dashed var(--dashboard-borda);
+    border-radius: 8px;
+    text-align: center;
+}
+
+.resumo-resultados {
+    margin: 14px 0 0;
+    color: var(--dashboard-texto-suave);
+    font-size: 12px;
+}
+
+.dialogo-desativacao {
+    width: min(480px, calc(100% - 32px));
+    padding: 0;
+    color: var(--dashboard-texto);
+    background: #fff;
+    border: 0;
+    border-radius: 12px;
+    box-shadow: 0 24px 70px rgba(17, 24, 39, 0.34);
+}
+
+.dialogo-desativacao::backdrop {
+    background: rgba(17, 24, 39, 0.62);
+}
+
+.dialogo-desativacao form {
+    padding: 24px;
+}
+
+.cabecalho-dialogo {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.cabecalho-dialogo span {
+    color: var(--usuarios-erro);
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+}
+
+.cabecalho-dialogo h2 {
+    margin: 5px 0 0;
+    color: var(--dashboard-azul);
+    font-size: 24px;
+}
+
+.botao-fechar-dialogo {
+    padding: 0;
+    color: var(--dashboard-texto-suave);
+    background: transparent;
+    border: 0;
+    font-size: 26px;
+    cursor: pointer;
+}
+
+.dialogo-desativacao form > p {
+    color: var(--dashboard-texto-suave);
+    line-height: 1.5;
+}
+
+.usuario-confirmacao {
+    padding: 14px;
+    background: #f7f9fc;
+    border: 1px solid var(--dashboard-borda);
+    border-left: 4px solid var(--usuarios-erro);
+    border-radius: 8px;
+}
+
+.usuario-confirmacao strong,
+.usuario-confirmacao span {
+    display: block;
+}
+
+.usuario-confirmacao span {
+    margin-top: 3px;
+    color: var(--dashboard-texto-suave);
+    font-size: 13px;
+}
+
+@media (max-width: 900px) {
+    .cabecalho-relatorio-usuarios {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .controles-relatorio {
+        justify-content: flex-start;
+    }
+
+    .painel-filtros-usuarios {
+        right: auto;
+        left: 0;
+    }
+}
+
+@media (max-width: 640px) {
+    .painel-filtros-usuarios {
+        position: static;
+        width: 100%;
+        margin-top: 8px;
+        grid-template-columns: 1fr;
+        box-shadow: none;
+    }
+
+    .acoes-filtros-usuarios {
+        grid-column: auto;
+    }
+
+    .controles-relatorio,
+    .controle-ordenacao,
+    .controle-ordenacao select,
+    .botao-direcao,
+    .area-filtros-usuarios,
+    .botao-filtros {
+        width: 100%;
+    }
+
+    .acoes-dialogo {
+        align-items: stretch;
+        flex-direction: column-reverse;
+    }
+}
