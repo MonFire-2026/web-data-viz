@@ -26,6 +26,7 @@ function preencherDadosDaSessao() {
 
 function senhaEhForte(senha) {
     return senha.length >= 8
+        && senha.length <= 64
         && /[a-z]/.test(senha)
         && /[A-Z]/.test(senha)
         && /[0-9]/.test(senha)
@@ -53,10 +54,11 @@ function nivelSelecionadoEhPermitido(valorSelecionado) {
     });
 }
 
-function simularCadastroUsuario(evento) {
+async function cadastrarUsuario(evento) {
     evento.preventDefault();
 
     var formulario = evento.currentTarget;
+    var botaoCadastrar = formulario.querySelector("button[type='submit']");
     var nomeInput = document.getElementById("nome_usuario_input");
     var emailInput = document.getElementById("email_usuario_input");
     var nivelSelect = document.getElementById("nivel_usuario_select");
@@ -67,6 +69,7 @@ function simularCadastroUsuario(evento) {
     var email = emailInput.value.trim();
     var senha = senhaInput.value;
     var confirmacao = confirmacaoInput.value;
+    var idEmpresa = Number(sessionStorage.ID_EMPRESA);
 
     if (nome.length < 3) {
         return exibirMensagemCadastroUsuario("Informe o nome completo do usuário.", "erro", nomeInput);
@@ -76,6 +79,13 @@ function simularCadastroUsuario(evento) {
         return exibirMensagemCadastroUsuario("Informe um e-mail institucional válido.", "erro", emailInput);
     }
 
+    if (!Number.isInteger(idEmpresa) || idEmpresa <= 0) {
+        return exibirMensagemCadastroUsuario(
+            "Não foi possível identificar a empresa do usuário conectado.",
+            "erro"
+        );
+    }
+
     if (!nivelSelecionadoEhPermitido(nivelSelect.value)) {
         preencherNiveisDeAcesso();
         return exibirMensagemCadastroUsuario("Selecione um nível de acesso permitido.", "erro", nivelSelect);
@@ -83,7 +93,7 @@ function simularCadastroUsuario(evento) {
 
     if (!senhaEhForte(senha)) {
         return exibirMensagemCadastroUsuario(
-            "A senha precisa ter 8 caracteres, letra maiúscula, minúscula, número e símbolo, sem espaços.",
+            "A senha precisa ter de 8 a 64 caracteres, letra maiúscula, minúscula, número e símbolo, sem espaços.",
             "erro",
             senhaInput
         );
@@ -93,14 +103,43 @@ function simularCadastroUsuario(evento) {
         return exibirMensagemCadastroUsuario("As senhas informadas não coincidem.", "erro", confirmacaoInput);
     }
 
-    formulario.reset();
-    preencherDadosDaSessao();
-    preencherNiveisDeAcesso();
-    exibirMensagemCadastroUsuario(
-        "Cadastro simulado com sucesso. Nenhum dado foi salvo.",
-        "sucesso",
-        nomeInput
-    );
+    botaoCadastrar.disabled = true;
+    botaoCadastrar.textContent = "Cadastrando...";
+
+    try {
+        var resposta = await fetch("/usuarios/cadastrar", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                nomeServer: nome,
+                emailServer: email,
+                senhaServer: senha,
+                confirmacaoSenhaServer: confirmacao,
+                cargoServer: nivelSelect.options[nivelSelect.selectedIndex].textContent,
+                codigoServer: idEmpresa
+            })
+        });
+
+        if (!resposta.ok) {
+            throw new Error(await resposta.text());
+        }
+
+        formulario.reset();
+        preencherDadosDaSessao();
+        preencherNiveisDeAcesso();
+        exibirMensagemCadastroUsuario("Usuário cadastrado com sucesso.", "sucesso");
+        await carregarUsuarios();
+    } catch (erro) {
+        exibirMensagemCadastroUsuario(
+            erro.message || "Não foi possível cadastrar o usuário.",
+            "erro"
+        );
+    } finally {
+        botaoCadastrar.disabled = false;
+        botaoCadastrar.textContent = "Cadastrar usuário";
+    }
 }
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -108,26 +147,69 @@ document.addEventListener("DOMContentLoaded", function () {
 
     preencherDadosDaSessao();
     preencherNiveisDeAcesso();
-    if (formulario) formulario.addEventListener("submit", simularCadastroUsuario);
+    if (formulario) formulario.addEventListener("submit", cadastrarUsuario);
 });
 
-var usuariosMonFire = [
-    { id: 1, nome: "Alexandre Tabacchi", email: "alexandre@sptech.school", cargo: "Administrador", cargoValor: "administrador", setor: "TI / Infraestrutura", ultimoAcesso: "Hoje, 09:12", ultimoAcessoOrdem: 202610090912, situacao: "Ativo" },
-    { id: 2, nome: "Felipe Amoroso", email: "felipe@sptech.school", cargo: "Gerente", cargoValor: "gerente", setor: "TI / Infraestrutura", ultimoAcesso: "Hoje, 08:47", ultimoAcessoOrdem: 202610090847, situacao: "Ativo" },
-    { id: 3, nome: "Gabryel Moura", email: "gabryel@sptech.school", cargo: "Técnico", cargoValor: "tecnico", setor: "Centro de Operações", ultimoAcesso: "Hoje, 07:30", ultimoAcessoOrdem: 202610090730, situacao: "Ativo" },
-    { id: 4, nome: "Helena Caporicci", email: "helena@sptech.school", cargo: "Comum", cargoValor: "comum", setor: "Centro de Operações", ultimoAcesso: "Ontem, 22:05", ultimoAcessoOrdem: 202610082205, situacao: "Ativo" },
-    { id: 5, nome: "Maria Luiza Vieira", email: "marialuiza@sptech.school", cargo: "Técnico", cargoValor: "tecnico", setor: "TI / Infraestrutura", ultimoAcesso: "25/09, 14:20", ultimoAcessoOrdem: 202609251420, situacao: "Inativo" },
-    { id: 6, nome: "Pedro Caparroz", email: "pedro@sptech.school", cargo: "Comum", cargoValor: "comum", setor: "Centro de Operações", ultimoAcesso: "18/09, 10:02", ultimoAcessoOrdem: 202609181002, situacao: "Inativo" }
-];
+var usuariosMonFire = [];
 
 var filtrosUsuarios = {
     cargo: ["administrador", "gerente", "tecnico", "comum"],
-    setor: ["TI / Infraestrutura", "Centro de Operações"],
     situacao: ["Ativo", "Inativo"]
 };
 
 var ordenacaoUsuarios = { campo: "nome", direcao: "asc" };
 var idUsuarioPendenteDesativacao = null;
+
+function prepararUsuarioParaTela(usuario) {
+    var dataUltimoAcesso = new Date(usuario.ultimoAcesso);
+    var nivel = normalizarNivelUsuario(usuario.cargo);
+
+    return {
+        id: usuario.id,
+        nome: usuario.nome,
+        email: usuario.email,
+        cargo: usuario.cargo,
+        cargoValor: nivel ? nivel.valor : "",
+        ultimoAcesso: Number.isNaN(dataUltimoAcesso.getTime())
+            ? "Não informado"
+            : dataUltimoAcesso.toLocaleString("pt-BR", {
+                dateStyle: "short",
+                timeStyle: "short"
+            }),
+        ultimoAcessoOrdem: Number.isNaN(dataUltimoAcesso.getTime()) ? 0 : dataUltimoAcesso.getTime(),
+        situacao: usuario.situacao
+    };
+}
+
+async function carregarUsuarios() {
+    var idEmpresa = Number(sessionStorage.ID_EMPRESA);
+    var mensagem = document.getElementById("mensagem_usuarios");
+
+    if (!Number.isInteger(idEmpresa) || idEmpresa <= 0) {
+        mensagem.textContent = "Não foi possível identificar a empresa do usuário conectado.";
+        atualizarTelaUsuarios();
+        return;
+    }
+
+    mensagem.textContent = "Carregando usuários...";
+
+    try {
+        var resposta = await fetch("/usuarios/listar/" + idEmpresa);
+
+        if (!resposta.ok) {
+            throw new Error(await resposta.text());
+        }
+
+        var usuarios = await resposta.json();
+        usuariosMonFire = usuarios.map(prepararUsuarioParaTela);
+        mensagem.textContent = "";
+    } catch (erro) {
+        usuariosMonFire = [];
+        mensagem.textContent = erro.message || "Não foi possível carregar os usuários.";
+    }
+
+    atualizarTelaUsuarios();
+}
 
 function escaparHtml(valor) {
     return String(valor)
@@ -193,7 +275,6 @@ function compararUsuarios(usuarioA, usuarioB) {
 function obterUsuariosVisiveis() {
     return usuariosMonFire.filter(function (usuario) {
         return filtrosUsuarios.cargo.includes(usuario.cargoValor)
-            && filtrosUsuarios.setor.includes(usuario.setor)
             && filtrosUsuarios.situacao.includes(usuario.situacao);
     }).sort(compararUsuarios);
 }
@@ -225,7 +306,6 @@ function montarTabelaUsuarios() {
                     <td><b>${escaparHtml(usuario.nome)}</b></td>
                     <td>${escaparHtml(usuario.email)}</td>
                     <td>${escaparHtml(usuario.cargo)}</td>
-                    <td>${escaparHtml(usuario.setor)}</td>
                     <td>${escaparHtml(usuario.ultimoAcesso)}</td>
                     <td><span class="selo ${classeSelo}">${escaparHtml(usuario.situacao)}</span></td>
                     <td>${criarAcaoUsuario(usuario)}</td>
@@ -239,7 +319,6 @@ function montarTabelaUsuarios() {
                         <th>Nome</th>
                         <th>E-mail</th>
                         <th>Cargo</th>
-                        <th>Setor</th>
                         <th>Último acesso</th>
                         <th>Situação</th>
                         <th>Ações</th>
@@ -326,29 +405,62 @@ function abrirConfirmacaoDesativacao(idUsuario) {
     else dialogo.setAttribute("open", "");
 }
 
-function confirmarDesativacaoUsuario() {
+async function confirmarDesativacaoUsuario() {
     var usuario = usuariosMonFire.find(function (item) {
         return item.id == idUsuarioPendenteDesativacao;
     });
+    var idEmpresa = Number(sessionStorage.ID_EMPRESA);
+    var idSolicitante = Number(sessionStorage.ID_USUARIO);
+    var botaoConfirmar = document.getElementById("botao_confirmar_desativacao");
+    var mensagem = document.getElementById("mensagem_usuarios");
 
     if (!usuario || !usuarioPodeSerDesativado(usuario)) {
-        document.getElementById("mensagem_usuarios").textContent =
+        mensagem.textContent =
             "A desativação não foi realizada porque a permissão não é mais válida.";
-    } else {
-        usuario.situacao = "Inativo";
-        document.getElementById("mensagem_usuarios").textContent =
-            "O acesso de " + usuario.nome + " foi desativado apenas nesta simulação. Nenhum dado foi salvo no banco.";
+        return;
     }
 
-    idUsuarioPendenteDesativacao = null;
-    document.getElementById("confirmacao_desativacao").close();
-    atualizarTelaUsuarios();
+    if (!Number.isInteger(idEmpresa) || !Number.isInteger(idSolicitante)) {
+        mensagem.textContent = "Não foi possível identificar o usuário conectado.";
+        return;
+    }
+
+    botaoConfirmar.disabled = true;
+    botaoConfirmar.textContent = "Desativando...";
+
+    try {
+        var resposta = await fetch("/usuarios/desativar/" + usuario.id, {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                idSolicitante: idSolicitante,
+                idEmpresa: idEmpresa
+            })
+        });
+
+        if (!resposta.ok) {
+            throw new Error(await resposta.text());
+        }
+
+        document.getElementById("confirmacao_desativacao").close();
+        await carregarUsuarios();
+        mensagem.textContent = "O acesso de " + usuario.nome + " foi desativado com sucesso.";
+    } catch (erro) {
+        mensagem.textContent = erro.message || "Não foi possível desativar o usuário.";
+    } finally {
+        idUsuarioPendenteDesativacao = null;
+        botaoConfirmar.disabled = false;
+        botaoConfirmar.textContent = "Confirmar desativação";
+    }
 }
 
 function inicializarPaginaUsuarios() {
     if (!document.getElementById("tabela_usuarios")) return;
 
     atualizarTelaUsuarios();
+    carregarUsuarios();
     document.getElementById("botao_abrir_cadastro").addEventListener("click", alternarCadastroUsuario);
     document.getElementById("botao_cancelar_cadastro").addEventListener("click", function () {
         document.getElementById("form_cadastro_usuario").reset();

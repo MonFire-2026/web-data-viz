@@ -83,18 +83,19 @@
                         <div class="campo-usuario">
                             <label for="senha_usuario_input">Senha provisória</label>
                             <input id="senha_usuario_input" type="password" autocomplete="new-password"
-                                aria-describedby="requisitos_senha" placeholder="Crie uma senha forte" required>
+                                minlength="8" maxlength="64" aria-describedby="requisitos_senha"
+                                placeholder="Crie uma senha forte" required>
                         </div>
 
                         <div class="campo-usuario">
                             <label for="confirmacao_senha_usuario_input">Confirmar senha</label>
                             <input id="confirmacao_senha_usuario_input" type="password" autocomplete="new-password"
-                                placeholder="Repita a senha" required>
+                                minlength="8" maxlength="64" placeholder="Repita a senha" required>
                         </div>
                     </div>
 
                     <p id="requisitos_senha" class="requisitos-senha">
-                        Use pelo menos 8 caracteres, com letra maiúscula, minúscula, número e símbolo.
+                        Use de 8 a 64 caracteres, com letra maiúscula, minúscula, número e símbolo, sem espaços.
                     </p>
 
                     <div id="mensagem_cadastro_usuario" class="mensagem-cadastro-usuario" role="status"
@@ -123,7 +124,6 @@
                             <option value="nome">Nome</option>
                             <option value="email">E-mail</option>
                             <option value="cargo">Cargo</option>
-                            <option value="setor">Setor</option>
                             <option value="ultimoAcessoOrdem">Último acesso</option>
                             <option value="situacao">Situação</option>
                         </select>
@@ -147,12 +147,6 @@
                                 <label><input type="checkbox" value="gerente" checked> Gerente</label>
                                 <label><input type="checkbox" value="tecnico" checked> Técnico</label>
                                 <label><input type="checkbox" value="comum" checked> Comum</label>
-                            </fieldset>
-
-                            <fieldset data-grupo-filtro="setor">
-                                <legend>Setor</legend>
-                                <label><input type="checkbox" value="TI / Infraestrutura" checked> TI / Infraestrutura</label>
-                                <label><input type="checkbox" value="Centro de Operações" checked> Centro de Operações</label>
                             </fieldset>
 
                             <fieldset data-grupo-filtro="situacao">

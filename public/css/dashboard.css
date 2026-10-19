@@ -359,6 +359,24 @@ textarea {
     font-size: 12px;
 }
 
+.mensagem-maquinas {
+    min-height: 20px;
+    margin: -8px 0 16px;
+    color: var(--dashboard-texto-suave);
+    font-size: 13px;
+}
+
+.estado-vazio-maquinas,
+.informacao-coletor {
+    color: var(--dashboard-texto-suave);
+    line-height: 1.5;
+}
+
+.estado-vazio-maquinas {
+    padding: 22px 0 8px;
+    text-align: center;
+}
+
 .resumo {
     display: flex;
     flex-wrap: wrap;

@@ -87,28 +87,14 @@
 </html>
 
 <script>
-
-
-
     function entrar() {
-        //  aguardar();
-
-        var emailVar = email_input.value;
+        var emailVar = email_input.value.trim();
         var senhaVar = senha_input.value;
 
         if (emailVar == "" || senhaVar == "") {
-            cardErro.style.display = "block"
-            mensagem_erro.innerHTML = "(Mensagem de erro para todos os campos em branco)";
-            finalizarAguardar();
+            alert("Preencha o e-mail e a senha.");
             return false;
         }
-        /*   else {
-               setInterval(sumirMensagem, 5000)
-           }
-               */
-
-        console.log("FORM LOGIN: ", emailVar);
-        console.log("FORM SENHA: ", senhaVar);
 
         fetch("/usuarios/autenticar", {
             method: "POST",
@@ -120,45 +106,28 @@
                 senhaServer: senhaVar
             })
         }).then(function (resposta) {
-            console.log("ESTOU NO THEN DO entrar()!")
-
             if (resposta.ok) {
-                console.log(resposta);
-
                 resposta.json().then(json => {
-                    console.log(json);
-                    console.log(JSON.stringify(json));
-                    sessionStorage.EMAIL_USUARIO = json.email;
-                    sessionStorage.NOME_USUARIO = json.nome;
-                    sessionStorage.ID_USUARIO = json.id;
-                    sessionStorage.AQUARIOS = JSON.stringify(json.aquarios)
+                    sessionStorage.setItem("ID_USUARIO", json.id);
+                    sessionStorage.setItem("NOME_USUARIO", json.nome);
+                    sessionStorage.setItem("EMAIL_USUARIO", json.email);
+                    sessionStorage.setItem("ID_EMPRESA", json.empresaId);
+                    sessionStorage.setItem("EMPRESA_USUARIO", json.empresa);
+                    sessionStorage.setItem("ID_CARGO", json.cargoId);
+                    sessionStorage.setItem("CARGO_USUARIO", json.cargo);
 
-                    // setTimeout(function () {
-                    window.location.href = "./dashboard/cards.html";
-                    //  }, 1000); // apenas para exibir o loading
-
+                    window.location.href = "./dashboard/dashboard.html";
                 });
-
             } else {
-
-                console.log("Houve um erro ao tentar realizar o login!");
-
                 resposta.text().then(texto => {
-                    console.error(texto);
-                    //   finalizarAguardar(texto);
+                    alert(texto);
                 });
             }
-
         }).catch(function (erro) {
-            console.log(erro);
+            console.error(erro);
+            alert("Não foi possível conectar ao servidor.");
         })
 
         return false;
     }
-
-    /*  function sumirMensagem() {
-          cardErro.style.display = "none"
-      }
-          */
-
 </script>

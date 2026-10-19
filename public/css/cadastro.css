@@ -20,3 +20,11 @@
 .campoCadastro select:focus {
     border-color: #dc2626;
 }
+
+.requisitosSenha {
+    display: block;
+    margin-top: -8px;
+    color: #64748b;
+    font-size: 12px;
+    line-height: 1.35;
+}
