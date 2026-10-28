@@ -1,5 +1,5 @@
-DROP DATABASE IF EXISTS MonFire;
-CREATE DATABASE MonFire;
+SET NAMES utf8mb4;
+CREATE DATABASE IF NOT EXISTS MonFire;
 USE MonFire;
 
 CREATE TABLE empresa (
@@ -234,29 +234,35 @@ INSERT INTO maquina (
     '10.193.0.11', 'Ubuntu Server 22.04', 'ATIVA', CURRENT_TIMESTAMP, 2
 );
 
--- A máquina de demonstração usa oito das doze opções fixas.
--- Os IDs dos componentes seguem a ordem do INSERT de tipo_componente.
+-- A máquina de demonstração usa as doze opções fixas.
+-- Os ids de configuracao_maquina seguem a ordem abaixo (1 a 12) e são usados
+-- pelo Python (1 a 10) e pelo Java (11 e 12, rede).
 INSERT INTO configuracao_maquina (fk_maquina, fk_componente) VALUES
-    (1, 1),  -- CPU Uso
-    (1, 2),  -- CPU Frequência
-    (1, 3),  -- RAM Uso
-    (1, 5),  -- RAM Disponível
-    (1, 7),  -- Disco Uso
-    (1, 9),  -- Disco Disponível
-    (1, 11), -- Rede recebida
-    (1, 12); -- Rede enviada
+    (1, 1),   -- id 1:  CPU Uso
+    (1, 2),   -- id 2:  CPU Frequência
+    (1, 3),   -- id 3:  RAM Uso
+    (1, 4),   -- id 4:  RAM Total
+    (1, 5),   -- id 5:  RAM Disponível
+    (1, 6),   -- id 6:  RAM Em uso
+    (1, 7),   -- id 7:  Disco Uso
+    (1, 8),   -- id 8:  Disco Total
+    (1, 9),   -- id 9:  Disco Disponível
+    (1, 10),  -- id 10: Disco Em uso
+    (1, 11),  -- id 11: Rede - Recebidos (Java)
+    (1, 12);  -- id 12: Rede - Enviados  (Java)
 
 -- Os limites variam por máquina; somente os catálogos acima são fixos.
 -- Em nivel_alerta, o ID 2 representa Atenção e o ID 3 representa Crítico.
+-- Total e Em uso (RAM e Disco) ficam sem limite.
 INSERT INTO metrica_alerta (fk_configuracao_maquina, fk_nivel_alerta, limite) VALUES
-    (1, 2, 70.0),  (1, 3, 90.0),
-    (2, 2, 3.5),   (2, 3, 4.2),
-    (3, 2, 70.0),  (3, 3, 90.0),
-    (4, 2, 4.0),   (4, 3, 2.0),
-    (5, 2, 75.0),  (5, 3, 90.0),
-    (6, 2, 50.0),  (6, 3, 20.0),
-    (7, 2, 100.0), (7, 3, 200.0),
-    (8, 2, 100.0), (8, 3, 200.0);
+    (1, 2, 70.0),   (1, 3, 90.0),    -- CPU Uso
+    (2, 2, 3.5),    (2, 3, 4.2),     -- CPU Frequência
+    (3, 2, 70.0),   (3, 3, 90.0),    -- RAM Uso
+    (5, 2, 4.0),    (5, 3, 2.0),     -- RAM Disponível
+    (7, 2, 75.0),   (7, 3, 90.0),    -- Disco Uso
+    (9, 2, 50.0),   (9, 3, 20.0),    -- Disco Disponível
+    (11, 2, 100.0), (11, 3, 200.0),  -- Rede recebida
+    (12, 2, 100.0), (12, 3, 200.0);  -- Rede enviada
 
 DELIMITER $$
 
