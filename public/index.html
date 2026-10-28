@@ -8,7 +8,10 @@
     <link rel="shortcut icon" href="./assets/icon/LogoMonfire.png" type="image/x-icon">
     <link rel="stylesheet" href="./css/global.css">
     <link rel="stylesheet" href="./css/index.css">
+    <link rel="stylesheet" href="./css/tema.css">
+    <script>document.documentElement.classList.add("tm-js");</script>
     <script src="./js/navbar.js" defer></script>
+    <script src="./js/tema.js" defer></script>
 </head>
 
 <body>
@@ -21,13 +24,16 @@
             <nav id="menuLinksHeader">
                 <ul>
                     <li><a href="#sessaoRecursos">Recursos</a></li>
+                    <li><a href="#sessaoCadeia">Importância</a></li>
                     <li><a href="#sessaoBeneficios">Benefícios</a></li>
-                    <li><a href="#sessaoImpacto">Impacto</a></li>
+                    <li><a href="#sessaoMetricas">Glossário</a></li>
+                    <li><a href="#sessaoImpacto">Notícias</a></li>
+                    <li><a href="#sessaoComparativo">Comparativo</a></li>
                     <li><a href="./sobreNos.html">Sobre Nós</a></li>
                     <div id="conteinerAcoesResponsivas">
                         <ul id="conteinerMenuLogar">
-                            <li><a href="../login.html">Entre</a></li>
-                            <li><a href="../cadastro.html">Cadastre-se</a></li>
+                            <li><a href="./login.html">Entre</a></li>
+                            <li><a href="./cadastro.html">Cadastre-se</a></li>
                         </ul>
                     </div>
                 </ul>
@@ -61,7 +67,7 @@
                     a operação.</p>
                 <div class="botoesTelaPrinicpal">
                     <a href="./cadastro.html" id="botaoCadastroTelaInicial" class="botaoCadastro" >Cadastre-se</a>
-                    <a href="./login.html" id="botaoLoginTelaInicial" class="botaoLogin">Ja tenho cadastro</a>
+                    <a href="./login.html" id="botaoLoginTelaInicial" class="botaoLogin">Já tenho cadastro</a>
 
                 </div>
             </div>
@@ -176,8 +182,140 @@
           </div>
         </section>
 
+        <section class="tm-secao tm-dupla">
+            <div class="tm-duplaInterna">
+
+                <div class="tm-colunaEsq" id="sessaoCadeia">
+                    <p class="tm-sobretitulo">Por que isto importa?</p>
+                    <h2 class="tm-titulo">Quando o sistema cai, a resposta atrasa</h2>
+                    <p class="tm-subtitulo">Uma ocorrência de emergência passa por várias etapas, e todas
+                        dependem de servidores funcionando. Uma falha em um único ponto pode interromper
+                        uma cadeia inteira.
+                    </p>
+
+                    <ol class="tm-cadeia">
+                        <li class="tm-etapa tm-reveal">
+                            <span class="tm-etapaNumero">1</span>
+                            <div class="tm-etapaTexto">
+                                <h3>Chamada recebida</h3>
+                                <p>A ligação chega à central de atendimento e o sistema registra o contato.</p>
+                            </div>
+                        </li>
+                        <li class="tm-etapa tm-reveal">
+                            <span class="tm-etapaNumero">2</span>
+                            <div class="tm-etapaTexto">
+                                <h3>Triagem da ocorrência</h3>
+                                <p>O técnico operacional confirma o endereço e tipo de emergência, e tudo é registrado no sistema.</p>
+                            </div>
+                        </li>
+                        <li class="tm-etapa tm-etapa--falha tm-reveal">
+                            <span class="tm-etapaNumero">3</span>
+                            <div class="tm-etapaTexto">
+                                <h3>Despacho de equipe</h3>
+                                <p>O sistema indica a viatura mais próxima e aciona a equipe.</p>
+                                <span class="tm-etiqueta">Ponto crítico: se o sistema de despacho cai,
+                                    a equipe não pode ser acionada a tempo.
+                                </span>
+                            </div>
+                        </li>
+                        <li class="tm-etapa tm-etapa--parada tm-reveal">
+                            <span class="tm-etapaNumero">4</span>
+                            <div class="tm-etapaTexto">
+                                <h3>Deslocamento</h3>
+                                <p>Mapas e localização das viaturas orientam o caminho até o local.</p>
+                            </div>
+                        </li>
+                        <li class="tm-etapa tm-etapa--parada tm-reveal">
+                            <span class="tm-etapaNumero">5</span>
+                            <div class="tm-etapaTexto">
+                                <h3>Atendimento no local</h3>
+                                <p>A equipe presta o socorro e atualiza o registro da ocorrência.</p>
+                            </div>
+                        </li>
+                    </ol>
+                </div>
+
+                <div class="tm-colunaDir tm-painelAzul" id="sessaoMetricas">
+                    <p class="tm-sobretitulo">Glossário</p>
+                    <h2 class="tm-titulo">O que cada métrica significa?</h2>
+                    <p class="tm-subtitulo">Clique em um cartão para poder ver o que ocorre
+                        quando o limite é ultrapassado.
+                    </p>
+
+                    <div class="tm-grade tm-grade--4">
+
+                        <div class="tm-flip tm-reveal" role="button" tabindex="0" aria-pressed="false">
+                            <div class="tm-flipInterno">
+                                <div class="tm-face tm-frente">
+                                    <span class="tm-flipSigla">CPU</span>
+                                    <h3>O cérebro</h3>
+                                    <p>Executa os cálculos e as instruções do servidor.</p>
+                                    <span class="tm-dica">Clique para virar</span>
+                                </div>
+                                <div class="tm-face tm-verso">
+                                    <h3>No limite</h3>
+                                    <p>Tudo pode ficar lento: as telas demoram para responder e os processos podem travar.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tm-flip tm-reveal" role="button" tabindex="0" aria-pressed="false">
+                            <div class="tm-flipInterno">
+                                <div class="tm-face tm-frente">
+                                    <span class="tm-flipSigla">RAM</span>
+                                    <h3>A mesa de trabalho da máquina</h3>
+                                    <p>O componente guarda o que está em utilização naquele momento.</p>
+                                    <span class="tm-dica">Clique para virar</span>
+                                </div>
+                                <div class="tm-face tm-verso">
+                                    <h3>No limite</h3>
+                                    <p>O sistema acaba perdendo a sua velocidade ou pode encerrar programas
+                                        por falta de espaço para trabalhar.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tm-flip tm-reveal" role="button" tabindex="0" aria-pressed="false">
+                            <div class="tm-flipInterno">
+                                <div class="tm-face tm-frente">
+                                    <span class="tm-flipSigla">DISCO</span>
+                                    <h3>O arquivo</h3>
+                                    <p>Armazena os dados de forma permanente.</p>
+                                    <span class="tm-dica">Clique para virar</span>
+                                </div>
+                                <div class="tm-face tm-verso">
+                                    <h3>No limite</h3>
+                                    <p>Sem espaço livre na máquina, novos registros não são
+                                        gravados e o sistema pode parar.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tm-flip tm-reveal" role="button" tabindex="0" aria-pressed="false">
+                            <div class="tm-flipInterno">
+                                <div class="tm-face tm-frente">
+                                    <span class="tm-flipSigla">REDE</span>
+                                    <h3>O caminho</h3>
+                                    <p>Leva os dados de uma máquina para outra máquina.</p>
+                                    <span class="tm-dica">Clique para virar</span>
+                                </div>
+                                <div class="tm-face tm-verso">
+                                    <h3>No limite</h3>
+                                    <p>A comunicação atrasa ou cai, e os serviços ficam inacessíveis para utilização.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
     <section class="segundoContainerPrimeiraTela" id="sessaoBeneficios">
-        
+
         <div class="containerTextoSemImagem">
             <div class="cabecalhoSecao">
                 <h3 class="tituloSecao">Benefícios para o seu time</h3>
@@ -208,34 +346,109 @@
             </div>
         </div>
     </section>
-    
-    <section class="conteinerTelaPrincipal2" id="sessaoImpacto">
 
-        <div class="ultimoContainerPrimeiraTela">
+    <section class="tm-secao tm-dupla">
+        <div class="tm-duplaInterna">
 
-            <div class="containerTextoSemImagem">
-                <div class="cabecalhoSecao cabecalhoSecaoImpacto">
-                    <h3 class="tituloSecao">Impacto positivo na operação</h3>
+            <div class="tm-colunaEsq" id="sessaoCausas">
+                <p class="tm-sobretitulo">Riscos</p>
+                <h2 class="tm-titulo">Por que os servidores falham?</h2>
+                <p class="tm-subtitulo">A maioria das paradas tem causas conhecidas,
+                    e muitas dão sinais antes de acontecer.
+                </p>
+
+                <div class="tm-grade tm-grade--3">
+                    <article class="tm-card tm-reveal">
+                        <h3>Superaquecimento</h3>
+                        <p>Ventilação ruim ou ambiente quente demais podem reduzir
+                            o desempenho e podem danificar componentes.
+                        </p>
+                    </article>
+                    <article class="tm-card tm-reveal">
+                        <h3>Disco cheio</h3>
+                        <p>Registros e arquivos acumulados ocupam todo o espaço,
+                            e o sistema deixa de poder gravar dados.
+                        </p>
+                    </article>
+                    <article class="tm-card tm-reveal">
+                        <h3>Memória esgotada</h3>
+                        <p>Programas consomem mais memória do que o servidor tem,
+                            causando lentidão ou travamentos.
+                        </p>
+                    </article>
+                    <article class="tm-card tm-reveal">
+                        <h3>Falha de energia</h3>
+                        <p>Quedas e oscilações desligam equipamentos, principalmente onde não existe
+                            reserva de energia.
+                       
+                    </article>
                 </div>
+            </div>
 
-                <div class="conteinerCardsImpacto">
-                    <div class="cardImpacto">
-                        <h2>68%</h2>
-                        <p>de redução nos incidentes não planejados no primeiro trimestre de uso.</p>
+            <div class="tm-colunaDir tm-painelAzul" id="sessaoComparativo">
+                <p class="tm-sobretitulo">Comparativo entre as situações</p>
+                <h2 class="tm-titulo">Descobrir depois ou prevenir antes?</h2>
+                <p class="tm-subtitulo">Alterne entre os dois cenários para ver a diferença na prática!</p>
+
+                <div class="tm-comparativo tm-reveal" data-modo="sem">
+                    <div class="tm-alternar">
+                        <button type="button" class="tm-botaoModo" data-modo="sem" aria-pressed="true">Sem monitoramento MonFire</button>
+                        <button type="button" class="tm-botaoModo" data-modo="com" aria-pressed="false">Com monitoramento MonFire</button>
                     </div>
-                    <div class="cardImpacto">
-                        <h2>4,2h</h2>
-                        <p>economizadas por semana em diagnósticos manuais de infraestrutura.</p>
-                    </div>
-                    <div class="cardImpacto">
-                        <h2>100%</h2>
-                        <p>das ocorrências críticas detectadas antes de afetar o usuário final.</p>
+
+                    <div class="tm-linhas">
+                        <div class="tm-linhaComp">
+                            <h3>Como o problema é descoberto</h3>
+                            <div class="tm-troca">
+                                <p class="tm-txtSem">Alguém percebe quando o serviço já parou.</p>
+                                <p class="tm-txtCom">Um alerta automático avisa quando uma métrica passa do limite.</p>
+                            </div>
+                        </div>
+                        <div class="tm-linhaComp">
+                            <h3>Quando é possível agir</h3>
+                            <div class="tm-troca">
+                                <p class="tm-txtSem">Depois da falha, quando a operação já foi afetada.</p>
+                                <p class="tm-txtCom">Antes da falha, com tempo para corrigir.</p>
+                            </div>
+                        </div>
+                        <div class="tm-linhaComp">
+                            <h3>Efeito na operação</h3>
+                            <div class="tm-troca">
+                                <p class="tm-txtSem">Interrupção do serviço até o reparo ser concluído.</p>
+                                <p class="tm-txtCom">O problema é resolvido antes de chegar ao usuário.</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
 
         </div>
     </section>
+
+    <section class="conteinerTelaPrincipal2" id="sessaoImpacto">
+        <div class="ultimoContainerPrimeiraTela">
+            <div class="containerTextoSemImagem">
+                <div class="cabecalhoSecao cabecalhoSecaoImpacto">
+                    <h3 class="tituloSecao">Notícias relacionadas ao impacto por falta de monitoramento:</h3>
+                </div>
+                <div class="conteinerCardsImpacto">
+                    <div class="cardImpacto">
+                        <h2>Jornal Opção: Tragédia relacionada a queda de sistema de chamados do 193:</h2>
+                        <p><a href="https://www.jornalopcao.com.br/catalao/mpgo-apura-demora-socorro-homem-morreu-catalao-849744/" target="_blank" rel="noopener noreferrer">Ler a matéria completa</a></p>
+                    </div>
+                    <div class="cardImpacto">
+                        <h2>Veículo: título da notícia aqui</h2>
+                        <p><a href="COLE_O_LINK_AQUI" target="_blank" rel="noopener noreferrer">Ler a matéria completa</a></p>
+                    </div>
+                    <div class="cardImpacto">
+                        <h2>Veículo: título da notícia aqui</h2>
+                        <p><a href="COLE_O_LINK_AQUI" target="_blank" rel="noopener noreferrer">Ler a matéria completa</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     </main>
 
     <div class="containerFooter">
@@ -257,7 +470,9 @@
                 <p><a href="#">Início</a></p>
                 <p><a href="#sessaoRecursos">Recursos</a></p>
                 <p><a href="#sessaoBeneficios">Benefícios</a></p>
-                <p><a href="#sessaoImpacto">Impacto</a></p>
+                <p><a href="#sessaoMetricas"></a></p>
+                <p><a href="#sessaoImpacto">Notícias</a></p>
+                <p><a href="#sessaoComparativo">Comparativo</a></p>
                 <p><a href="./sobreNos.html">Sobre nós</a></p>
                 <p><a href="./login.html">Entrar</a></p>
                 <p><a href="./cadastro.html">Cadastrar</a></p>
@@ -267,8 +482,5 @@
 
     </div>
 
-
-
 </body>
-
 </html>

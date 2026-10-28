@@ -254,4 +254,17 @@
         width: 85%;
         grid-template-columns: 1fr;
     }
+
+    .containerPrimeirotextobanner,
+.containerSegundotextobanner,
+.containerTextoAbaixoBanner,
+.containerTextoAbaixoTextoBanner,
+.botaoComecarAgora,
+.caixa,
+.equipeTecnica h1,
+.fotoEquipe,
+.cardEquipe h2,
+.cardEquipe p {
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
 }
