@@ -5,7 +5,10 @@
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
-    "dev": "nodemon --exec node app.js"
+    "dev": "nodemon --exec node app.js",
+    "test": "node --test",
+    "db:reset": "node scripts/recriarBanco.js",
+    "db:verify": "node scripts/validarBanco.js"
   },
   "author": "Feito pelos desenvolvedores @ São Paulo Tech School / Bandtec Digital School",
   "license": "MIT",

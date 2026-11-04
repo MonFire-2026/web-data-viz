@@ -2,27 +2,18 @@
 <html lang="pt-br">
 
 <head>
-    <link rel="shortcut icon" href="../assets/icon/LogoMonfire.png" type="image/x-icon">
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MonFire | Visão Específica</title>
-
+    <link rel="shortcut icon" href="../assets/icon/LogoMonfire.png" type="image/x-icon">
     <link rel="stylesheet" href="./../css/dashboard.css">
-
-
     <script src="../js/sessao.js"></script>
     <script src="../js/dashboard-layout.js"></script>
-    <script src="../js/alerta.js"></script>
-
-
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-
 </head>
 
-<body class="pagina-cards" onload="exibirAquarios(), atualizacaoPeriodica()">
-
+<body>
     <aside class="sidebar" aria-label="Navegação principal">
         <a class="brand" href="../index.html" aria-label="MonFire - Página inicial">
             <img class="brand-logo" src="../assets/icon/LogoMonfire.png" alt="">
@@ -44,253 +35,231 @@
         </div>
     </aside>
 
-    <main class="conteudo">
+    <main class="conteudo visao-executiva">
         <header class="topo">
             <h1>Visão Específica</h1>
-            <p>Monitoramento detalhado dos componentes de hardware do sistema 193 – Corpo de Bombeiros.</p>
+            <p>Acompanhamento gerencial dos incidentes e das máquinas que mais exigem atenção.</p>
         </header>
 
-        <div id="alerta"></div>
-
-        <section class="painel" style="margin-top:28px">
-            <h2>Consumo por componente</h2>
-            <div class="filtros" id="filtros"></div>
-            <div class="area-grafico">
-                <canvas id="cGrafico"></canvas>
+        <section class="kpis" aria-label="Resumo da semana atual">
+            <div class="kpi">
+                <div class="kpi-valor" id="kpiIncidentesSemana">—</div>
+                <div class="kpi-rotulo">Incidentes nesta semana</div>
             </div>
-            <div class="resumo" id="resumo"></div>
-        </section>
-
-        <section class="painel">
-            <h2>Servidores do sistema 193</h2>
-            <div class="tabela-wrap" id="tab"></div>
-        </section>
-
-        <section class="painel">
-            <div class="cards" id="cardAquarios">
-
+            <div class="kpi">
+                <div class="kpi-valor" id="kpiMaquinasAfetadas">—</div>
+                <div class="kpi-rotulo">Máquinas afetadas</div>
+            </div>
+            <div class="kpi destaque">
+                <div class="kpi-valor" id="kpiIncidentesCriticos">—</div>
+                <div class="kpi-rotulo">Incidentes críticos</div>
             </div>
         </section>
+
+        <section class="painel painel-principal">
+            <div class="cabecalho-painel">
+                <div>
+                    <h2>Incidentes por semana</h2>
+                    <p>Novos episódios de atenção ou criticidade identificados no período.</p>
+                </div>
+                <span id="periodoResumo">Carregando período...</span>
+            </div>
+            <div class="area-grafico grafico-executivo-principal">
+                <canvas id="graficoIncidentesSemanais" role="img"
+                    aria-label="Gráfico de incidentes de atenção e críticos por semana"></canvas>
+            </div>
+        </section>
+
+        <section class="graficos-gerenciais">
+            <div class="painel">
+                <div class="cabecalho-painel">
+                    <div>
+                        <h2>Máquinas com mais incidentes</h2>
+                        <p>Ranking das máquinas que mais apresentaram problemas.</p>
+                    </div>
+                </div>
+                <div class="area-grafico grafico-executivo-secundario">
+                    <canvas id="graficoMaquinas" role="img"
+                        aria-label="Ranking das máquinas com mais incidentes"></canvas>
+                </div>
+            </div>
+
+            <div class="painel">
+                <div class="cabecalho-painel">
+                    <div>
+                        <h2>Incidentes por componente</h2>
+                        <p>Distribuição dos problemas entre CPU, RAM, Disco e Rede.</p>
+                    </div>
+                </div>
+                <div class="area-grafico grafico-executivo-secundario">
+                    <canvas id="graficoComponentes" role="img"
+                        aria-label="Distribuição dos incidentes por componente"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <p class="status-dashboard" id="statusResumo" role="status" aria-live="polite"></p>
     </main>
 
-</body>
+    <script>
+        const NAVY = '#1a2438';
+        const VERMELHO = '#d62222';
+        const CINZA = '#8a94a6';
+        const AMBAR = '#e0a100';
+        const AZUL = '#3568a8';
+        const ID_EMPRESA_ATUAL = Number(sessionStorage.ID_EMPRESA);
 
-<script>
+        let graficoSemanal;
+        let graficoMaquinas;
+        let graficoComponentes;
 
-    function exibirAquarios() {
-        JSON.parse(sessionStorage.AQUARIOS || "[]").forEach(item => {
-            document.getElementById("cardAquarios").innerHTML += `
-                    <div class="card-aquario">
-                        <div class="title-aquario">
-                            <h1>${item.descricao}</h1>
-                        </div>
-                        <div class="desc-aquario">
-                        <div class="temperatura">
-                            <p id="temp_aquario_${item.id}">-°C</p>
-                        </div>
-                        <div class="cor-alerta" id="card_${item.id}"></div>
-                    </div>
-                    </div>
-                    `
-        });
-    }
+        Chart.defaults.font.family = "'Segoe UI', Tahoma, sans-serif";
+        Chart.defaults.color = '#5a6b85';
 
-    const NAVY = '#1a2438';
-    const VERMELHO = '#d62222';
-    const CINZA = '#8a94a6';
-    const AMBAR = '#e0a100';
-    const CORES = [NAVY, VERMELHO, CINZA, AMBAR];
+        window.addEventListener('load', carregarResumoGerencial);
 
-    Chart.defaults.font.family = "'Segoe UI', Tahoma, sans-serif";
-    Chart.defaults.color = '#5a6b85';
+        async function carregarResumoGerencial() {
+            var status = document.getElementById('statusResumo');
 
-    const HORAS = ['10:00', '10:05', '10:10', '10:15', '10:20', '10:25', '10:30', '10:35', '10:40', '10:45', '10:50', '10:55'];
-    const COMPONENTES = ['CPU', 'RAM', 'Disco', 'Rede'];
-
-    function serie(a, b, s) {
-        let valores = [];
-
-        for (let i = 0; i < HORAS.length; i++) {
-            let valor = Math.round(a + (b - a) * i / 11 + Math.sin(i * s) * 2);
-            valores.push(Math.min(100, valor));
-        }
-
-        return valores;
-    }
-
-    const SERVIDORES = [
-        { nome: 'SRV-193-CAD-01', funcao: 'Responsável pelas ocorrências',  dados: { CPU: serie(55, 72, 1.3), RAM: serie(60, 78, 2.1), Disco: serie(40, 42, .7), Rede: serie(30, 45, 1.7) } },
-        { nome: 'SRV-193-CAD-02',  funcao: 'Responsável pelo Banco de dados',           dados: { CPU: serie(50, 66, .9),  RAM: serie(70, 84, 1.9), Disco: serie(84, 92, .5), Rede: serie(25, 35, 2.3) } },
-        { nome: 'SRV-193-CAD-03', funcao: 'Responsável pela geolocalização',   dados: { CPU: serie(35, 44, 1.1), RAM: serie(48, 55, 2.5), Disco: serie(55, 57, .6), Rede: serie(40, 58, 1.4) } },
-        { nome: 'SRV-193-CAD-04', funcao: 'Responsável pela sTelefonia 193', dados: { CPU: serie(60, 91, 1.6), RAM: serie(52, 60, .8),  Disco: serie(62, 66, 1.2), Rede: serie(48, 70, 2.0) } }
-    ];
-
-    function valorAtual(servidor, componente) {
-        return servidor.dados[componente][11];
-    }
-    function nivel(valor) {
-        if (valor >= 90) {
-            return 'Crítico';
-        } else if (valor >= 75) {
-            return 'Atenção';
-        } else {
-            return 'Normal';
-        }
-    }
-    function selo(situacao) {
-        let classe = 'ok';
-
-        if (situacao == 'Atenção') {
-            classe = 'atencao';
-        } else if (situacao == 'Crítico') {
-            classe = 'critico';
-        }
-
-        return `<span class="selo ${classe}">${situacao}</span>`;
-    }
-    const graficoComponentes = new Chart(document.getElementById('cGrafico'), {
-        type: 'line',
-        data: { labels: HORAS, datasets: [] },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { position: 'bottom', labels: { usePointStyle: true, padding: 20 } }
-            },
-            scales: {
-                y: { min: 0, max: 100, title: { display: true, text: 'Uso (%)' }, grid: { color: '#e2e5ea' } },
-                x: { grid: { display: false } }
+            if (!Number.isInteger(ID_EMPRESA_ATUAL) || ID_EMPRESA_ATUAL <= 0) {
+                status.textContent = 'Não foi possível identificar a empresa do usuário.';
+                return;
             }
-        }
-    });
 
-    function mostrar(componente) {
+            status.textContent = 'Carregando indicadores gerenciais...';
 
-        let botoes = document.querySelectorAll('.chip');
-        for (let i = 0; i < botoes.length; i++) {
-            if (botoes[i].textContent == componente) {
-                botoes[i].classList.add('ativo');
-            } else {
-                botoes[i].classList.remove('ativo');
+            try {
+                var resposta = await fetch(
+                    `/medidas/incidentes/resumo/${ID_EMPRESA_ATUAL}`,
+                    { cache: 'no-store' }
+                );
+
+                if (!resposta.ok) throw new Error(await resposta.text());
+
+                var resumo = await resposta.json();
+                atualizarKpis(resumo.kpis);
+                plotarIncidentesSemanais(resumo.incidentesSemanais);
+                plotarMaquinas(resumo.maquinasComMaisIncidentes);
+                plotarComponentes(resumo.incidentesPorComponente);
+                document.getElementById('periodoResumo').textContent =
+                    `Últimas ${resumo.periodoSemanas} semanas`;
+                status.textContent = resumo.kpis.incidentesSemana == 0
+                    ? 'Nenhum novo incidente foi identificado nesta semana.'
+                    : '';
+            } catch (erro) {
+                status.textContent = erro.message || 'Não foi possível carregar o resumo gerencial.';
             }
         }
 
-        let linhas = [];
-        let valores = [];
+        function atualizarKpis(kpis) {
+            document.getElementById('kpiIncidentesSemana').textContent = kpis.incidentesSemana;
+            document.getElementById('kpiMaquinasAfetadas').textContent = kpis.maquinasAfetadas;
+            document.getElementById('kpiIncidentesCriticos').textContent = kpis.incidentesCriticos;
+        }
 
-        for (let i = 0; i < SERVIDORES.length; i++) {
-            let s = SERVIDORES[i];
+        function plotarIncidentesSemanais(semanas) {
+            if (graficoSemanal) graficoSemanal.destroy();
 
-            linhas.push({
-                label: s.nome.replace('SRV-193-', ''),
-                data: s.dados[componente],
-                borderColor: CORES[i],
-                backgroundColor: CORES[i],
-                borderWidth: 2,
-                tension: 0.35,
-                pointRadius: 2
+            graficoSemanal = new Chart(document.getElementById('graficoIncidentesSemanais'), {
+                type: 'bar',
+                data: {
+                    labels: semanas.map(function (semana) { return semana.semana; }),
+                    datasets: [
+                        {
+                            label: 'Atenção',
+                            data: semanas.map(function (semana) { return semana.atencao; }),
+                            backgroundColor: AMBAR,
+                            borderRadius: 5
+                        },
+                        {
+                            label: 'Crítico',
+                            data: semanas.map(function (semana) { return semana.critico; }),
+                            backgroundColor: VERMELHO,
+                            borderRadius: 5
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom', labels: { usePointStyle: true, padding: 20 } }
+                    },
+                    scales: {
+                        x: { stacked: true, grid: { display: false } },
+                        y: {
+                            stacked: true,
+                            beginAtZero: true,
+                            ticks: { precision: 0 },
+                            title: { display: true, text: 'Quantidade de incidentes' },
+                            grid: { color: '#e2e5ea' }
+                        }
+                    }
+                }
             });
-
-            valores.push(valorAtual(s, componente));
         }
 
-        graficoComponentes.data.datasets = linhas;
-        graficoComponentes.options.scales.y.title.text = 'Uso de ' + componente + ' (%)';
-        graficoComponentes.update();
+        function plotarMaquinas(maquinas) {
+            var semDados = maquinas.length == 0;
+            var itens = semDados ? [{ nome: 'Sem incidentes', quantidade: 0 }] : maquinas;
 
+            if (graficoMaquinas) graficoMaquinas.destroy();
 
-        let maior = 0;
-        let posicaoMaior = 0;
-        let soma = 0;
-        let emAtencao = 0;
-
-        for (let i = 0; i < valores.length; i++) {
-            if (valores[i] > maior) {
-                maior = valores[i];
-                posicaoMaior = i;
-            }
-            soma += valores[i];
-            if (valores[i] >= 75) {
-                emAtencao++;
-            }
-        }
-
-        document.getElementById('resumo').innerHTML = `
-            <div><b>${maior}%</b>Maior uso atual (${SERVIDORES[posicaoMaior].nome})</div>
-            <div><b>${Math.round(soma / valores.length)}%</b>Média dos servidores</div>
-            <div><b>${emAtencao}</b>Servidores em atenção ou crítico</div>
-        `;
-    }
-
-    function montarFiltros() {
-        let botoes = '';
-
-        for (let i = 0; i < COMPONENTES.length; i++) {
-            botoes += `<button class="chip" type="button" onclick="mostrar('${COMPONENTES[i]}')">${COMPONENTES[i]}</button>`;
-        }
-
-        document.getElementById('filtros').innerHTML = botoes;
-    }
-
-    function montarTabela() {
-        let linhas = '';
-
-        for (let i = 0; i < SERVIDORES.length; i++) {
-            let s = SERVIDORES[i];
-            let colunasUso = '';
-            let problemas = [];
-            let maior = 0;
-
-            for (let j = 0; j < COMPONENTES.length; j++) {
-                let valor = valorAtual(s, COMPONENTES[j]);
-
-                colunasUso += `<td>${valor}%</td>`;
-
-                if (valor >= 75) {
-                    problemas.push(COMPONENTES[j] + ' ' + valor + '%');
+            graficoMaquinas = new Chart(document.getElementById('graficoMaquinas'), {
+                type: 'bar',
+                data: {
+                    labels: itens.map(function (maquina) { return maquina.nome; }),
+                    datasets: [{
+                        label: 'Incidentes',
+                        data: itens.map(function (maquina) { return maquina.quantidade; }),
+                        backgroundColor: semDados ? CINZA : NAVY,
+                        borderRadius: 5
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { beginAtZero: true, ticks: { precision: 0 }, grid: { color: '#e2e5ea' } },
+                        y: { grid: { display: false } }
+                    }
                 }
-                if (valor > maior) {
-                    maior = valor;
-                }
-            }
-
-            let situacao = nivel(maior);
-            let classeLinha = situacao == 'Crítico' ? 'critico' : '';
-            let textoProblema = problemas.length > 0 ? problemas.join(' · ') : '—';
-
-            linhas += `
-                <tr class="${classeLinha}">
-                    <td><b>${s.nome}</b></td>
-                    <td>${s.funcao}</td>
-                    ${colunasUso}
-                    <td>${textoProblema}</td>
-                    <td>${selo(situacao)}</td>
-                </tr>
-            `;
+            });
         }
 
-        document.getElementById('tab').innerHTML = `
-            <table>
-                <thead>
-                    <tr>
-                        <th>Servidor</th>
-                        <th>Função</th>
-                        <th>CPU</th>
-                        <th>RAM</th>
-                        <th>Disco</th>
-                        <th>Rede</th>
-                        <th>Problema detectado</th>
-                        <th>Situação</th>
-                    </tr>
-                </thead>
-                <tbody>${linhas}</tbody>
-            </table>
-        `;
-    }
+        function plotarComponentes(componentes) {
+            var semDados = componentes.length == 0;
+            var itens = semDados ? [{ componente: 'Sem incidentes', quantidade: 1 }] : componentes;
 
-    montarFiltros();
-    mostrar('CPU');
-    montarTabela();
-</script>
+            if (graficoComponentes) graficoComponentes.destroy();
+
+            graficoComponentes = new Chart(document.getElementById('graficoComponentes'), {
+                type: 'doughnut',
+                data: {
+                    labels: itens.map(function (item) { return item.componente; }),
+                    datasets: [{
+                        data: itens.map(function (item) { return item.quantidade; }),
+                        backgroundColor: semDados
+                            ? ['#d9dee7']
+                            : [NAVY, VERMELHO, CINZA, AMBAR, AZUL],
+                        borderColor: '#ffffff',
+                        borderWidth: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '62%',
+                    plugins: {
+                        legend: { position: 'bottom', labels: { usePointStyle: true, padding: 18 } },
+                        tooltip: { enabled: !semDados }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
 
 </html>

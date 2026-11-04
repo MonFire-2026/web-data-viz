@@ -12,9 +12,6 @@
 
     <script src="../js/sessao.js"></script>
     <script src="../js/dashboard-layout.js"></script>
-    <script src="./../js/alerta.js"></script>
-
-
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 
@@ -46,9 +43,14 @@
     </aside>
 
     <main class="conteudo">
-        <header class="topo">
-            <h1>Visão Geral</h1>
-            <p>Resumo do consumo de hardware dos servidores da unidade.</p>
+        <header class="topo topo-com-acoes">
+            <div>
+                <h1>Visão Geral</h1>
+                <p>Resumo do consumo de hardware dos servidores da unidade.</p>
+            </div>
+            <button class="botao-topo" type="button" onclick="abrirChamado()">
+                <span>Abrir chamado</span>
+            </button>
         </header>
         <div id="alerta"></div>
 
@@ -57,24 +59,35 @@
                 <div class="kpi-valor" id="kpiServidores">47</div>
                 <div class="kpi-rotulo">Total de servidores</div>
             </div>
-            <div class="kpi">
-                <div class="kpi-valor" id="kpiCpu">68%</div>
-                <div class="kpi-rotulo">Porcentagem atual da CPU</div>
+            <div class="kpi" title="Máquinas ativas sem captura nos últimos 5 minutos">
+                <div class="kpi-valor" id="kpiSemCaptura">—</div>
+                <div class="kpi-rotulo">Máquinas sem capturas recentes</div>
             </div>
             <div class="kpi destaque">
-                <div class="kpi-valor" id="kpiAlertas">5</div>
+                <div class="kpi-valor" id="kpiAlertas">—</div>
                 <div class="kpi-rotulo">Alertas em aberto</div>
             </div>
         </section>
 
         <section class="graficos">
             <div class="painel">
-                <h2>Gráfico de consumo geral</h2>
-                <div class="seletor-servidor" id="seletorServidor"></div>
+                <h2>Consumo por componente</h2>
+                <div class="filtros" id="filtrosComponente" aria-label="Componente monitorado">
+                    <button class="chip" type="button" data-componente="CPU_USO">CPU</button>
+                    <button class="chip" type="button" data-componente="RAM_USO">RAM</button>
+                    <button class="chip" type="button" data-componente="DISCO_USO">Disco</button>
+                    <button class="chip" type="button" data-componente="REDE">Rede</button>
+                </div>
+                <div class="filtros-rede" id="filtrosRede" hidden aria-label="Direção do tráfego de rede">
+                    <span>Tráfego:</span>
+                    <button class="chip chip-secundario" type="button" data-rede="REDE_RECEBIDA">Recebido</button>
+                    <button class="chip chip-secundario" type="button" data-rede="REDE_ENVIADA">Enviado</button>
+                </div>
                 <div class="area-grafico">
                     <canvas id="graficoConsumo"></canvas>
                 </div>
                 <p class="aviso-captura" id="avisoCaptura"></p>
+                <div class="resumo" id="resumoComponente"></div>
             </div>
 
             <div class="painel">
@@ -96,198 +109,285 @@
     const NAVY = '#1a2438';
     const VERMELHO = '#d62222';
     const CINZA = '#8a94a6';
-
-    const DADOS_ESTATICOS = [
-        ['10:00', 32, 45, 38], ['10:05', 35, 47, 38], ['10:10', 41, 50, 39],
-        ['10:15', 40, 55, 39], ['10:20', 48, 54, 40], ['10:25', 55, 58, 41],
-        ['10:30', 52, 62, 41], ['10:35', 60, 64, 42], ['10:40', 63, 66, 43],
-        ['10:45', 61, 70, 43], ['10:50', 68, 71, 44], ['10:55', 68, 74, 45]
-    ].map(l => ({ momento_grafico: l[0], cpu: l[1], ram: l[2], disco: l[3] }));
+    const AMBAR = '#e0a100';
+    const AZUL = '#3568a8';
+    const VERDE = '#34836f';
+    const ROXO = '#7657a6';
+    const CORES_MAQUINAS = [NAVY, VERMELHO, CINZA, AMBAR, AZUL, VERDE, ROXO];
+    const ID_EMPRESA_ATUAL = Number(sessionStorage.ID_EMPRESA);
+    const COMPONENTES_GRAFICO = {
+        CPU_USO: { tituloEixo: 'Uso de CPU (%)', percentual: true, rede: false },
+        RAM_USO: { tituloEixo: 'Uso de RAM (%)', percentual: true, rede: false },
+        DISCO_USO: { tituloEixo: 'Uso de Disco (%)', percentual: true, rede: false },
+        REDE_RECEBIDA: { tituloEixo: 'Dados recebidos (MB)', percentual: false, rede: true },
+        REDE_ENVIADA: { tituloEixo: 'Dados enviados (MB)', percentual: false, rede: true }
+    };
 
     let proximaAtualizacao;
-    let servidorAtual;   // servidor que está sendo exibido
-    let dados;           // dados do gráfico de consumo
-    let myChart;         // gráfico de consumo
+    let codigoComponenteAtual = 'CPU_USO';
+    let versaoConsulta = 0;
+    let graficoComponentes;
 
-    window.onload = exibirAquariosDoUsuario;
+    window.onload = carregarDashboard;
 
-    function exibirAquariosDoUsuario() {
-        var aquarios = [];
-if (sessionStorage.AQUARIOS != undefined) {
-    aquarios = JSON.parse(sessionStorage.AQUARIOS);
-}
-        if (aquarios.length == 0) {
-            document.getElementById("seletorServidor").style.display = 'none';
-            plotarGrafico(DADOS_ESTATICOS, null);
+    function abrirChamado() {
+        alert("A integração para abertura de chamados no Jira será disponibilizada em breve.");
+    }
+
+    async function carregarDashboard() {
+        configurarFiltrosComponente();
+        await carregarMaquinasDaEmpresa();
+
+        if (Number.isInteger(ID_EMPRESA_ATUAL) && ID_EMPRESA_ATUAL > 0) {
+            selecionarComponente('CPU_USO');
+        }
+    }
+
+    async function carregarMaquinasDaEmpresa() {
+        var aviso = document.getElementById("avisoCaptura");
+
+        if (!Number.isInteger(ID_EMPRESA_ATUAL) || ID_EMPRESA_ATUAL <= 0) {
+            aviso.textContent = "Não foi possível identificar a empresa do usuário.";
             return;
         }
 
-        aquarios.forEach(item => {
-            document.getElementById("seletorServidor").innerHTML += `
-                <button class="btn-servidor" id="btnAquario${item.id}" onclick="exibirAquario(${item.id})">${item.descricao}</button>
-            `
+        try {
+            var resposta = await fetch(`/maquinas/listar/${ID_EMPRESA_ATUAL}`, { cache: "no-store" });
+            if (!resposta.ok) throw new Error(await resposta.text());
+
+            var maquinas = await resposta.json();
+            document.getElementById("kpiServidores").textContent = maquinas.length;
+            document.getElementById("kpiSemCaptura").textContent = maquinas.filter(function (maquina) {
+                return Number(maquina.semCapturaRecente) == 1;
+            }).length;
+        } catch (erro) {
+            aviso.textContent = erro.message || "Não foi possível carregar as máquinas.";
+        }
+    }
+
+    function configurarFiltrosComponente() {
+        document.querySelectorAll('[data-componente]').forEach(function (botao) {
+            botao.addEventListener('click', function () {
+                var componente = botao.dataset.componente;
+                selecionarComponente(componente == 'REDE' ? 'REDE_RECEBIDA' : componente);
+            });
         });
 
-        document.getElementById("kpiServidores").innerHTML = aquarios.length;
-
-        if (aquarios.length > 0) {
-            exibirAquario(aquarios[0].id)
-        }
+        document.querySelectorAll('[data-rede]').forEach(function (botao) {
+            botao.addEventListener('click', function () {
+                selecionarComponente(botao.dataset.rede);
+            });
+        });
     }
 
-    function exibirAquario(idAquario) {
-        servidorAtual = idAquario;
-        let botoes = document.querySelectorAll(".btn-servidor");
-        for (let i = 0; i < botoes.length; i++) {
-            botoes[i].classList.remove("ativo");
-        }
-        document.getElementById(`btnAquario${idAquario}`).classList.add("ativo");
-
-        obterDadosGrafico(idAquario);
-    }
-    function obterDadosGrafico(idAquario) {
-
+    function selecionarComponente(codigoComponente) {
+        codigoComponenteAtual = codigoComponente;
         if (proximaAtualizacao != undefined) {
             clearTimeout(proximaAtualizacao);
         }
 
-        fetch(`/medidas/ultimas/${idAquario}`, { cache: 'no-store' }).then(function (response) {
-            if (response.ok) {
-                response.json().then(function (resposta) {
-                    console.log(`Dados recebidos: ${JSON.stringify(resposta)}`);
-                    resposta.reverse();
+        var ehRede = codigoComponente.startsWith('REDE_');
+        document.getElementById('filtrosRede').hidden = !ehRede;
 
-                    if (resposta.length == 0 || resposta[0].cpu === undefined) {
-                        plotarGrafico(DADOS_ESTATICOS, null);
-                    } else {
-                        plotarGrafico(resposta, idAquario);
-                    }
+        document.querySelectorAll('[data-componente]').forEach(function (botao) {
+            var ativo = ehRede
+                ? botao.dataset.componente == 'REDE'
+                : botao.dataset.componente == codigoComponente;
+            botao.classList.toggle('ativo', ativo);
+            botao.setAttribute('aria-pressed', String(ativo));
+        });
 
-                });
-            } else {
-                console.error('Nenhum dado encontrado ou erro na API');
-                plotarGrafico(DADOS_ESTATICOS, null);
-            }
-        })
-            .catch(function (error) {
-                console.error(`Erro na obtenção dos dados p/ gráfico: ${error.message}`);
-                plotarGrafico(DADOS_ESTATICOS, null);
-            });
+        document.querySelectorAll('[data-rede]').forEach(function (botao) {
+            var ativo = botao.dataset.rede == codigoComponente;
+            botao.classList.toggle('ativo', ativo);
+            botao.setAttribute('aria-pressed', String(ativo));
+        });
+
+        carregarComponente(codigoComponente, ++versaoConsulta);
     }
 
-    function plotarGrafico(resposta, idAquario) {
+    async function carregarComponente(codigoComponente, versao) {
+        var aviso = document.getElementById('avisoCaptura');
 
-        console.log('iniciando plotagem do gráfico...');
+        try {
+            var respostaHttp = await fetch(
+                `/medidas/componente/${codigoComponente}?idEmpresa=${ID_EMPRESA_ATUAL}`,
+                { cache: 'no-store' }
+            );
 
-        dados = {
-            labels: [],
-            datasets: [
-                { label: 'CPU', data: [], borderColor: NAVY, backgroundColor: NAVY, borderWidth: 3, tension: 0.35, pointRadius: 2 },
-                { label: 'RAM', data: [], borderColor: VERMELHO, backgroundColor: VERMELHO, borderWidth: 2, tension: 0.35, pointRadius: 2 },
-                { label: 'Disco', data: [], borderColor: CINZA, backgroundColor: CINZA, borderWidth: 2, tension: 0.35, pointRadius: 2 }
-            ]
-        };
+            if (!respostaHttp.ok) throw new Error(await respostaHttp.text());
 
-        for (i = 0; i < resposta.length; i++) {
-            var registro = resposta[i];
-            dados.labels.push(registro.momento_grafico);
-            dados.datasets[0].data.push(registro.cpu);
-            dados.datasets[1].data.push(registro.ram);
-            dados.datasets[2].data.push(registro.disco);
+            var capturas = await respostaHttp.json();
+            if (versao != versaoConsulta || codigoComponente != codigoComponenteAtual) return;
+
+            aviso.textContent = capturas.length == 0
+                ? 'Ainda não existem capturas para este componente.'
+                : '';
+            plotarGraficoComponente(capturas, codigoComponente);
+        } catch (erro) {
+            if (versao != versaoConsulta) return;
+            aviso.textContent = erro.message || 'Não foi possível consultar as capturas.';
+            plotarGraficoComponente([], codigoComponente);
         }
 
-        console.log('O gráfico será plotado com os respectivos valores:')
-        console.log(dados)
-
-        if (myChart) {
-            myChart.destroy();
+        if (versao == versaoConsulta) {
+            proximaAtualizacao = setTimeout(function () {
+                carregarComponente(codigoComponente, versao);
+            }, 5000);
         }
+    }
 
-        myChart = new Chart(document.getElementById('graficoConsumo'), {
+    function agruparCapturasPorMaquina(capturas) {
+        var grupos = new Map();
+
+        capturas.forEach(function (captura) {
+            if (!grupos.has(captura.idMaquina)) {
+                grupos.set(captura.idMaquina, {
+                    nome: captura.nomeMaquina,
+                    capturas: []
+                });
+            }
+
+            var grupo = grupos.get(captura.idMaquina);
+            if (grupo.capturas.length < 12) grupo.capturas.push(captura);
+        });
+
+        return Array.from(grupos.values());
+    }
+
+    function plotarGraficoComponente(capturas, codigoComponente) {
+        var configuracao = COMPONENTES_GRAFICO[codigoComponente];
+        var grupos = agruparCapturasPorMaquina(capturas);
+        var conjuntos = grupos.map(function (grupo, indice) {
+            var pontos = grupo.capturas.slice().reverse().map(function (captura) {
+                return {
+                    x: new Date(captura.momento).getTime(),
+                    y: Number(captura.valor)
+                };
+            }).filter(function (ponto) {
+                return Number.isFinite(ponto.x) && Number.isFinite(ponto.y);
+            });
+
+            var cor = CORES_MAQUINAS[indice % CORES_MAQUINAS.length];
+            return {
+                label: grupo.nome,
+                data: pontos,
+                borderColor: cor,
+                backgroundColor: cor,
+                borderWidth: 2,
+                tension: 0.35,
+                pointRadius: 2
+            };
+        });
+        var possuiPontos = conjuntos.some(function (conjunto) {
+            return conjunto.data.length > 0;
+        });
+
+        if (graficoComponentes) graficoComponentes.destroy();
+
+        graficoComponentes = new Chart(document.getElementById('graficoConsumo'), {
             type: 'line',
-            data: dados,
+            data: { datasets: conjuntos },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
+                parsing: false,
                 plugins: {
-                    legend: { position: 'bottom', labels: { usePointStyle: true, padding: 20 } }
+                    legend: { position: 'bottom', labels: { usePointStyle: true, padding: 20 } },
+                    tooltip: {
+                        callbacks: {
+                            title: function (itens) {
+                                if (itens.length == 0) return '';
+                                return formatarHorario(itens[0].parsed.x);
+                            }
+                        }
+                    }
                 },
                 scales: {
                     y: {
                         min: 0,
-                        max: 100,
-                        title: { display: true, text: 'Uso (%)' },
+                        max: configuracao.percentual ? 100 : undefined,
+                        title: { display: true, text: configuracao.tituloEixo },
                         grid: { color: '#e2e5ea' }
                     },
-                    x: { grid: { display: false } }
+                    x: {
+                        type: possuiPontos ? 'linear' : 'category',
+                        grid: { display: false },
+                        ticks: {
+                            callback: possuiPontos ? formatarHorario : function () { return ''; }
+                        }
+                    }
                 }
             }
         });
 
-        atualizarKpiCpu();
-
-        if (idAquario !== null) {
-            proximaAtualizacao = setTimeout(() => atualizarGrafico(idAquario), 2000);
-        }
+        atualizarResumoComponente(grupos, configuracao);
     }
 
-    function atualizarGrafico(idAquario) {
+    function formatarHorario(valor) {
+        return new Date(Number(valor)).toLocaleTimeString('pt-BR', {
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit'
+        });
+    }
 
-        if (idAquario != servidorAtual) {
+    function formatarMedida(valor, unidade) {
+        return new Intl.NumberFormat('pt-BR', {
+            maximumFractionDigits: 2
+        }).format(valor) + unidade;
+    }
+
+    function escaparHtml(valor) {
+        return String(valor).replace(/[&<>"']/g, function (caractere) {
+            return {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            }[caractere];
+        });
+    }
+
+    function atualizarResumoComponente(grupos, configuracao) {
+        var resumo = document.getElementById('resumoComponente');
+        var atuais = grupos.map(function (grupo) {
+            return { nome: grupo.nome, captura: grupo.capturas[0] };
+        }).filter(function (item) {
+            return item.captura && Number.isFinite(Number(item.captura.valor));
+        });
+
+        if (atuais.length == 0) {
+            resumo.innerHTML = `
+                <div><b>—</b>Nenhuma leitura atual</div>
+                <div><b>—</b>Média das máquinas</div>
+                <div><b>0</b>Máquinas em atenção ou crítico</div>
+            `;
             return;
         }
 
-        fetch(`/medidas/tempo-real/${idAquario}`, { cache: 'no-store' }).then(function (response) {
-            if (response.ok) {
-                response.json().then(function (novoRegistro) {
+        var pior = atuais[0];
+        var soma = 0;
+        var quantidadeEmAlerta = 0;
 
-                    obterdados(idAquario);
-                    console.log(`Dados recebidos: ${JSON.stringify(novoRegistro)}`);
-                    console.log(`Dados atuais do gráfico:`);
-                    console.log(dados);
-
-                    let avisoCaptura = document.getElementById('avisoCaptura')
-                    avisoCaptura.innerHTML = ""
-
-                    if (novoRegistro[0].momento_grafico == dados.labels[dados.labels.length - 1]) {
-                        console.log("Como não há dados novos para captura, o gráfico não atualizará.")
-                        avisoCaptura.innerHTML = "<i class='fa-solid fa-triangle-exclamation'></i> Foi trazido o dado mais atual capturado pelo sensor. Como não há dados novos a exibir, o gráfico não atualizará."
-                    } else {
-                        dados.labels.shift(); 
-                        dados.labels.push(novoRegistro[0].momento_grafico);
-
-                        dados.datasets[0].data.shift();
-                        dados.datasets[0].data.push(novoRegistro[0].cpu);
-
-                        dados.datasets[1].data.shift();
-                        dados.datasets[1].data.push(novoRegistro[0].ram);
-
-                        dados.datasets[2].data.shift();
-                        dados.datasets[2].data.push(novoRegistro[0].disco);
-
-                        myChart.update();
-                        atualizarKpiCpu();
-                    }
-
-                    proximaAtualizacao = setTimeout(() => atualizarGrafico(idAquario), 2000);
-                });
-            } else {
-                console.error('Nenhum dado encontrado ou erro na API');
-                proximaAtualizacao = setTimeout(() => atualizarGrafico(idAquario), 2000);
+        atuais.forEach(function (item) {
+            var valor = Number(item.captura.valor);
+            var valorPior = Number(pior.captura.valor);
+            if (configuracao.rede ? valor < valorPior : valor > valorPior) pior = item;
+            soma += valor;
+            if (item.captura.nivel == 'Atenção' || item.captura.nivel == 'Crítico') {
+                quantidadeEmAlerta++;
             }
-        })
-            .catch(function (error) {
-                console.error(`Erro na obtenção dos dados p/ gráfico: ${error.message}`);
-            });
+        });
 
-    }
-
-    function atualizarKpiCpu() {
-        let cpu = dados.datasets[0].data;
-        let ultimo = cpu[cpu.length - 1];
-        if (ultimo !== undefined) {
-            document.getElementById('kpiCpu').innerHTML = ultimo + '%';
-        }
+        var unidade = atuais[0].captura.unidadeMedida || '';
+        var rotuloPior = configuracao.rede ? 'Menor tráfego atual' : 'Maior uso atual';
+        resumo.innerHTML = `
+            <div><b>${escaparHtml(formatarMedida(Number(pior.captura.valor), unidade))}</b>${rotuloPior} (${escaparHtml(pior.nome)})</div>
+            <div><b>${escaparHtml(formatarMedida(soma / atuais.length, unidade))}</b>Média das máquinas</div>
+            <div><b>${quantidadeEmAlerta}</b>Máquinas em atenção ou crítico</div>
+        `;
     }
 
     new Chart(document.getElementById('graficoIncidentes'), {
@@ -295,7 +395,7 @@ if (sessionStorage.AQUARIOS != undefined) {
         data: {
             labels: ['CPU', 'RAM', 'Disco'],
             datasets: [{
-                data: [9, 14, 5],
+                data: [0, 0, 0],
                 backgroundColor: [NAVY, VERMELHO, CINZA],
                 borderColor: '#ffffff',
                 borderWidth: 4

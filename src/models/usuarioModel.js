@@ -20,6 +20,7 @@ function buscarPorEmail(email) {
         INNER JOIN cargo AS c
             ON c.id = uc.fk_cargo
         WHERE u.email = ?
+            AND u.ativo = 1
         LIMIT 1;
     `;
 
@@ -28,10 +29,10 @@ function buscarPorEmail(email) {
 
 function atualizarUltimoAcesso(idUsuario) {
     var instrucaoSql = `
-        UPDATE usuario_cargo
+        UPDATE usuario
         SET ultimo_acesso = CURRENT_TIMESTAMP
-        WHERE fk_usuario = ?
-            AND saida IS NULL;
+        WHERE id = ?
+            AND ativo = 1;
     `;
 
     return database.executar(instrucaoSql, [idUsuario]);
@@ -77,9 +78,9 @@ function listarPorEmpresa(idEmpresa) {
             u.nome,
             u.email,
             c.funcao AS cargo,
-            DATE_FORMAT(uc.ultimo_acesso, '%Y-%m-%dT%H:%i:%s') AS ultimoAcesso,
+            DATE_FORMAT(u.ultimo_acesso, '%Y-%m-%dT%H:%i:%s') AS ultimoAcesso,
             CASE
-                WHEN uc.saida IS NULL THEN 'Ativo'
+                WHEN u.ativo = 1 THEN 'Ativo'
                 ELSE 'Inativo'
             END AS situacao
         FROM usuario AS u
@@ -133,6 +134,8 @@ function buscarDadosParaDesativacao(idSolicitante, idUsuario, idEmpresa) {
             ON cargo_alvo.id = vinculo_alvo.fk_cargo
         WHERE solicitante.id = ?
             AND solicitante.fk_empresa = ?
+            AND solicitante.ativo = 1
+            AND usuario_alvo.ativo = 1
         LIMIT 1;
     `;
 
@@ -140,17 +143,27 @@ function buscarDadosParaDesativacao(idSolicitante, idUsuario, idEmpresa) {
 }
 
 function desativar(idUsuario, idEmpresa) {
-    var instrucaoSql = `
-        UPDATE usuario_cargo AS uc
-        INNER JOIN usuario AS u
-            ON u.id = uc.fk_usuario
-        SET uc.saida = CURRENT_TIMESTAMP
-        WHERE uc.fk_usuario = ?
-            AND u.fk_empresa = ?
-            AND uc.saida IS NULL;
-    `;
+    return database.executarTransacao(async function (transacao) {
+        var resultadoUsuario = await transacao.executar(`
+            UPDATE usuario
+            SET ativo = 0,
+                dtHr_desativacao = CURRENT_TIMESTAMP
+            WHERE id = ?
+                AND fk_empresa = ?
+                AND ativo = 1;
+        `, [idUsuario, idEmpresa]);
 
-    return database.executar(instrucaoSql, [idUsuario, idEmpresa]);
+        if (resultadoUsuario.affectedRows == 1) {
+            await transacao.executar(`
+                UPDATE usuario_cargo
+                SET saida = CURRENT_TIMESTAMP
+                WHERE fk_usuario = ?
+                    AND saida IS NULL;
+            `, [idUsuario]);
+        }
+
+        return resultadoUsuario;
+    });
 }
 
 function cadastrar(nome, email, senhaHash, idEmpresa, idCargo) {

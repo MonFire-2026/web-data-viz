@@ -8,12 +8,13 @@
     <title>MonFire | Máquinas</title>
     <link rel="shortcut icon" href="../assets/icon/LogoMonfire.png" type="image/x-icon">
     <link rel="stylesheet" href="../css/dashboard.css">
+    <link rel="stylesheet" href="../css/cadastro-maquinas.css">
     <script src="../js/sessao.js" defer></script>
     <script src="../js/dashboard-layout.js" defer></script>
     <script src="../js/maquinas.js" defer></script>
 </head>
 
-<body>
+<body class="pagina-maquinas">
     <aside class="sidebar" aria-label="Navegação principal">
         <a class="brand" href="../index.html" aria-label="MonFire - Página inicial">
             <img class="brand-logo" src="../assets/icon/LogoMonfire.png" alt="">
@@ -43,20 +44,74 @@
 
         <section class="kpis" id="kpis_maquinas" aria-label="Resumo das máquinas"></section>
 
+        <section class="cadastro-maquina" id="cadastro-maquina" aria-labelledby="titulo-cadastro-maquina" hidden>
+            <button class="cadastro-maquina-toggle" id="botao_abrir_cadastro_maquina" type="button" aria-expanded="false"
+                aria-controls="conteudo_cadastro_maquina">
+                <span>
+                    <strong id="titulo-cadastro-maquina">Cadastrar nova máquina</strong>
+                    <small>Escolha o que será monitorado e defina os limites dos alertas.</small>
+                </span>
+                <span class="cadastro-maquina-icone" aria-hidden="true">+</span>
+            </button>
+
+            <div class="cadastro-maquina-conteudo" id="conteudo_cadastro_maquina" hidden>
+                <form id="form_cadastro_maquina" novalidate>
+                    <div class="cadastro-maquina-grade">
+                        <div class="cadastro-maquina-campo cadastro-maquina-campo-largo">
+                            <label for="nome_maquina_input">Nome da máquina</label>
+                            <input id="nome_maquina_input" type="text" minlength="2" maxlength="50"
+                                placeholder="Ex.: SRV-193-CAD-01" required>
+                        </div>
+                    </div>
+
+                    <fieldset class="cadastro-maquina-componentes">
+                        <legend>Componentes monitorados</legend>
+
+                        <p class="cadastro-maquina-status-componentes" id="status_componentes_maquina" role="status"
+                            aria-live="polite">Carregando componentes...</p>
+                        <div class="cadastro-maquina-lista-componentes" id="lista_componentes_maquina"></div>
+                    </fieldset>
+
+                    <div id="mensagem_cadastro_maquina" class="cadastro-maquina-mensagem" role="status"
+                        aria-live="polite" hidden></div>
+
+                    <div class="cadastro-maquina-acoes">
+                        <button class="cadastro-maquina-botao cadastro-maquina-botao-secundario" id="botao_cancelar_cadastro_maquina"
+                            type="button">Cancelar</button>
+                        <button class="cadastro-maquina-botao cadastro-maquina-botao-primario"
+                            id="botao_cadastrar_maquina" type="submit" disabled>Cadastrar máquina</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
         <section class="painel" aria-labelledby="titulo-maquinas">
             <h2 id="titulo-maquinas">Máquinas monitoradas</h2>
             <p class="mensagem-maquinas" id="mensagem_maquinas" role="status" aria-live="polite"></p>
             <div class="tabela-wrap" id="tabela_maquinas"></div>
         </section>
 
-        <section class="painel" aria-labelledby="titulo-registro-coletor">
-            <h2 id="titulo-registro-coletor">Registro das máquinas</h2>
-            <p class="informacao-coletor">
-                As máquinas são registradas diretamente no banco pelo coletor Java. O cadastro manual pelo site não é
-                necessário.
-            </p>
-        </section>
     </main>
+
+    <div class="cadastro-maquina-modal" id="modal_codigo_ativacao" hidden>
+        <div class="cadastro-maquina-modal-fundo" data-fechar-modal-codigo></div>
+        <section class="cadastro-maquina-modal-conteudo" role="dialog" aria-modal="true"
+            aria-labelledby="titulo_modal_codigo" aria-describedby="descricao_modal_codigo">
+            <button class="cadastro-maquina-modal-fechar" type="button" aria-label="Fechar"
+                data-fechar-modal-codigo>&times;</button>
+            <span class="cadastro-maquina-modal-icone" aria-hidden="true">&#10003;</span>
+            <h2 id="titulo_modal_codigo">Máquina cadastrada</h2>
+            <p id="descricao_modal_codigo">Use este código ao iniciar os coletores Java e Python.</p>
+            <div class="cadastro-maquina-codigo-linha">
+                <code id="codigo_ativacao_gerado"></code>
+                <button class="cadastro-maquina-botao-copiar" id="botao_copiar_codigo" type="button">Copiar</button>
+            </div>
+            <p class="cadastro-maquina-codigo-validade" id="validade_codigo_ativacao"></p>
+            <p class="cadastro-maquina-codigo-aviso">Guarde este código agora. Ele não será exibido novamente.</p>
+            <button class="cadastro-maquina-botao cadastro-maquina-botao-primario cadastro-maquina-modal-confirmar"
+                type="button" data-fechar-modal-codigo>Entendi</button>
+        </section>
+    </div>
 </body>
 
 </html>

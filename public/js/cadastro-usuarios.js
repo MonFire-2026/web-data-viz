@@ -1,3 +1,8 @@
+function usuarioPodeCadastrarUsuario() {
+    var nivel = normalizarNivelUsuario(sessionStorage.CARGO_USUARIO);
+    return nivel != undefined && (nivel.valor == "administrador" || nivel.valor == "gerente");
+}
+
 function preencherNiveisDeAcesso() {
     var seletorNivel = document.getElementById("nivel_usuario_select");
     if (!seletorNivel) return;
@@ -56,6 +61,10 @@ function nivelSelecionadoEhPermitido(valorSelecionado) {
 
 async function cadastrarUsuario(evento) {
     evento.preventDefault();
+
+    if (!usuarioPodeCadastrarUsuario()) {
+        return exibirMensagemCadastroUsuario("Seu cargo não permite cadastrar usuários.", "erro");
+    }
 
     var formulario = evento.currentTarget;
     var botaoCadastrar = formulario.querySelector("button[type='submit']");
@@ -144,10 +153,14 @@ async function cadastrarUsuario(evento) {
 
 document.addEventListener("DOMContentLoaded", function () {
     var formulario = document.getElementById("form_cadastro_usuario");
+    var secaoCadastro = document.getElementById("cadastro-usuario");
 
-    preencherDadosDaSessao();
-    preencherNiveisDeAcesso();
-    if (formulario) formulario.addEventListener("submit", cadastrarUsuario);
+    if (formulario && secaoCadastro && usuarioPodeCadastrarUsuario()) {
+        secaoCadastro.hidden = false;
+        preencherDadosDaSessao();
+        preencherNiveisDeAcesso();
+        formulario.addEventListener("submit", cadastrarUsuario);
+    }
 });
 
 var usuariosMonFire = [];
@@ -461,13 +474,16 @@ function inicializarPaginaUsuarios() {
 
     atualizarTelaUsuarios();
     carregarUsuarios();
-    document.getElementById("botao_abrir_cadastro").addEventListener("click", alternarCadastroUsuario);
-    document.getElementById("botao_cancelar_cadastro").addEventListener("click", function () {
-        document.getElementById("form_cadastro_usuario").reset();
-        preencherDadosDaSessao();
-        preencherNiveisDeAcesso();
-        alternarCadastroUsuario();
-    });
+
+    if (usuarioPodeCadastrarUsuario()) {
+        document.getElementById("botao_abrir_cadastro").addEventListener("click", alternarCadastroUsuario);
+        document.getElementById("botao_cancelar_cadastro").addEventListener("click", function () {
+            document.getElementById("form_cadastro_usuario").reset();
+            preencherDadosDaSessao();
+            preencherNiveisDeAcesso();
+            alternarCadastroUsuario();
+        });
+    }
 
     document.getElementById("ordenacao_usuarios").addEventListener("change", function (evento) {
         ordenacaoUsuarios.campo = evento.target.value;
