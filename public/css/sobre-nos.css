@@ -255,7 +255,7 @@
         grid-template-columns: 1fr;
     }
 
-    .containerPrimeirotextobanner,
+.containerPrimeirotextobanner,
 .containerSegundotextobanner,
 .containerTextoAbaixoBanner,
 .containerTextoAbaixoTextoBanner,
@@ -265,6 +265,7 @@
 .fotoEquipe,
 .cardEquipe h2,
 .cardEquipe p {
-    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;;
 }
+
 }
