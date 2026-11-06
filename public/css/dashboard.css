@@ -289,7 +289,7 @@ textarea {
 
 .graficos {
     display: grid;
-    grid-template-columns: minmax(0, 3fr) minmax(280px, 2fr);
+    grid-template-columns: minmax(0, 1fr);
     gap: 20px;
     max-width: 1380px;
 }

@@ -89,13 +89,6 @@
                 <p class="aviso-captura" id="avisoCaptura"></p>
                 <div class="resumo" id="resumoComponente"></div>
             </div>
-
-            <div class="painel">
-                <h2>Gráfico de incidentes</h2>
-                <div class="area-grafico">
-                    <canvas id="graficoIncidentes"></canvas>
-                </div>
-            </div>
         </section>
     </main>
 
@@ -390,24 +383,4 @@
         `;
     }
 
-    new Chart(document.getElementById('graficoIncidentes'), {
-        type: 'doughnut',
-        data: {
-            labels: ['CPU', 'RAM', 'Disco'],
-            datasets: [{
-                data: [0, 0, 0],
-                backgroundColor: [NAVY, VERMELHO, CINZA],
-                borderColor: '#ffffff',
-                borderWidth: 4
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            cutout: '60%',
-            plugins: {
-                legend: { position: 'bottom', labels: { usePointStyle: true, padding: 20 } }
-            }
-        }
-    });
 </script>
