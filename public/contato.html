@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MonFire - Sobre nós</title>
+    <link rel="stylesheet" href="./css/sobre-nos.css">
+    <link rel="stylesheet" href="./css/global.css">
+    <link rel="shortcut icon" href="./assets/icon/LogoMonfire.png" type="image/x-icon">
+    <script src="./js/navbar.js" defer></script>
+</head>
+
+<body>
+    <header>
+        <div class="conteinerHeader">
+            <div class="conteinerLogoHeader">
+                <a href="./index.html"><img src="./assets/icon/LogoMonfire.png" alt="logo"></a>
+                <h1>Mon<span>Fire</span></h1>
+            </div>
+            <nav id="menuLinksHeader">
+                <ul>
+                    <li><a href="./index.html">Início</a></li>
+                    <li><a href="./sobreNos.html">Sobre Nós</a></li>
+                    <li><a href="#">Contato</a></li>
+                    <div id="conteinerAcoesResponsivas">
+                        <ul id="conteinerMenuLogar">
+                            <li><a href="./login.html">Entre</a></li>
+                        </ul>
+                    </div>
+                </ul>
+            </nav>
+            <div class="conteinerBotoesHeader">
+                <a href="./login.html" class="botaoLogin">Entrar</a>
+            </div>
+            <div class="conteinerMenuResponsivo">
+                <button class="botaoMenu" type="button" aria-label="Abrir menu de navegação"
+                    aria-controls="menuLinksHeader" aria-expanded="false" onclick="mostrarMenu()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor"
+                        class="bi bi-list" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd"
+                            d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="banner">
+        <div class="containerPrimeirotextobanner" id="nossaMissao">
+            CONTATO
+        </div>
+
+        <div class="containerSegundotextobanner">
+            Em operações de emergência, cada segundo importa: solicite o cadastro da sua unidade para <br> antecipar falhas silenciosas de hardware e garantir a alta disponibilidade do 193.
+        </div>
+    </div>
+
+    <div class="containerTextoAbaixoBanner" style="margin-left: 45px;">
+        <p class="titulo-criacao">VENHA FAZER PARTE</p>
+    </div>
+
+    <div class="containerSecao" id="criamos" style="padding: 20px 0px 50px 0px;">
+        <div class="containerTexto" style="padding-left: 50px;">
+            <div class="cardCadastro">
+                <div class="cabecalhoCadastro">
+                    <h2>Dados do solicitante</h2>
+                    <p>Informe seus dados reais</p>
+                </div>
+
+                <div class="formularioCadastro">
+                    <div class="campoCadastro">
+                        <label for="nome_input">NOME COMPLETO <span>*</span></label>
+                        <input type="text" name="" id="nome_input" placeholder="nome sobrenome">
+                    </div>
+
+                    <div class="campoCadastro">
+                        <label for="cargo_input">CARGO <span>*</span></label>
+                        <input type="text" name="" id="cargo_input" placeholder="EX:  Gestor Infraestrutura">
+                    </div>
+
+                    <div class="campoCadastro">
+                        <label for="email_input">E-MAIL INSTITUCIONAL <span>*</span></label>
+                        <input type="text" name="" id="email_input" placeholder="usuario@provedor.com">
+                    </div>
+
+                    <div class="campoCadastro">
+                        <label for="telefone_input">TELEFONE <span>*</span></label>
+                        <input type="text" name="" id="telefone_input" placeholder="+55 (11)98765-4321">
+                    </div>
+
+                    <button type="button" class="botaoCriarConta" onclick="entrar()">Enviar</button>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="containerCaixas" style="background-color: white; padding-top: 0px; margin-right: 50px; width: auto;">
+            <div class="caixa" style="border: none; border-radius: 0px; height: 500px; width: 375px; background-image: url('./assets/imgs/imagemAtendimento.jpg'); background-position: center right; object-fit: cover;">
+            </div>
+
+            <div class="caixa" style="background-color:white; border: none; border-radius: 0px; width: 500px;">
+                <h3>E-mail MonFire</h3>
+                <p>monfire@monfire.com</p>
+                
+                <h3>Telefone</h3>
+                <p>monfire@monfire.com</p>
+                
+                <br>
+                <h3>NOSSAS REDES SOCIAIS</h3>
+                <p>Youtube</p>
+                <p>Facebook</p>
+                <p>Instagram</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="containerFooter">
+
+        <div class="containerEmpresaFooter">
+
+            <div class="containerConteudoFooter">
+
+                <a href="./index.html"><img src="./assets/icon/LogoMonfire.png" alt="logo"></a>
+                <h3>Mon<span>Fire</span></h3> <br>
+                <p>Monitoramento de servidores para o Corpo de Bombeiros do Brasil.</p>
+
+            </div>
+
+            <div class="divisaoFooter"></div>
+
+            <div class="botoesFooter">
+
+                <p><a href="./index.html">Início</a></p>
+                <p><a href="./sobreNos.html">Sobre Nós</a></p>
+                <p><a href="#">Contato</a></p>
+                <p><a href="./login.html">Entrar</a></p>
+            </div>
+
+        </div>
+
+    </div>
+</body>
+</html>

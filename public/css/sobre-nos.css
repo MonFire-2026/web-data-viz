@@ -32,9 +32,8 @@
     padding-bottom: 70px;
     display: flex;
     flex-direction: row;
-    align-items: flex-start;
-    justify-content: center;
-    gap: 80px;
+    align-items: center;
+    justify-content: space-evenly;
 }
 
 .containerTexto {
