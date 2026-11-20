@@ -1,4 +1,5 @@
 SET NAMES utf8mb4;
+drop DATABASE IF EXISTS MonFire;
 CREATE DATABASE IF NOT EXISTS MonFire;
 USE MonFire;
 
@@ -6,7 +7,9 @@ CREATE TABLE empresa (
     id INT PRIMARY KEY AUTO_INCREMENT,
     razao_social VARCHAR(50) NOT NULL,
     cnpj CHAR(14) NOT NULL UNIQUE,
-    dtHr DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    dtHr_ativacao DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    dtHr_atualizacao DATETIME DEFAULT CURRENT_TIMESTAMP,
+    dtHr_inativacao DATETIME DEFAULT CURRENT_TIMESTAMP,
     unidade VARCHAR(50) NOT NULL
 );
 
@@ -18,12 +21,14 @@ CREATE TABLE usuario (
     senha_hash VARCHAR(90) NOT NULL,
     ultimo_acesso DATETIME,
     ativo TINYINT(1) NOT NULL DEFAULT 1,
-    dtHr_desativacao DATETIME,
+    dtHr_ativacao DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    dtHr_atualizacao DATETIME DEFAULT CURRENT_TIMESTAMP,
+    dtHr_inativacao DATETIME DEFAULT CURRENT_TIMESTAMP,
     fk_empresa INT NOT NULL,
     CONSTRAINT empresa_usuario FOREIGN KEY (fk_empresa) REFERENCES empresa(id),
-    CONSTRAINT ck_usuario_desativacao CHECK (
-        (ativo = 1 AND dtHr_desativacao IS NULL)
-        OR (ativo = 0 AND dtHr_desativacao IS NOT NULL)
+    CONSTRAINT ck_usuario_inativacao CHECK (
+        (ativo = 1 AND dtHr_inativacao)
+        OR (ativo = 0 AND dtHr_inativacao)
     )
 );
 
@@ -35,12 +40,13 @@ CREATE TABLE cargo (
 CREATE TABLE usuario_cargo (
     fk_usuario INT NOT NULL,
     fk_cargo INT NOT NULL,
-    dtHr_inicio DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    saida DATETIME,
+    dtHr_ativacao	 DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    dtHr_atualizacao DATETIME DEFAULT CURRENT_TIMESTAMP,
+    dtHr_inativacao DATETIME DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (fk_usuario, fk_cargo),
     CONSTRAINT fk_usuario_cargo_usuario FOREIGN KEY (fk_usuario) REFERENCES usuario(id),
     CONSTRAINT fk_usuario_cargo_cargo FOREIGN KEY (fk_cargo) REFERENCES cargo(id),
-    CONSTRAINT ck_usuario_cargo_periodo CHECK (saida IS NULL OR saida >= dtHr_inicio)
+    CONSTRAINT ck_usuario_cargo_periodo CHECK (dtHr_inativacao IS NULL OR dtHr_inativacao >= dtHr_ativacao)
 );
 
 CREATE TABLE maquina (
@@ -51,8 +57,9 @@ CREATE TABLE maquina (
     ip VARCHAR(45),
     sistema_operacional VARCHAR(100),
     situacao ENUM('PENDENTE', 'ATIVA', 'INATIVA') NOT NULL DEFAULT 'PENDENTE',
-    dtHr_cadastro DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    dtHr_ativacao DATETIME,
+    dtHr_ativacao DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    dtHr_atualizacao DATETIME DEFAULT CURRENT_TIMESTAMP,
+    dtHr_inativacao DATETIME DEFAULT CURRENT_TIMESTAMP,
     fk_empresa INT NOT NULL,
     CONSTRAINT empresa_maquina FOREIGN KEY (fk_empresa) REFERENCES empresa(id),
     CONSTRAINT uk_empresa_mac UNIQUE (fk_empresa, mac),
@@ -72,13 +79,15 @@ CREATE TABLE maquina (
 CREATE TABLE codigo_ativacao (
     id INT PRIMARY KEY AUTO_INCREMENT,
     codigo_hash CHAR(64) NOT NULL UNIQUE,
-    dtHr_geracao DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    dtHr_expiracao DATETIME NOT NULL,
+    dtHr_ativacao DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    dtHr_atualizacao DATETIME DEFAULT CURRENT_TIMESTAMP,
+    dtHr_inativacao DATETIME DEFAULT CURRENT_TIMESTAMP,
+    usado BOOLEAN NOT NULL,
     fk_maquina INT NOT NULL UNIQUE,
     CONSTRAINT fk_codigo_ativacao_maquina
         FOREIGN KEY (fk_maquina) REFERENCES maquina(id),
     CONSTRAINT ck_codigo_ativacao_validade
-        CHECK (dtHr_expiracao > dtHr_geracao)
+        CHECK (dtHr_inativacao > dtHr_ativacao)
 );
 
 CREATE TABLE nivel_alerta (
@@ -145,7 +154,7 @@ CREATE TABLE metrica_alerta (
 CREATE TABLE captura (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
     valor DOUBLE NOT NULL,
-    dtHr DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    dtHr_captura DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
     fk_configuracao_maquina INT NOT NULL,
     CONSTRAINT fk_captura_configuracao
         FOREIGN KEY (fk_configuracao_maquina) REFERENCES configuracao_maquina(id)
@@ -157,7 +166,7 @@ CREATE TABLE alerta (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
     fk_captura BIGINT NOT NULL,
     fk_metrica_alerta INT NOT NULL,
-    dtHr DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    dtHr_emissao DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
     CONSTRAINT fk_alerta_captura FOREIGN KEY (fk_captura) REFERENCES captura(id),
     CONSTRAINT fk_alerta_metrica FOREIGN KEY (fk_metrica_alerta) REFERENCES metrica_alerta(id),
     CONSTRAINT uk_alerta_captura UNIQUE (fk_captura)
@@ -175,16 +184,16 @@ INSERT INTO cargo (funcao) VALUES
 
 -- O último acesso agora é armazenado uma única vez na conta do usuário.
 INSERT INTO usuario (
-    nome, email, senha_hash, ultimo_acesso, ativo, dtHr_desativacao, fk_empresa
+    nome, email, senha_hash, ultimo_acesso, ativo, dtHr_ativacao, fk_empresa
 ) VALUES
-    ('Alexandre Tabacchi', 'alexandre@sptech.school', '$2b$10$KBMteNmthOSspRt3ri5QquIIk8jGYlCvgf.x.plubY5gYO/qdNKpW', '2026-10-09 09:12:00', 1, NULL, 2),
-    ('Felipe Amoroso', 'felipe@sptech.school', '$2b$10$KIiaFarAERlI1uJ47EXTneHvwhDCiSgtyyDwpRgb.catVd8dx6CCO', '2026-10-09 08:47:00', 1, NULL, 2),
-    ('Gabryel Moura', 'gabryel@sptech.school', '$2b$10$bKXS2JLQehn3LoB4f6D7oeC6kLAt8ef94DLQlLBjGBQJNIOfikq6q', '2026-10-09 07:30:00', 1, NULL, 2),
-    ('Helena Caporicci', 'helena@sptech.school', '$2b$10$h5jpQUCYkC9db5QinRgNtuua4HOgdzpwNOvOA9Rvbi9yXtGB4SLfG', '2026-10-08 22:05:00', 1, NULL, 2),
+    ('Alexandre Tabacchi', 'alexandre@sptech.school', '$2b$10$KBMteNmthOSspRt3ri5QquIIk8jGYlCvgf.x.plubY5gYO/qdNKpW', '2026-10-09 09:12:00', 1, '2026-09-25 14:16:00', 2),
+    ('Felipe Amoroso', 'felipe@sptech.school', '$2b$10$KIiaFarAERlI1uJ47EXTneHvwhDCiSgtyyDwpRgb.catVd8dx6CCO', '2026-10-09 08:47:00', 1, '2026-09-25 14:17:00', 2),
+    ('Gabryel Moura', 'gabryel@sptech.school', '$2b$10$bKXS2JLQehn3LoB4f6D7oeC6kLAt8ef94DLQlLBjGBQJNIOfikq6q', '2026-10-09 07:30:00', 1, '2026-09-25 14:18:00', 2),
+    ('Helena Caporicci', 'helena@sptech.school', '$2b$10$h5jpQUCYkC9db5QinRgNtuua4HOgdzpwNOvOA9Rvbi9yXtGB4SLfG', '2026-10-08 22:05:00', 1, '2026-09-25 14:19:00', 2),
     ('Maria Luiza Vieira', 'marialuiza@sptech.school', '$2b$10$wljkR8Wskq.0MpLfFocobu0NYhOyV166.Vy.4pPcA1ntxtIFIRZtm', '2026-09-25 14:20:00', 0, '2026-09-25 14:20:00', 2),
     ('Pedro Caparroz', 'pedro@sptech.school', '$2b$10$TseNY21dVYkXYSztsOgJB.z0zs8TFvZ1EXPHvEZeNzqJTFSNclnQC', '2026-09-18 10:02:00', 0, '2026-09-18 10:02:00', 2);
 
-INSERT INTO usuario_cargo (fk_usuario, fk_cargo, dtHr_inicio, saida) VALUES
+INSERT INTO usuario_cargo (fk_usuario, fk_cargo, dtHr_ativacao, dtHr_inativacao) VALUES
     (1, 1, '2026-01-01 00:00:00', NULL),
     (2, 1, '2026-01-01 00:00:00', NULL),
     (3, 1, '2026-01-01 00:00:00', NULL),
@@ -377,9 +386,29 @@ CREATE OR REPLACE VIEW vw_captura_geral AS
 SELECT
     c.id AS captura_id,
     c.valor,
+<<<<<<< Updated upstream
     c.dtHr AS data_hora,
     cm.fk_maquina AS maquina_id,
     cm.fk_componente AS metrica_id,
+=======
+    c.dtHr_captura AS data_hora,
+    maq.id AS maquina_id,
+    maq.nome AS maquina_nome,
+    maq.hostname,
+    maq.mac,
+    maq.ip,
+    maq.sistema_operacional,
+    maq.situacao AS maquina_situacao,
+    maq.fk_empresa AS empresa_id,
+    cm.id AS configuracao_id,
+    cm.ativa AS configuracao_ativa,
+    comp.id AS componente_id,
+    comp.status_atividade AS componente_ativo,
+    tc.codigo AS metrica_codigo,
+    tc.nome AS componente_nome,
+    mc.nome AS metrica_nome,
+    mc.unidade_medida,
+>>>>>>> Stashed changes
     atencao.limite AS limite_atencao,
     critico.limite AS limite_critico
 FROM captura AS c

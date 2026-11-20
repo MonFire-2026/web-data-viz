@@ -1,0 +1,384 @@
+
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>MonFire | Rede</title>
+
+    <link rel="shortcut icon"
+        href="../assets/icon/LogoMonfire.png"
+        type="image/x-icon">
+
+    <link rel="stylesheet" href="../css/dashboard.css">
+    <link rel="stylesheet" href="../css/rede.css">
+
+    <script src="../js/sessao.js"></script>
+    <script src="../js/dashboard-layout.js"></script>
+
+    <!-- Biblioteca Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Font Awesome -->
+    <script src="https://kit.fontawesome.com/9f7414eb10.js"
+        crossorigin="anonymous"></script>
+</head>
+
+<body>
+
+    <!-- NAVBAR LATERAL -->
+    <aside class="sidebar" aria-label="Navegação principal">
+
+        <a class="brand" href="../index.html"
+            aria-label="MonFire - Página inicial">
+
+            <img class="brand-logo"
+                src="../assets/icon/LogoMonfire.png"
+                alt="">
+
+            <span class="brand-name">
+                Mon<span>Fire</span>
+            </span>
+        </a>
+
+        <nav class="nav" aria-label="Menu da dashboard">
+
+            <span class="nav-label">Painel</span>
+
+            <a href="./dashboard.html">
+                <i class="fa-solid fa-house"></i>
+                Visão Geral
+            </a>
+
+            <a href="./visaoEspecifica.html">
+                <i class="fa-solid fa-microchip"></i>
+                Visão Específica
+            </a>
+
+            <a href="./rede.html" class="ativo"
+                aria-current="page">
+                <i class="fa-solid fa-wifi"></i>
+                Rede
+            </a>
+
+            <a href="./usuarios.html">
+                <i class="fa-solid fa-users"></i>
+                Usuários
+            </a>
+
+            <a href="./maquinas.html">
+                <i class="fa-solid fa-server"></i>
+                Máquinas
+            </a>
+
+            <a href="./alertas.html">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                Alertas
+            </a>
+
+        </nav>
+
+        <div class="sidebar-footer">
+
+            <p>
+                <small>Sessão atual</small>
+                <strong id="nome_usuario" data-nome-usuario>
+                    Usuário administrador
+                </strong>
+            </p>
+
+            <button class="btn-sair"
+                type="button"
+                onclick="limparSessao()">
+                Sair
+            </button>
+
+        </div>
+
+    </aside>
+
+
+    <!-- CONTEÚDO PRINCIPAL -->
+    <main class="conteudo">
+
+        <!-- CABEÇALHO -->
+        <header class="topo topo-com-acoes">
+
+            <div>
+                <h1>
+                    <i class="fa-solid fa-wifi"></i>
+                    Rede
+                </h1>
+
+                <p>
+                    Análise de tráfego e desempenho da rede
+                    das máquinas monitoradas.
+                </p>
+            </div>
+
+            <div class="acoes-rede">
+
+                <select id="filtroMaquina"
+                    class="filtro-select"
+                    aria-label="Selecionar máquina">
+
+                    <option value="">
+                        Todas as máquinas
+                    </option>
+
+                </select>
+
+                <select id="filtroPeriodo"
+                    class="filtro-select"
+                    aria-label="Selecionar período">
+
+                    <option value="24">Últimas 24 horas</option>
+                    <option value="12">Últimas 12 horas</option>
+                    <option value="7">Últimos 7 dias</option>
+                    <option value="30">Últimos 30 dias</option>
+
+                </select>
+
+            </div>
+
+        </header>
+
+
+        <!-- INDICADORES DE REDE -->
+        <section class="kpis kpis-rede">
+
+            <article class="kpi kpi-rede">
+
+                <div class="kpi-icone azul">
+                    <i class="fa-solid fa-download"></i>
+                </div>
+
+                <div class="kpi-rotulo">
+                    Total Recebido
+                </div>
+
+                <div class="kpi-valor" id="totalRecebido">
+                    —
+                </div>
+
+            </article>
+
+
+            <article class="kpi kpi-rede">
+
+                <div class="kpi-icone roxo">
+                    <i class="fa-solid fa-upload"></i>
+                </div>
+
+                <div class="kpi-rotulo">
+                    Total Enviado
+                </div>
+
+                <div class="kpi-valor" id="totalEnviado">
+                    —
+                </div>
+
+            </article>
+
+
+            <article class="kpi kpi-rede">
+
+                <div class="kpi-icone verde">
+                    <i class="fa-solid fa-gauge-high"></i>
+                </div>
+
+                <div class="kpi-rotulo">
+                    Velocidade Média (Download)
+                </div>
+
+                <div class="kpi-valor" id="mediaDownload">
+                    —
+                </div>
+
+            </article>
+
+
+            <article class="kpi kpi-rede">
+
+                <div class="kpi-icone laranja">
+                    <i class="fa-solid fa-gauge-high"></i>
+                </div>
+
+                <div class="kpi-rotulo">
+                    Velocidade Média (Upload)
+                </div>
+
+                <div class="kpi-valor" id="mediaUpload">
+                    —
+                </div>
+
+            </article>
+
+        </section>
+
+
+        <!-- GRÁFICOS PRINCIPAIS -->
+        <section class="rede-graficos-principais">
+
+            <!-- VELOCIDADE DE TRANSFERÊNCIA -->
+            <article class="painel painel-transferencia">
+
+                <div class="cabecalho-painel">
+
+                    <div>
+                        <h2>
+                            <i class="fa-solid fa-chart-line"></i>
+                            Velocidade de Transferência
+                        </h2>
+
+                        <p>
+                            Acompanhamento do tráfego de entrada
+                            e saída da rede.
+                        </p>
+                    </div>
+
+                    <div class="legenda-rede">
+                        <span>
+                            <i class="legenda-ponto azul"></i>
+                            Download
+                        </span>
+
+                        <span>
+                            <i class="legenda-ponto roxo"></i>
+                            Upload
+                        </span>
+                    </div>
+
+                </div>
+
+                <div class="area-grafico grafico-transferencia">
+                    <canvas id="graficoTransferencia"></canvas>
+                </div>
+
+            </article>
+
+
+            <!-- COMPARATIVO DE TRÁFEGO -->
+            <article class="painel painel-comparativo">
+
+                <h2>
+                    <i class="fa-solid fa-chart-pie"></i>
+                    Comparativo de Tráfego
+                </h2>
+
+                <div class="area-grafico grafico-comparativo">
+                    <canvas id="graficoComparativo"></canvas>
+                </div>
+
+            </article>
+
+        </section>
+
+
+        <!-- GRÁFICOS SECUNDÁRIOS -->
+        <section class="rede-graficos-secundarios">
+
+            <!-- HISTÓRICO DIÁRIO -->
+            <article class="painel">
+
+                <div class="cabecalho-painel">
+
+                    <div>
+                        <h2>
+                            <i class="fa-solid fa-chart-column"></i>
+                            Histórico Diário
+                        </h2>
+
+                        <p>
+                            Comparação dos dados recebidos
+                            e enviados.
+                        </p>
+                    </div>
+
+                    <div class="legenda-rede">
+
+                        <span>
+                            <i class="legenda-ponto azul"></i>
+                            Recebido
+                        </span>
+
+                        <span>
+                            <i class="legenda-ponto roxo"></i>
+                            Enviado
+                        </span>
+
+                    </div>
+
+                </div>
+
+                <div class="area-grafico grafico-historico">
+                    <canvas id="graficoHistorico"></canvas>
+                </div>
+
+            </article>
+
+
+            <!-- PICOS E COMPORTAMENTO -->
+            <article class="painel painel-picos">
+
+                <h2>
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    Picos e Comportamento
+                </h2>
+
+                <div class="indicadores-picos">
+
+                    <div>
+                        <span>Maior Pico de Download</span>
+                        <strong id="picoDownload">—</strong>
+                    </div>
+
+                    <div>
+                        <span>Maior Pico de Upload</span>
+                        <strong id="picoUpload">—</strong>
+                    </div>
+
+                    <div>
+                        <span>Variação em Relação à Média</span>
+                        <strong id="variacaoRede">—</strong>
+                    </div>
+
+                </div>
+
+                <div class="status-rede" id="statusRede">
+
+                    <i class="fa-solid fa-circle-info"></i>
+
+                    <div>
+                        <strong>Status da rede</strong>
+
+                        <p>
+                            Aguardando dados de monitoramento.
+                        </p>
+                    </div>
+
+                </div>
+
+            </article>
+
+        </section>
+
+        <div id="alerta"></div>
+
+    </main>
+
+    <script>
+        const nomeUsuario = document.getElementById('nome_usuario');
+
+        if (sessionStorage.NOME_USUARIO) {
+            nomeUsuario.textContent = sessionStorage.NOME_USUARIO;
+        }
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="../js/rede.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,323 @@
+
+/* =====================================
+   DASHBOARD DE REDE - MONFIRE
+===================================== */
+
+/* Cabeçalho e filtros */
+
+.acoes-rede {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+}
+
+.filtro-select {
+    min-height: 46px;
+    padding: 0 16px;
+    color: var(--dashboard-azul);
+    background: var(--dashboard-superficie);
+    border: 1px solid var(--dashboard-borda);
+    border-radius: 9px;
+    font-size: 13px;
+    font-weight: 650;
+    cursor: pointer;
+}
+
+.filtro-select:focus {
+    outline: 2px solid rgba(220, 38, 38, 0.2);
+    border-color: var(--dashboard-vermelho);
+}
+
+/* Menu lateral */
+
+.nav a i {
+    width: 20px;
+    margin-right: 8px;
+    text-align: center;
+}
+
+/* Indicadores */
+
+.kpis-rede {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.kpi-rede {
+    position: relative;
+    min-height: 155px;
+    padding: 20px;
+    border-left: 4px solid var(--dashboard-azul);
+}
+
+.kpi-icone {
+    display: flex;
+    width: 38px;
+    height: 38px;
+    margin-bottom: 12px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9px;
+    font-size: 19px;
+}
+
+.kpi-icone.azul {
+    color: #2878d0;
+    background: #e5f0ff;
+}
+
+.kpi-icone.roxo {
+    color: #7951bb;
+    background: #f0e9ff;
+}
+
+.kpi-icone.verde {
+    color: #168653;
+    background: #e1f5e9;
+}
+
+.kpi-icone.laranja {
+    color: #d97706;
+    background: #fff0dc;
+}
+
+.kpi-rede .kpi-valor {
+    font-size: clamp(23px, 2vw, 32px);
+}
+
+.kpi-rede .kpi-rotulo {
+    margin-bottom: 8px;
+    font-weight: 650;
+}
+
+/* Organização dos gráficos principais */
+
+.rede-graficos-principais {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(260px, 0.9fr);
+    gap: 20px;
+    max-width: 1380px;
+}
+
+.rede-graficos-secundarios {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
+    gap: 20px;
+    max-width: 1380px;
+    margin-top: 20px;
+}
+
+.rede-graficos-principais .painel,
+.rede-graficos-secundarios .painel {
+    margin-top: 0;
+    min-width: 0;
+}
+
+/* Cabeçalho dos painéis */
+
+.cabecalho-painel {
+    align-items: center;
+}
+
+.cabecalho-painel h2 i,
+.painel h2 i {
+    margin-right: 7px;
+    color: var(--dashboard-vermelho);
+}
+
+.legenda-rede {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    color: var(--dashboard-texto-suave);
+    font-size: 12px;
+    font-weight: 650;
+}
+
+.legenda-rede span {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.legenda-ponto {
+    display: inline-block;
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+}
+
+.legenda-ponto.azul {
+    background: #2878d0;
+}
+
+.legenda-ponto.roxo {
+    background: #8954d8;
+}
+
+/* Áreas dos gráficos */
+
+.grafico-transferencia {
+    height: 320px;
+}
+
+.grafico-comparativo {
+    height: 320px;
+    max-width: 100%;
+}
+
+.grafico-historico {
+    height: 260px;
+}
+
+/* Indicadores de picos */
+
+.painel-picos h2 {
+    margin-bottom: 22px;
+}
+
+.indicadores-picos {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    margin-bottom: 22px;
+}
+
+.indicadores-picos > div {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: 10px;
+    padding-right: 10px;
+    border-right: 1px solid var(--dashboard-borda);
+}
+
+.indicadores-picos > div:last-child {
+    border-right: none;
+}
+
+.indicadores-picos span {
+    color: var(--dashboard-texto-suave);
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+.indicadores-picos strong {
+    color: var(--dashboard-azul);
+    font-size: clamp(17px, 2vw, 23px);
+    overflow-wrap: anywhere;
+}
+
+/* Status da rede */
+
+.status-rede {
+    display: flex;
+    min-height: 75px;
+    padding: 15px;
+    align-items: center;
+    gap: 13px;
+    background: #edf2f8;
+    border: 1px solid var(--dashboard-borda);
+    border-radius: 9px;
+}
+
+.status-rede > i {
+    color: var(--dashboard-azul-claro);
+    font-size: 24px;
+}
+
+.status-rede strong {
+    color: var(--dashboard-azul);
+    font-size: 14px;
+}
+
+.status-rede p {
+    margin: 5px 0 0;
+    color: var(--dashboard-texto-suave);
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+/* Responsividade */
+
+@media (max-width: 1200px) {
+
+    .kpis-rede {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .rede-graficos-principais {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .rede-graficos-secundarios {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .grafico-comparativo {
+        max-width: 420px;
+        margin: 0 auto;
+    }
+}
+
+@media (max-width: 900px) {
+
+    .topo-com-acoes {
+        align-items: flex-start;
+    }
+
+    .acoes-rede {
+        width: 100%;
+    }
+
+    .filtro-select {
+        flex: 1;
+        min-width: 0;
+    }
+}
+
+@media (max-width: 640px) {
+
+    .kpis-rede {
+        grid-template-columns: 1fr;
+    }
+
+    .acoes-rede {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .filtro-select {
+        width: 100%;
+    }
+
+    .indicadores-picos {
+        grid-template-columns: 1fr;
+    }
+
+    .indicadores-picos > div {
+        padding: 10px 0;
+        border-right: none;
+        border-bottom: 1px solid var(--dashboard-borda);
+    }
+
+    .indicadores-picos > div:last-child {
+        border-bottom: none;
+    }
+
+    .legenda-rede {
+        gap: 10px;
+    }
+
+    .grafico-transferencia {
+        height: 280px;
+    }
+
+    .grafico-historico {
+        height: 240px;
+    }
+}
+
+.topo-com-acoes > .acoes-rede::after {
+    display: none;
+}
