@@ -386,29 +386,9 @@ CREATE OR REPLACE VIEW vw_captura_geral AS
 SELECT
     c.id AS captura_id,
     c.valor,
-<<<<<<< Updated upstream
     c.dtHr AS data_hora,
     cm.fk_maquina AS maquina_id,
     cm.fk_componente AS metrica_id,
-=======
-    c.dtHr_captura AS data_hora,
-    maq.id AS maquina_id,
-    maq.nome AS maquina_nome,
-    maq.hostname,
-    maq.mac,
-    maq.ip,
-    maq.sistema_operacional,
-    maq.situacao AS maquina_situacao,
-    maq.fk_empresa AS empresa_id,
-    cm.id AS configuracao_id,
-    cm.ativa AS configuracao_ativa,
-    comp.id AS componente_id,
-    comp.status_atividade AS componente_ativo,
-    tc.codigo AS metrica_codigo,
-    tc.nome AS componente_nome,
-    mc.nome AS metrica_nome,
-    mc.unidade_medida,
->>>>>>> Stashed changes
     atencao.limite AS limite_atencao,
     critico.limite AS limite_critico
 FROM captura AS c
@@ -418,7 +398,8 @@ LEFT JOIN metrica_alerta AS atencao
     AND atencao.fk_nivel_alerta = 2
 LEFT JOIN metrica_alerta AS critico
     ON critico.fk_configuracao_maquina = cm.id
-    AND critico.fk_nivel_alerta = 3;
+    AND critico.fk_nivel_alerta = 3
+    LIMIT 1000;
 
 
 SELECT *
