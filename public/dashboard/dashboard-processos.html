@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MonFire | Análise de Processos</title>
+    <link rel="shortcut icon" href="../assets/icon/LogoMonfire.png" type="image/x-icon">
+
+    <link rel="stylesheet" href="../css/dashboard.css">
+    <link rel="stylesheet" href="../css/dashboard-processo.css">
+
+    <script src="../js/sessao.js"></script>
+    <script src="../js/dashboard-layout.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.js"></script>
+
+    <script src="https://kit.fontawesome.com/9f7414eb10.js" crossorigin="anonymous"></script>
+
+    <script defer src="../js/dash-processos.js"></script>
+</head>
+
+<body>
+
+    <aside class="sidebar" aria-label="Navegação principal">
+        <a class="brand" href="../index.html" aria-label="MonFire - Página inicial">
+            <img class="brand-logo" src="../assets/icon/LogoMonfire.png" alt="">
+            <span class="brand-name">Mon<span>Fire</span></span>
+        </a>
+
+        <nav class="nav" aria-label="Menu da dashboard">
+            <span class="nav-label">Painel</span>
+            <a href="./dashboard.html">Visão Geral</a>
+            <a href="./visaoEspecifica.html">Visão Específica</a>
+            <a href="./dashboard-processos.html" class="ativo" aria-current="page">Análise de Processos</a>
+            <a href="./usuarios.html">Usuários</a>
+            <a href="./maquinas.html">Máquinas</a>
+            <a href="./alertas.html">Alertas</a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <p><small>Sessão atual</small><strong data-nome-usuario>Usuário administrador</strong></p>
+            <button class="btn-sair" type="button" onclick="limparSessao()">Sair</button>
+        </div>
+    </aside>
+
+    <main class="conteudo pagina-processos">
+        <header class="topo topo-com-acoes">
+            <div>
+                <h1>Análise de Processos</h1>
+                <p>Resumo do consumo de hardware e processos ativos na instância.</p>
+            </div>
+            <button class="botao-topo" id="btnAbrirChamado" type="button">
+                <span>Abrir chamado</span>
+            </button>
+        </header>
+
+        <div class="seletor-servidor" id="seletorMaquinas" role="group" aria-label="Máquina monitorada"></div>
+        <p class="mensagem-maquinas" id="mensagemMaquinas"></p>
+
+        <section class="kpis" aria-label="Indicadores de processos">
+            <div class="kpi">
+                <div class="kpi-valor" id="kpiTotalProcessos">—</div>
+                <div class="kpi-rotulo">Processos ativos na instância</div>
+            </div>
+            <div class="kpi">
+                <div class="kpi-valor proc-kpi-texto" id="kpiMaiorConsumo">—</div>
+                <div class="kpi-rotulo">Maior consumo de RAM</div>
+            </div>
+            <div class="kpi" id="kpiRisco" data-nivel="">
+                <div class="kpi-valor" id="kpiRiscoNivel">—</div>
+                <div class="kpi-rotulo">Risco de instabilidade</div>
+            </div>
+        </section>
+
+        <section class="painel">
+            <div class="cabecalho-painel">
+                <div>
+                    <h2>Correlação: Processos em Execução vs. Uso de RAM</h2>
+                </div>
+                <div class="proc-aviso-risco">
+                    <i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i>
+                    <span>Risco de instabilidade alto acima de <span id="limiteRisco">60</span>% de RAM</span>
+                </div>
+            </div>
+            <div class="area-grafico">
+                <canvas id="graficoCorrelacao" role="img"
+                    aria-label="Gráfico de linhas com a quantidade de processos e o uso de RAM ao longo do tempo"></canvas>
+            </div>
+            <p class="aviso-captura" id="avisoProcessos"></p>
+        </section>
+
+        <section class="painel proc-painel-tabela">
+            <div class="proc-painel-corpo">
+                <h2>Processos em Execução</h2>
+                <div class="tabela-wrap">
+                    <table class="proc-tabela">
+                        <thead>
+                            <tr>
+                                <th scope="col">Nome</th>
+                                <th scope="col">Status</th>
+                                <th scope="col">CPU</th>
+                                <th scope="col">Memória</th>
+                                <th scope="col">Rede</th>
+                                <th scope="col">Disco</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabelaProcessos">
+                            <tr>
+                                <td class="proc-vazio" colspan="6">Carregando processos...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="proc-faixa-alerta" id="faixaAlerta" role="alert" hidden>
+                <i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i>
+                <span id="textoAlerta"></span>
+            </div>
+        </section>
+    </main>
+
+</body>
+
+</html>

@@ -16,7 +16,7 @@ function buscarPorEmail(email) {
             ON e.id = u.fk_empresa
         INNER JOIN usuario_cargo AS uc
             ON uc.fk_usuario = u.id
-            AND uc.saida IS NULL
+            AND uc.dtHr_inativacao IS NULL
         INNER JOIN cargo AS c
             ON c.id = uc.fk_cargo
         WHERE u.email = ?

@@ -104,9 +104,67 @@ function buscarCapturasParaResumo(idEmpresa, quantidadeSemanas, limiteLinhas) {
     return database.executar(instrucaoSql, [idEmpresa]);
 }
 
+function buscarCorrelacaoProcessos(idMaquina, limite = 10){
+    var instrucaoSql = `
+        SELECT
+            c.id AS idCaptura,
+            DATE_FORMAT(c.dtHr_captura, '%H:%i:%s') AS horario,
+            c.valor AS usoRamPct,
+            COALESCE(SUM(ca.qtd_instancias), 0) AS totalProcessos,
+            COUNT(ca.id) AS totalAplicativos
+        FROM captura AS c
+        INNER JOIN configuracao_maquina AS cm ON cm.id = c.fk_configuracao_maquina
+        INNER JOIN componente AS comp ON comp.id = cm.fk_componente
+        INNER JOIN tipo_componente AS tc ON tc.id = comp.fk_tipo_componente
+        LEFT JOIN captura_aplicativo AS ca ON ca.fk_captura = c.id
+        WHERE cm.fk_maquina = ${idMaquina}
+          AND tc.codigo = 'RAM_USO'
+        GROUP BY c.id, c.dtHr_captura, c.valor
+        ORDER BY c.dtHr_captura DESC
+        LIMIT ${limite};
+    `;
+
+    return database.executar(instrucaoSql);
+}
+
+function buscarAplicativosAtuais(idMaquina){
+    var instrucaoSql = `
+        SELECT
+            c.id AS idCaptura,
+            DATE_FORMAT(c.dtHr_captura, '%d/%m/%Y %H:%i:%s') AS dataHora,
+            c.valor AS usoRamPct,
+            ca.nome,
+            ca.qtd_instancias AS qtdInstancias,
+            ca.status,
+            ca.uso_cpu AS usoCpu,
+            ca.memoria_mb AS memoriaMb,
+            ca.disco_mb_s AS discoMbS,
+            ca.rede_mbps AS redeMbps
+        FROM captura_aplicativo AS ca
+        INNER JOIN captura AS c ON c.id = ca.fk_captura
+        WHERE ca.fk_captura = (
+            SELECT c2.id
+            FROM captura AS c2
+            INNER JOIN configuracao_maquina AS cm2 ON cm2.id = c2.fk_configuracao_maquina
+            INNER JOIN componente AS comp2 ON comp2.id = cm2.fk_componente
+            INNER JOIN tipo_componente AS tc2 ON tc2.id = comp2.fk_tipo_componente
+            INNER JOIN captura_aplicativo AS ca2 ON ca2.fk_captura = c2.id
+            WHERE cm2.fk_maquina = ${idMaquina}
+              AND tc2.codigo = 'RAM_USO'
+            ORDER BY c2.dtHr_captura DESC, c2.id DESC
+            LIMIT 1
+        )
+        ORDER BY ca.memoria_mb DESC;
+    `;
+
+    return database.executar(instrucaoSql);
+}
+
 module.exports = {
     buscarUltimasMedidas,
     buscarMedidasEmTempoReal,
     buscarCapturasPorComponente,
-    buscarCapturasParaResumo
+    buscarCapturasParaResumo,
+    buscarCorrelacaoProcessos,
+    buscarAplicativosAtuais
 }

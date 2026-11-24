@@ -19,4 +19,12 @@ router.get("/incidentes/resumo/:idEmpresa", function (req, res) {
     medidaController.buscarResumoGerencial(req, res);
 });
 
+router.get("/processos/correlacao/:idMaquina", function (req, res) {
+    medidaController.buscarCorrelacaoProcessos(req, res);
+});
+
+router.get("/processos/atual/:idMaquina", function (req, res) {
+    medidaController.buscarAplicativosAtuais(req, res);
+});
+
 module.exports = router;

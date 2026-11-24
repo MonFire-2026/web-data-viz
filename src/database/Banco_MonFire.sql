@@ -386,7 +386,7 @@ CREATE OR REPLACE VIEW vw_captura_geral AS
 SELECT
     c.id AS captura_id,
     c.valor,
-    c.dtHr AS data_hora,
+    c.dtHr_captura AS data_hora,
     cm.fk_maquina AS maquina_id,
     cm.fk_componente AS metrica_id,
     atencao.limite AS limite_atencao,
@@ -399,9 +399,66 @@ LEFT JOIN metrica_alerta AS atencao
 LEFT JOIN metrica_alerta AS critico
     ON critico.fk_configuracao_maquina = cm.id
     AND critico.fk_nivel_alerta = 3
-    LIMIT 1000;
-
+LIMIT 1000;
 
 SELECT *
 FROM vw_captura_geral
 ORDER BY data_hora;
+
+USE MonFire;
+
+CREATE TABLE IF NOT EXISTS captura_aplicativo (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    fk_captura BIGINT NOT NULL,
+    nome VARCHAR(100) NOT NULL,
+    qtd_instancias INT NOT NULL DEFAULT 1,
+    status VARCHAR(20) NOT NULL DEFAULT 'Ativo',
+    uso_cpu DECIMAL(5,2) NOT NULL DEFAULT 0.00,
+    memoria_mb DECIMAL(10,2) NOT NULL,
+    disco_mb_s DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+    rede_mbps DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+    CONSTRAINT fk_captura_aplicativo_captura
+        FOREIGN KEY (fk_captura) REFERENCES captura(id)
+        ON DELETE CASCADE
+);
+
+CREATE INDEX idx_captura_aplicativo_ranking
+    ON captura_aplicativo (fk_captura, memoria_mb DESC);
+    
+    
+SELECT 
+    c.id AS id_captura,
+    c.dtHr_captura,
+    c.valor AS ram_total_pct,
+    cm.fk_maquina
+FROM captura AS c
+INNER JOIN configuracao_maquina AS cm ON cm.id = c.fk_configuracao_maquina
+ORDER BY c.id DESC
+LIMIT 10;
+
+SELECT 
+    ca.fk_captura,
+    c.dtHr_captura,
+    ca.nome,
+    ca.qtd_instancias,
+    ca.status,
+    ca.uso_cpu,
+    ca.memoria_mb,
+    ca.disco_mb_s,
+    ca.rede_mbps
+FROM captura_aplicativo AS ca
+INNER JOIN captura AS c ON c.id = ca.fk_captura
+WHERE ca.fk_captura = (SELECT MAX(fk_captura) FROM captura_aplicativo)
+ORDER BY ca.memoria_mb DESC;
+
+SELECT 
+    c.id AS id_captura,
+    c.dtHr_captura,
+    SUM(ca.qtd_instancias) AS total_processos_ativos,
+    c.valor AS uso_ram_pct,
+    ROUND(SUM(ca.memoria_mb), 2) AS ram_somada_processos_mb
+FROM captura AS c
+INNER JOIN captura_aplicativo AS ca ON ca.fk_captura = c.id
+GROUP BY c.id, c.dtHr_captura, c.valor
+ORDER BY c.dtHr_captura DESC
+LIMIT 10;

@@ -1,0 +1,80 @@
+.pagina-processos .seletor-servidor {
+    margin: 28px 0 16px;
+}
+
+.pagina-processos .proc-kpi-texto {
+    overflow: hidden;
+    overflow-wrap: normal;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.pagina-processos .kpi[data-nivel="baixo"] {
+    border-left-color: #34836f;
+}
+
+.pagina-processos .kpi[data-nivel="moderado"] {
+    border-left-color: #e0a100;
+}
+
+.pagina-processos .proc-aviso-risco {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--dashboard-azul);
+    font-size: 14px;
+}
+
+.pagina-processos .proc-aviso-risco i {
+    color: var(--dashboard-vermelho);
+}
+
+
+.pagina-processos .painel.proc-painel-tabela {
+    padding: 0;
+    overflow: hidden;
+}
+
+.pagina-processos .proc-painel-corpo {
+    padding: clamp(20px, 3vw, 28px);
+}
+
+.pagina-processos .proc-tabela {
+    min-width: 640px;
+}
+
+.pagina-processos .proc-tabela tbody tr.proc-destaque td {
+    background: #fdd3d3;
+}
+
+.pagina-processos .proc-tabela td.proc-vazio {
+    padding: 32px 12px;
+    color: var(--dashboard-texto-suave);
+    text-align: center;
+}
+
+.pagina-processos .proc-faixa-alerta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px clamp(20px, 3vw, 28px);
+    color: #fff;
+    background: linear-gradient(90deg, var(--dashboard-vermelho-escuro), var(--dashboard-vermelho));
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.4;
+}
+
+.pagina-processos .proc-faixa-alerta[hidden] {
+    display: none;
+}
+
+@media (max-width: 640px) {
+    .pagina-processos .proc-painel-corpo {
+        padding: 18px;
+    }
+
+    .pagina-processos .proc-faixa-alerta {
+        padding: 14px 18px;
+    }
+}

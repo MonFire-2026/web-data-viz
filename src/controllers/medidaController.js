@@ -287,10 +287,56 @@ function buscarResumoGerencial(req, res) {
     });
 }
 
+function buscarCorrelacaoProcessos(req, res){
+    var idMaquina = req.params.idMaquina;
+    var limite = req.params.limite || 10;
+
+    if(!idMaquina){
+        return res.status(400).send("O idMaquina está indefinido!");
+    }
+
+    medidaModel.buscarCorrelacaoProcessos(idMaquina, limite)
+        .then(function (resultado){
+            if(resultado.length > 0){
+                res.status(200).json(resultado);
+            } else{
+                res.status(204).send("Nenhum dado de correlação encontrado!")
+            }
+        })
+        .catch(function(erro){
+            console.log("Erro ao buscar correlação de processos:", erro.sqlMessage);
+            res.status(500).json(erro.sqlMessage);
+        });
+}
+
+function buscarAplicativosAtuais(req, res){
+    var idMaquina = req.params.idMaquina;
+
+    if(!idMaquina){
+        return res.status(400).send("O idMaquina está indefiniddo!");
+    }
+
+    medidaModel.buscarAplicativosAtuais(idMaquina)
+        .then(function(resultado){
+            if(resultado.length > 0){
+                res.status(200).json(resultado);
+            } else{
+                res.status(204).send("Nenhum aplicativo encontrado para esta máquina!");
+            }
+        })
+
+        .catch(function(erro){
+            console.log("Erro ao buscar aplicativos atuais:", erro.sqlMessage);
+
+            res.status(500).json(erro.sqlMessage);
+        })
+}
+
 module.exports = {
     buscarUltimasMedidas,
     buscarMedidasEmTempoReal,
     buscarCapturasPorComponente,
-    buscarResumoGerencial
-
+    buscarResumoGerencial,
+    buscarCorrelacaoProcessos,
+    buscarAplicativosAtuais
 }
