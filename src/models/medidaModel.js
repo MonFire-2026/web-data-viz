@@ -3,7 +3,7 @@ var database = require("../database/config");
 function consultaCapturas(limite) {
     return `
         SELECT
-            DATE_FORMAT(MAX(c.dtHr), '%H:%i:%s') AS momento_grafico,
+            DATE_FORMAT(MAX(c.dtHr_captura), '%H:%i:%s') AS momento_grafico,
             MAX(CASE WHEN tc.codigo = 'CPU_USO' THEN c.valor END) AS cpu,
             MAX(CASE WHEN tc.codigo = 'RAM_USO' THEN c.valor END) AS ram,
             MAX(CASE WHEN tc.codigo = 'DISCO_USO' THEN c.valor END) AS disco
@@ -17,8 +17,8 @@ function consultaCapturas(limite) {
         WHERE cm.fk_maquina = ?
             AND m.fk_empresa = ?
             AND tc.codigo IN ('CPU_USO', 'RAM_USO', 'DISCO_USO')
-        GROUP BY DATE_FORMAT(c.dtHr, '%Y-%m-%d %H:%i:%s')
-        ORDER BY MAX(c.dtHr) DESC
+        GROUP BY DATE_FORMAT(c.dtHr_captura, '%Y-%m-%d %H:%i:%s')
+        ORDER BY MAX(c.dtHr_captura) DESC
         LIMIT ${limite};
     `;
 }
@@ -40,7 +40,7 @@ function buscarCapturasPorComponente(idEmpresa, codigoComponente, limiteLinhas) 
             tc.codigo,
             mc.unidade_medida AS unidadeMedida,
             c.valor,
-            DATE_FORMAT(c.dtHr, '%Y-%m-%dT%H:%i:%s') AS momento,
+            DATE_FORMAT(c.dtHr_captura, '%Y-%m-%dT%H:%i:%s') AS momento,
             MAX(CASE WHEN na.estado = 'Atenção' THEN ma.limite END) AS limiteAtencao,
             MAX(CASE WHEN na.estado = 'Crítico' THEN ma.limite END) AS limiteCritico
         FROM captura AS c
@@ -61,8 +61,8 @@ function buscarCapturasPorComponente(idEmpresa, codigoComponente, limiteLinhas) 
             AND tc.codigo = ?
         GROUP BY
             c.id, m.id, m.nome, tc.codigo, mc.unidade_medida,
-            c.valor, c.dtHr
-        ORDER BY c.dtHr DESC
+            c.valor, c.dtHr_captura
+        ORDER BY c.dtHr_captura DESC
         LIMIT ${limiteLinhas};
     `;
 
@@ -77,7 +77,7 @@ function buscarCapturasParaResumo(idEmpresa, quantidadeSemanas, limiteLinhas) {
             m.nome AS nomeMaquina,
             tc.codigo,
             c.valor,
-            DATE_FORMAT(c.dtHr, '%Y-%m-%dT%H:%i:%s') AS momento,
+            DATE_FORMAT(c.dtHr_captura, '%Y-%m-%dT%H:%i:%s') AS momento,
             MAX(CASE WHEN na.estado = 'Atenção' THEN ma.limite END) AS limiteAtencao,
             MAX(CASE WHEN na.estado = 'Crítico' THEN ma.limite END) AS limiteCritico
         FROM captura AS c
@@ -90,14 +90,14 @@ function buscarCapturasParaResumo(idEmpresa, quantidadeSemanas, limiteLinhas) {
             ON na.id = ma.fk_nivel_alerta
             AND na.estado IN ('Atenção', 'Crítico')
         WHERE m.fk_empresa = ?
-            AND c.dtHr >= DATE_SUB(CURRENT_TIMESTAMP, INTERVAL ${quantidadeSemanas} WEEK)
+            AND c.dtHr_captura >= DATE_SUB(CURRENT_TIMESTAMP, INTERVAL ${quantidadeSemanas} WEEK)
             AND tc.codigo IN (
                 'CPU_USO', 'RAM_USO', 'DISCO_USO',
                 'REDE_RECEBIDA', 'REDE_ENVIADA'
             )
         GROUP BY
-            c.id, m.id, m.nome, tc.codigo, c.valor, c.dtHr
-        ORDER BY c.dtHr DESC
+            c.id, m.id, m.nome, tc.codigo, c.valor, c.dtHr_captura
+        ORDER BY c.dtHr_captura DESC
         LIMIT ${limiteLinhas};
     `;
 

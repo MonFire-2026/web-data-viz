@@ -90,16 +90,16 @@ function listarPorEmpresa(idEmpresa) {
             ON c.id = uc.fk_cargo
         WHERE u.fk_empresa = ?
             AND (
-                uc.saida IS NULL
+                uc.dtHr_inativacao IS NULL
                 OR (
                     NOT EXISTS (
                         SELECT 1
                         FROM usuario_cargo AS uc_ativo
                         WHERE uc_ativo.fk_usuario = u.id
-                            AND uc_ativo.saida IS NULL
+                            AND uc_ativo.dtHr_inativacao IS NULL
                     )
                     AND uc.saida = (
-                        SELECT MAX(uc_anterior.saida)
+                        SELECT MAX(uc_anterior.dtHr_inativacao)
                         FROM usuario_cargo AS uc_anterior
                         WHERE uc_anterior.fk_usuario = u.id
                     )
@@ -121,7 +121,7 @@ function buscarDadosParaDesativacao(idSolicitante, idUsuario, idEmpresa) {
         FROM usuario AS solicitante
         INNER JOIN usuario_cargo AS vinculo_solicitante
             ON vinculo_solicitante.fk_usuario = solicitante.id
-            AND vinculo_solicitante.saida IS NULL
+            AND vinculo_solicitante.dtHr_inativacao IS NULL
         INNER JOIN cargo AS cargo_solicitante
             ON cargo_solicitante.id = vinculo_solicitante.fk_cargo
         INNER JOIN usuario AS usuario_alvo
@@ -129,7 +129,7 @@ function buscarDadosParaDesativacao(idSolicitante, idUsuario, idEmpresa) {
             AND usuario_alvo.fk_empresa = solicitante.fk_empresa
         INNER JOIN usuario_cargo AS vinculo_alvo
             ON vinculo_alvo.fk_usuario = usuario_alvo.id
-            AND vinculo_alvo.saida IS NULL
+            AND vinculo_alvo.dtHr_inativacao IS NULL
         INNER JOIN cargo AS cargo_alvo
             ON cargo_alvo.id = vinculo_alvo.fk_cargo
         WHERE solicitante.id = ?
@@ -147,7 +147,7 @@ function desativar(idUsuario, idEmpresa) {
         var resultadoUsuario = await transacao.executar(`
             UPDATE usuario
             SET ativo = 0,
-                dtHr_desativacao = CURRENT_TIMESTAMP
+                dtHr_inativacao = CURRENT_TIMESTAMP
             WHERE id = ?
                 AND fk_empresa = ?
                 AND ativo = 1;
@@ -156,9 +156,9 @@ function desativar(idUsuario, idEmpresa) {
         if (resultadoUsuario.affectedRows == 1) {
             await transacao.executar(`
                 UPDATE usuario_cargo
-                SET saida = CURRENT_TIMESTAMP
+                SET dtHr_inativacao = CURRENT_TIMESTAMP
                 WHERE fk_usuario = ?
-                    AND saida IS NULL;
+                    AND dtHr_inativacao IS NULL;
             `, [idUsuario]);
         }
 

@@ -1,149 +1,191 @@
 
 document.addEventListener("DOMContentLoaded", function () {
-    // Códigos dos componentes de rede no banco
-    const REDE_RECEBIDA = 11;
-    const REDE_ENVIADA = 12;
 
-    // Identificação da empresa já utilizada pelo projeto
-    const idEmpresa = window.ID_EMPRESA_ATUAL;
+    // Identificação da máquina e da empresa
+    const idMaquina = 1;
+    const idEmpresa = window.ID_EMPRESA_ATUAL || 2;
 
-    let dadosRecebidos = [];
-    let dadosEnviados = [];
+    let dadosRede = null;
 
     let graficoTransferencia = null;
     let graficoComparativo = null;
     let graficoHistorico = null;
 
-    // Busca os dados de um componente na API
-    async function buscarCapturas(codigoComponente) {
+    // Consulta a nova API de rede
+    async function buscarCapturas() {
         try {
             const resposta = await fetch(
-                `/medidas/componente/${codigoComponente}?idEmpresa=${idEmpresa}`
+                `/rede/capturas/${idMaquina}/${idEmpresa}`
             );
 
             if (!resposta.ok) {
-                throw new Error("Erro ao consultar as capturas.");
+                throw new Error("Erro ao consultar a API de rede.");
             }
 
-            const dados = await resposta.json();
+            return await resposta.json();
 
-            return Array.isArray(dados) ? dados : [];
         } catch (erro) {
             console.error("Erro ao buscar dados de rede:", erro);
-            return [];
+
+            document.getElementById("alerta").textContent =
+                "Não foi possível carregar os dados da rede.";
+
+            return null;
         }
     }
 
-    // Converte a data recebida da API
-    function obterData(captura) {
-        return new Date(captura.momento);
+    // Converte o horário da captura
+    function obterData(item) {
+        return new Date(item.momento);
     }
 
-    // Aplica o período selecionado
+    // Converte MB/s para Mbps
+    function converterParaMbps(valor) {
+        return valor * 8;
+    }
+
+    // Formata os volumes em MB e GB
+    function formatarVolume(valor) {
+        if (!Number.isFinite(valor)) return "--";
+
+        if (valor >= 1024) {
+            return (valor / 1024).toFixed(2) + " GB";
+        }
+
+        return valor.toFixed(2) + " MB";
+    }
+
+    // Formata velocidades em Mbps
+    function formatarVelocidade(valor) {
+        if (!Number.isFinite(valor)) return "--";
+
+        return valor.toFixed(2) + " Mbps";
+    }
+
+    // Aplica o filtro de período
     function filtrarPorPeriodo(dados) {
         const periodo = document.getElementById("filtroPeriodo").value;
 
-        if (periodo === "todos") {
-            return dados;
+        let horas;
+
+        if (periodo === "7") {
+            horas = 7 * 24;
+        } else if (periodo === "30") {
+            horas = 30 * 24;
+        } else {
+            horas = Number(periodo);
         }
 
-        const horas = Number(periodo);
         const limite = new Date();
 
         limite.setHours(limite.getHours() - horas);
 
-        return dados.filter(function (captura) {
-            return obterData(captura) >= limite;
+        return dados.filter(function (item) {
+            return obterData(item) >= limite;
         });
     }
 
-    // Aplica o filtro de máquina
-    function filtrarPorMaquina(dadosRecebidos, dadosEnviados) {
-        const maquinaSelecionada =
-            document.getElementById("filtroMaquina").value;
-
-        if (maquinaSelecionada === "todas") {
-            return {
-                recebidos: dadosRecebidos,
-                enviados: dadosEnviados
-            };
-        }
-
-        return {
-            recebidos: dadosRecebidos.filter(
-                item => String(item.idMaquina) === maquinaSelecionada
-            ),
-            enviados: dadosEnviados.filter(
-                item => String(item.idMaquina) === maquinaSelecionada
-            )
-        };
-    }
-
-    // Formata os valores apresentados nos indicadores
-    function formatarVolume(valor) {
-        if (!Number.isFinite(valor)) return "--";
-
-        if (valor >= 1024 ** 3) {
-            return (valor / 1024 ** 3).toFixed(2) + " GB";
-        }
-
-        if (valor >= 1024 ** 2) {
-            return (valor / 1024 ** 2).toFixed(2) + " MB";
-        }
-
-        return (valor / 1024).toFixed(2) + " KB";
-    }
-
-    function formatarVelocidade(valor) {
-        if (!Number.isFinite(valor)) return "-- Mbps";
-        return valor.toFixed(1) + " Mbps";
-    }
-
-    // Atualiza os indicadores da tela
-    function atualizarIndicadores(recebidos, enviados) {
-        const totalRecebido = calcularTotal(recebidos);
-        const totalEnviado = calcularTotal(enviados);
-
-        document.getElementById("totalRecebido").textContent =
-            formatarVolume(totalRecebido);
-
-        document.getElementById("totalEnviado").textContent =
-            formatarVolume(totalEnviado);
-
-        document.getElementById("mediaDownload").textContent =
-            formatarVelocidade(calcularMedia(recebidos));
-
-        document.getElementById("mediaUpload").textContent =
-            formatarVelocidade(calcularMedia(enviados));
-    }
-
-    // Calcula o total dos valores recebidos
+    // Soma as variações válidas do período
     function calcularTotal(dados) {
-        if (dados.length === 0) return 0;
-
         return dados.reduce(function (total, item) {
-            return total + Number(item.valor || 0);
+            return total + Number(item.variacao || 0);
         }, 0);
     }
 
-    // Calcula a média dos valores
+    // Calcula a velocidade média
     function calcularMedia(dados) {
         if (dados.length === 0) return 0;
 
         const total = dados.reduce(function (soma, item) {
-            return soma + Number(item.valor || 0);
+            return soma + Number(item.porSegundo || 0);
         }, 0);
 
         return total / dados.length;
     }
 
-    // Cria ou atualiza o gráfico de transferência
+    // Encontra a maior velocidade registrada
+    function calcularPico(dados) {
+        if (dados.length === 0) return 0;
+
+        return Math.max(
+            ...dados.map(item => Number(item.porSegundo || 0))
+        );
+    }
+
+    // Atualiza os cards principais
+    function atualizarIndicadores(recebidos, enviados) {
+
+        document.getElementById("totalRecebido").textContent =
+            formatarVolume(calcularTotal(recebidos));
+
+        document.getElementById("totalEnviado").textContent =
+            formatarVolume(calcularTotal(enviados));
+
+        document.getElementById("mediaDownload").textContent =
+            formatarVelocidade(
+                converterParaMbps(calcularMedia(recebidos))
+            );
+
+        document.getElementById("mediaUpload").textContent =
+            formatarVelocidade(
+                converterParaMbps(calcularMedia(enviados))
+            );
+    }
+
+    // Configurações comuns dos gráficos
+    function opcoesGrafico(tituloEixo) {
+        return {
+            responsive: true,
+            maintainAspectRatio: false,
+
+            interaction: {
+                intersect: false,
+                mode: "index"
+            },
+
+            plugins: {
+                legend: {
+                    labels: {
+                        color: "#d5d7e0"
+                    }
+                }
+            },
+
+            scales: {
+                x: {
+                    ticks: {
+                        color: "#b9bdca"
+                    },
+                    grid: {
+                        color: "rgba(255,255,255,0.06)"
+                    }
+                },
+
+                y: {
+                    title: {
+                        display: true,
+                        text: tituloEixo,
+                        color: "#b9bdca"
+                    },
+
+                    ticks: {
+                        color: "#b9bdca"
+                    },
+
+                    grid: {
+                        color: "rgba(255,255,255,0.06)"
+                    }
+                }
+            }
+        };
+    }
+
+    // Gráfico de velocidade de transferência
     function atualizarGraficoTransferencia(recebidos, enviados) {
+
         const contexto = document
             .getElementById("graficoTransferencia")
             .getContext("2d");
-
-        const dados = organizarPorHorario(recebidos, enviados);
 
         if (graficoTransferencia) {
             graficoTransferencia.destroy();
@@ -151,20 +193,33 @@ document.addEventListener("DOMContentLoaded", function () {
 
         graficoTransferencia = new Chart(contexto, {
             type: "line",
+
             data: {
-                labels: dados.labels,
+                labels: recebidos.map(item =>
+                    obterData(item).toLocaleTimeString("pt-BR", {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        second: "2-digit"
+                    })
+                ),
+
                 datasets: [
                     {
-                        label: "Download (Recebimento)",
-                        data: dados.recebidos,
+                        label: "Download",
+                        data: recebidos.map(item =>
+                            converterParaMbps(Number(item.porSegundo))
+                        ),
                         borderColor: "#3995ff",
                         backgroundColor: "rgba(57,149,255,0.12)",
                         fill: true,
                         tension: 0.35
                     },
+
                     {
-                        label: "Upload (Envio)",
-                        data: dados.enviados,
+                        label: "Upload",
+                        data: enviados.map(item =>
+                            converterParaMbps(Number(item.porSegundo))
+                        ),
                         borderColor: "#a34cff",
                         backgroundColor: "rgba(163,76,255,0.12)",
                         fill: true,
@@ -172,50 +227,14 @@ document.addEventListener("DOMContentLoaded", function () {
                     }
                 ]
             },
-            options: opcoesGrafico("Mbps")
+
+            options: opcoesGrafico("Velocidade (Mbps)")
         });
     }
 
-    // Organiza as capturas pelo horário
-    function organizarPorHorario(recebidos, enviados) {
-        const horarios = [
-            ...new Set(
-                recebidos.concat(enviados).map(item =>
-                    obterData(item).toLocaleTimeString("pt-BR", {
-                        hour: "2-digit",
-                        minute: "2-digit"
-                    })
-                )
-            )
-        ].sort();
-
-        return {
-            labels: horarios,
-            recebidos: horarios.map(horario => {
-                const item = recebidos.find(c =>
-                    obterData(c).toLocaleTimeString("pt-BR", {
-                        hour: "2-digit",
-                        minute: "2-digit"
-                    }) === horario
-                );
-
-                return item ? Number(item.valor) : 0;
-            }),
-            enviados: horarios.map(horario => {
-                const item = enviados.find(c =>
-                    obterData(c).toLocaleTimeString("pt-BR", {
-                        hour: "2-digit",
-                        minute: "2-digit"
-                    }) === horario
-                );
-
-                return item ? Number(item.valor) : 0;
-            })
-        };
-    }
-
-    // Gráfico de rosca: recebido x enviado
+    // Gráfico comparativo de volume recebido e enviado
     function atualizarGraficoComparativo(recebidos, enviados) {
+
         const contexto = document
             .getElementById("graficoComparativo")
             .getContext("2d");
@@ -227,26 +246,24 @@ document.addEventListener("DOMContentLoaded", function () {
         const totalRecebido = calcularTotal(recebidos);
         const totalEnviado = calcularTotal(enviados);
 
-        const total = totalRecebido + totalEnviado;
-
-        const porcentagem = total > 0
-            ? Math.round((totalRecebido / total) * 100)
-            : 0;
-
         graficoComparativo = new Chart(contexto, {
             type: "doughnut",
+
             data: {
                 labels: ["Recebido", "Enviado"],
+
                 datasets: [{
                     data: [totalRecebido, totalEnviado],
                     backgroundColor: ["#3995ff", "#a34cff"],
                     borderWidth: 0
                 }]
             },
+
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
                 cutout: "70%",
+
                 plugins: {
                     legend: {
                         position: "bottom",
@@ -257,30 +274,64 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
             }
         });
-
-        const centro = document.getElementById("graficoComparativo");
-
-        centro.setAttribute("aria-label",
-            porcentagem + "% do tráfego foi recebido."
-        );
     }
 
-    // Histórico diário de recebimento e envio
+    // Agrupa o volume por dia
+    function organizarPorDia(recebidos, enviados) {
+
+        const dias = {};
+
+        function adicionarDados(dados, tipo) {
+            dados.forEach(function (item) {
+
+                const data = obterData(item);
+
+                const dia = data.toLocaleDateString("pt-BR");
+
+                if (!dias[dia]) {
+                    dias[dia] = {
+                        recebidos: 0,
+                        enviados: 0
+                    };
+                }
+
+                dias[dia][tipo] += Number(item.variacao || 0);
+            });
+        }
+
+        adicionarDados(recebidos, "recebidos");
+        adicionarDados(enviados, "enviados");
+
+        const labels = Object.keys(dias);
+
+        return {
+            labels: labels,
+
+            recebidos: labels.map(dia => dias[dia].recebidos),
+
+            enviados: labels.map(dia => dias[dia].enviados)
+        };
+    }
+
+    // Gráfico de histórico diário
     function atualizarGraficoHistorico(recebidos, enviados) {
+
         const contexto = document
             .getElementById("graficoHistorico")
             .getContext("2d");
-
-        const historico = organizarPorDia(recebidos, enviados);
 
         if (graficoHistorico) {
             graficoHistorico.destroy();
         }
 
+        const historico = organizarPorDia(recebidos, enviados);
+
         graficoHistorico = new Chart(contexto, {
             type: "bar",
+
             data: {
                 labels: historico.labels,
+
                 datasets: [
                     {
                         label: "Recebido",
@@ -288,6 +339,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         backgroundColor: "#3995ff",
                         borderRadius: 4
                     },
+
                     {
                         label: "Enviado",
                         data: historico.enviados,
@@ -296,203 +348,165 @@ document.addEventListener("DOMContentLoaded", function () {
                     }
                 ]
             },
-            options: opcoesGrafico("Volume")
+
+            options: opcoesGrafico("Volume (MB)")
         });
     }
 
-    function organizarPorDia(recebidos, enviados) {
-        const dias = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
-
-        const labels = dias.slice(1).concat(dias[0]);
-
-        function somarDia(dados, dia) {
-            return dados
-                .filter(item => obterData(item).getDay() === dia)
-                .reduce((total, item) => total + Number(item.valor || 0), 0);
-        }
-
-        return {
-            labels,
-            recebidos: [1, 2, 3, 4, 5, 6, 0].map(dia =>
-                somarDia(recebidos, dia)
-            ),
-            enviados: [1, 2, 3, 4, 5, 6, 0].map(dia =>
-                somarDia(enviados, dia)
-            )
-        };
-    }
-
-    // Configurações visuais comuns dos gráficos
-    function opcoesGrafico(tituloEixo) {
-        return {
-            responsive: true,
-            maintainAspectRatio: false,
-            interaction: {
-                intersect: false,
-                mode: "index"
-            },
-            plugins: {
-                legend: {
-                    labels: {
-                        color: "#d5d7e0"
-                    }
-                }
-            },
-            scales: {
-                x: {
-                    ticks: {
-                        color: "#b9bdca"
-                    },
-                    grid: {
-                        color: "rgba(255,255,255,0.06)"
-                    }
-                },
-                y: {
-                    title: {
-                        display: true,
-                        text: tituloEixo,
-                        color: "#b9bdca"
-                    },
-                    ticks: {
-                        color: "#b9bdca"
-                    },
-                    grid: {
-                        color: "rgba(255,255,255,0.06)"
-                    }
-                }
-            }
-        };
-    }
-
-    // Atualiza os picos e o comportamento da rede
+    // Atualiza os picos e a variação
     function atualizarPicos(recebidos, enviados) {
-        const picoDownload = Math.max(
-            0,
-            ...recebidos.map(item => Number(item.valor || 0))
-        );
 
-        const picoUpload = Math.max(
-            0,
-            ...enviados.map(item => Number(item.valor || 0))
-        );
+        const mediaDownload = calcularMedia(recebidos);
+        const mediaUpload = calcularMedia(enviados);
+
+        const picoDownload = calcularPico(recebidos);
+        const picoUpload = calcularPico(enviados);
 
         document.getElementById("picoDownload").textContent =
-            formatarVelocidade(picoDownload);
+            formatarVelocidade(converterParaMbps(picoDownload));
 
         document.getElementById("picoUpload").textContent =
-            formatarVelocidade(picoUpload);
+            formatarVelocidade(converterParaMbps(picoUpload));
 
-        const media = calcularMedia(recebidos);
-
-        const variacao = media > 0
-            ? ((picoDownload - media) / media) * 100
+        const variacao = mediaDownload > 0
+            ? ((picoDownload - mediaDownload) / mediaDownload) * 100
             : 0;
 
         document.getElementById("variacaoRede").textContent =
-            "+" + variacao.toFixed(0) + "%";
+            variacao.toFixed(1) + "%";
 
-        atualizarStatus(picoDownload, media);
+        atualizarStatus(recebidos, enviados);
     }
 
-    // Atualiza a mensagem de situação da rede
-    function atualizarStatus(pico, media) {
+    // Atualiza o status da rede
+    function atualizarStatus(recebidos, enviados) {
+
         const status = document.getElementById("statusRede");
         const alerta = document.getElementById("alerta");
 
-        if (media === 0) {
-            status.textContent = "Sem dados suficientes";
+        const errosRecebidos = calcularTotal(
+            dadosRede.historico.errosRecebidos
+        );
+
+        const errosEnviados = calcularTotal(
+            dadosRede.historico.errosEnviados
+        );
+
+        const descartes = calcularTotal(
+            dadosRede.historico.descartesRecebidos
+        );
+
+        const colisoes = calcularTotal(
+            dadosRede.historico.colisoes
+        );
+
+        const totalProblemas =
+            errosRecebidos + errosEnviados + descartes + colisoes;
+
+        if (recebidos.length === 0 && enviados.length === 0) {
+
+            status.querySelector("strong").textContent =
+                "Sem dados suficientes";
+
+            status.querySelector("p").textContent =
+                "Não existem capturas para o período selecionado.";
+
+            alerta.textContent = "";
+
+        } else if (totalProblemas > 0) {
+
+            status.querySelector("strong").textContent =
+                "Atenção";
+
+            status.querySelector("p").textContent =
+                "Foram registrados erros, descartes ou colisões.";
+
             alerta.textContent =
-                "Não existem capturas de rede para o período selecionado.";
+                "Verifique os indicadores de integridade da rede.";
+
+        } else {
+
+            status.querySelector("strong").textContent =
+                "Sem erros registrados";
+
+            status.querySelector("p").textContent =
+                "Não foram registrados erros, descartes ou colisões.";
+
+            alerta.textContent = "";
+        }
+    }
+
+    // Atualiza todos os elementos da dashboard
+    function atualizarDashboard() {
+
+        if (!dadosRede || !dadosRede.historico) {
             return;
         }
 
-        const variacao = ((pico - media) / media) * 100;
-
-        if (variacao > 100) {
-            status.textContent = "Atenção";
-            alerta.textContent =
-                "Foram identificados picos elevados de tráfego no período.";
-        } else {
-            status.textContent = "Dentro do esperado";
-            alerta.textContent =
-                "Não foram identificados picos anormais no período.";
-        }
-    }
-
-    // Preenche o filtro com as máquinas encontradas
-    function preencherFiltroMaquinas(dados) {
-        const filtro = document.getElementById("filtroMaquina");
-
-        const maquinaAtual = filtro.value;
-
-        const maquinas = {};
-
-        dados.forEach(function (item) {
-            maquinas[item.idMaquina] = item.nomeMaquina;
-        });
-
-        filtro.innerHTML = '<option value="todas">Todas as máquinas</option>';
-
-        Object.entries(maquinas).forEach(function ([id, nome]) {
-            const opcao = document.createElement("option");
-
-            opcao.value = id;
-            opcao.textContent = nome;
-
-            filtro.appendChild(opcao);
-        });
-
-        filtro.value = maquinas[maquinaAtual] ? maquinaAtual : "todas";
-    }
-
-    // Atualiza toda a dashboard
-    function atualizarDashboard() {
-        const filtrados = filtrarPorMaquina(
-            filtrarPorPeriodo(dadosRecebidos),
-            filtrarPorPeriodo(dadosEnviados)
+        const recebidos = filtrarPorPeriodo(
+            dadosRede.historico.recebimento || []
         );
 
-        atualizarIndicadores(filtrados.recebidos, filtrados.enviados);
-
-        atualizarGraficoTransferencia(
-            filtrados.recebidos,
-            filtrados.enviados
+        const enviados = filtrarPorPeriodo(
+            dadosRede.historico.envio || []
         );
 
-        atualizarGraficoComparativo(
-            filtrados.recebidos,
-            filtrados.enviados
+        const errosRecebidos = filtrarPorPeriodo(
+            dadosRede.historico.errosRecebidos || []
         );
 
-        atualizarGraficoHistorico(
-            filtrados.recebidos,
-            filtrados.enviados
+        const errosEnviados = filtrarPorPeriodo(
+            dadosRede.historico.errosEnviados || []
         );
 
-        atualizarPicos(filtrados.recebidos, filtrados.enviados);
+        const descartes = filtrarPorPeriodo(
+            dadosRede.historico.descartesRecebidos || []
+        );
+
+        const colisoes = filtrarPorPeriodo(
+            dadosRede.historico.colisoes || []
+        );
+
+        // Atualiza os dados filtrados para o status
+        dadosRede.historico.errosRecebidos = errosRecebidos;
+        dadosRede.historico.errosEnviados = errosEnviados;
+        dadosRede.historico.descartesRecebidos = descartes;
+        dadosRede.historico.colisoes = colisoes;
+
+        atualizarIndicadores(recebidos, enviados);
+
+        atualizarGraficoTransferencia(recebidos, enviados);
+
+        atualizarGraficoComparativo(recebidos, enviados);
+
+        atualizarGraficoHistorico(recebidos, enviados);
+
+        atualizarPicos(recebidos, enviados);
     }
 
     // Carrega os dados da API
     async function carregarDashboard() {
+
         if (!idEmpresa) {
             console.error("ID da empresa não encontrado.");
             return;
         }
 
-        dadosRecebidos = await buscarCapturas(REDE_RECEBIDA);
-        dadosEnviados = await buscarCapturas(REDE_ENVIADA);
+        dadosRede = await buscarCapturas();
 
-        preencherFiltroMaquinas(
-            dadosRecebidos.concat(dadosEnviados)
-        );
+        if (!dadosRede || !dadosRede.historico) {
+            return;
+        }
+
+        const filtroMaquina = document.getElementById("filtroMaquina");
+
+        filtroMaquina.innerHTML =
+            '<option value="1">Máquina 1</option>';
 
         atualizarDashboard();
     }
 
-    // Atualiza quando os filtros forem alterados
-    document.getElementById("filtroMaquina")
-        .addEventListener("change", atualizarDashboard);
-
+    // Eventos dos filtros
     document.getElementById("filtroPeriodo")
         .addEventListener("change", atualizarDashboard);
 

@@ -1,5 +1,4 @@
 SET NAMES utf8mb4;
-drop DATABASE IF EXISTS MonFire;
 CREATE DATABASE IF NOT EXISTS MonFire;
 USE MonFire;
 
@@ -27,7 +26,7 @@ CREATE TABLE usuario (
     fk_empresa INT NOT NULL,
     CONSTRAINT empresa_usuario FOREIGN KEY (fk_empresa) REFERENCES empresa(id),
     CONSTRAINT ck_usuario_inativacao CHECK (
-        (ativo = 1 AND dtHr_inativacao)
+        (ativo = 1 AND dtHr_ativacao)
         OR (ativo = 0 AND dtHr_inativacao)
     )
 );
@@ -382,6 +381,11 @@ END$$
 DELIMITER ;
 
 
+
+-- =====================================================
+-- 1. CRIAR A VIEW COM TODAS AS INFORMAÇÕES DAS CAPTURAS
+-- =====================================================
+
 CREATE OR REPLACE VIEW vw_captura_geral AS
 SELECT
     c.id AS captura_id,
@@ -389,23 +393,56 @@ SELECT
     c.dtHr_captura AS data_hora,
     cm.fk_maquina AS maquina_id,
     cm.fk_componente AS metrica_id,
+
+    maq.nome AS maquina_nome,
+    maq.hostname,
+    maq.mac,
+    maq.ip,
+    maq.sistema_operacional,
+    maq.situacao AS maquina_situacao,
+    maq.fk_empresa AS empresa_id,
+
+    cm.id AS configuracao_id,
+    cm.ativa AS configuracao_ativa,
+
+    comp.id AS componente_id,
+    comp.status_atividade AS componente_ativo,
+
+    tc.codigo AS metrica_codigo,
+    tc.nome AS componente_nome,
+
+    mc.nome AS metrica_nome,
+    mc.unidade_medida,
     atencao.limite AS limite_atencao,
     critico.limite AS limite_critico
-FROM captura AS c
-INNER JOIN configuracao_maquina AS cm ON cm.id = c.fk_configuracao_maquina
-LEFT JOIN metrica_alerta AS atencao
+
+FROM captura c
+INNER JOIN configuracao_maquina cm
+    ON cm.id = c.fk_configuracao_maquina
+INNER JOIN maquina maq
+    ON maq.id = cm.fk_maquina
+INNER JOIN componente comp
+    ON comp.id = cm.fk_componente
+INNER JOIN tipo_componente tc
+    ON tc.id = comp.fk_tipo_componente
+INNER JOIN metrica_componente mc
+    ON mc.id = tc.fk_metrica_componente
+LEFT JOIN metrica_alerta atencao
     ON atencao.fk_configuracao_maquina = cm.id
     AND atencao.fk_nivel_alerta = 2
-LEFT JOIN metrica_alerta AS critico
+LEFT JOIN metrica_alerta critico
     ON critico.fk_configuracao_maquina = cm.id
     AND critico.fk_nivel_alerta = 3
 LIMIT 1000;
+
 
 SELECT *
 FROM vw_captura_geral
 ORDER BY data_hora;
 
 USE MonFire;
+
+-- TABELA DE CAPTURA DE APLICATIVOS
 
 CREATE TABLE IF NOT EXISTS captura_aplicativo (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
@@ -424,41 +461,137 @@ CREATE TABLE IF NOT EXISTS captura_aplicativo (
 
 CREATE INDEX idx_captura_aplicativo_ranking
     ON captura_aplicativo (fk_captura, memoria_mb DESC);
-    
-    
-SELECT 
-    c.id AS id_captura,
-    c.dtHr_captura,
-    c.valor AS ram_total_pct,
-    cm.fk_maquina
-FROM captura AS c
-INNER JOIN configuracao_maquina AS cm ON cm.id = c.fk_configuracao_maquina
-ORDER BY c.id DESC
-LIMIT 10;
 
-SELECT 
-    ca.fk_captura,
-    c.dtHr_captura,
-    ca.nome,
-    ca.qtd_instancias,
-    ca.status,
-    ca.uso_cpu,
-    ca.memoria_mb,
-    ca.disco_mb_s,
-    ca.rede_mbps
-FROM captura_aplicativo AS ca
-INNER JOIN captura AS c ON c.id = ca.fk_captura
-WHERE ca.fk_captura = (SELECT MAX(fk_captura) FROM captura_aplicativo)
-ORDER BY ca.memoria_mb DESC;
 
-SELECT 
-    c.id AS id_captura,
-    c.dtHr_captura,
-    SUM(ca.qtd_instancias) AS total_processos_ativos,
-    c.valor AS uso_ram_pct,
-    ROUND(SUM(ca.memoria_mb), 2) AS ram_somada_processos_mb
-FROM captura AS c
-INNER JOIN captura_aplicativo AS ca ON ca.fk_captura = c.id
-GROUP BY c.id, c.dtHr_captura, c.valor
-ORDER BY c.dtHr_captura DESC
-LIMIT 10;
+-- =====================================================
+-- CADASTRO DAS METRICAS ADICIONAIS DE REDE
+-- =====================================================
+
+SET @id_maquina = (
+    SELECT cm.fk_maquina
+    FROM configuracao_maquina cm
+    INNER JOIN componente comp
+        ON comp.id = cm.fk_componente
+    INNER JOIN tipo_componente tc
+        ON tc.id = comp.fk_tipo_componente
+    WHERE tc.codigo = 'REDE_RECEBIDA'
+      AND cm.ativa = 1
+      AND comp.status_atividade = 1
+    LIMIT 1
+);
+
+START TRANSACTION;
+
+-- CADASTRAR AS SEIS METRICAS
+
+INSERT INTO metrica_componente
+    (nome, unidade_medida, especificacao)
+
+SELECT novas.nome, novas.unidade, novas.especificacao
+FROM (
+    SELECT 'Pacotes Recebidos' AS nome, 'Pacotes' AS unidade,
+        'Quantidade acumulada de pacotes recebidos pela rede' AS especificacao
+    UNION ALL
+    SELECT 'Pacotes Enviados', 'Pacotes',
+        'Quantidade acumulada de pacotes enviados pela rede'
+    UNION ALL
+    SELECT 'Erros Recebidos', 'Erros',
+        'Quantidade acumulada de erros no recebimento de dados'
+    UNION ALL
+    SELECT 'Erros Enviados', 'Erros',
+        'Quantidade acumulada de erros no envio de dados'
+    UNION ALL
+    SELECT 'Descartes Recebidos', 'Pacotes',
+        'Quantidade acumulada de pacotes descartados no recebimento'
+    UNION ALL
+    SELECT 'Colisoes', 'Colisoes',
+        'Quantidade acumulada de colisoes na rede'
+) AS novas
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM metrica_componente mc
+    WHERE mc.nome = novas.nome
+      AND mc.unidade_medida = novas.unidade
+);
+
+-- CADASTRAR OS TIPOS DE COMPONENTE
+
+INSERT INTO tipo_componente
+    (codigo, nome, fk_metrica_componente)
+
+SELECT novas.codigo, novas.nome, mc.id
+FROM (
+    SELECT 'REDE_PACOTES_RECEBIDOS' AS codigo,
+        'Rede - Pacotes Recebidos' AS nome,
+        'Pacotes Recebidos' AS metrica
+    UNION ALL
+    SELECT 'REDE_PACOTES_ENVIADOS',
+        'Rede - Pacotes Enviados', 'Pacotes Enviados'
+    UNION ALL
+    SELECT 'REDE_ERROS_RECEBIDOS',
+        'Rede - Erros Recebidos', 'Erros Recebidos'
+    UNION ALL
+    SELECT 'REDE_ERROS_ENVIADOS',
+        'Rede - Erros Enviados', 'Erros Enviados'
+    UNION ALL
+    SELECT 'REDE_DESCARTES_RECEBIDOS',
+        'Rede - Descartes Recebidos', 'Descartes Recebidos'
+    UNION ALL
+    SELECT 'REDE_COLISOES',
+        'Rede - Colisoes', 'Colisoes'
+) AS novas
+INNER JOIN metrica_componente mc
+    ON mc.nome = novas.metrica
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM tipo_componente tc
+    WHERE tc.codigo = novas.codigo
+);
+
+-- CRIAR OS COMPONENTES
+
+INSERT INTO componente
+    (status_atividade, fk_tipo_componente)
+
+SELECT 1, tc.id
+FROM tipo_componente tc
+WHERE tc.codigo IN (
+    'REDE_PACOTES_RECEBIDOS',
+    'REDE_PACOTES_ENVIADOS',
+    'REDE_ERROS_RECEBIDOS',
+    'REDE_ERROS_ENVIADOS',
+    'REDE_DESCARTES_RECEBIDOS',
+    'REDE_COLISOES'
+)
+AND NOT EXISTS (
+    SELECT 1
+    FROM componente comp
+    WHERE comp.fk_tipo_componente = tc.id
+);
+
+-- VINCULAR OS COMPONENTES A MAQUINA
+
+INSERT INTO configuracao_maquina
+    (fk_maquina, fk_componente, ativa)
+
+SELECT @id_maquina, comp.id, 1
+FROM componente comp
+INNER JOIN tipo_componente tc
+    ON tc.id = comp.fk_tipo_componente
+WHERE tc.codigo IN (
+    'REDE_PACOTES_RECEBIDOS',
+    'REDE_PACOTES_ENVIADOS',
+    'REDE_ERROS_RECEBIDOS',
+    'REDE_ERROS_ENVIADOS',
+    'REDE_DESCARTES_RECEBIDOS',
+    'REDE_COLISOES'
+)
+AND @id_maquina IS NOT NULL
+AND NOT EXISTS (
+    SELECT 1
+    FROM configuracao_maquina cm
+    WHERE cm.fk_maquina = @id_maquina
+      AND cm.fk_componente = comp.id
+);
+
+COMMIT;

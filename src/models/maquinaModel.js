@@ -13,12 +13,12 @@ function listarPorEmpresa(idEmpresa) {
             DATE_FORMAT(m.dtHr_cadastro, '%Y-%m-%dT%H:%i:%s') AS dataCadastro,
             DATE_FORMAT(m.dtHr_ativacao, '%Y-%m-%dT%H:%i:%s') AS dataAtivacao,
             DATE_FORMAT(ca.dtHr_expiracao, '%Y-%m-%dT%H:%i:%s') AS codigoExpiraEm,
-            DATE_FORMAT(ultima_captura.dtHr, '%Y-%m-%dT%H:%i:%s') AS ultimaCaptura,
+            DATE_FORMAT(ultima_captura.dtHr_captura, '%Y-%m-%dT%H:%i:%s') AS ultimaCaptura,
             CASE
                 WHEN m.situacao = 'ATIVA'
                     AND (
-                        ultima_captura.dtHr IS NULL
-                        OR ultima_captura.dtHr < DATE_SUB(CURRENT_TIMESTAMP, INTERVAL 5 MINUTE)
+                        ultima_captura.dtHr_captura IS NULL
+                        OR ultima_captura.dtHr_captura < DATE_SUB(CURRENT_TIMESTAMP, INTERVAL 5 MINUTE)
                     )
                 THEN 1
                 ELSE 0
@@ -30,7 +30,7 @@ function listarPorEmpresa(idEmpresa) {
         LEFT JOIN (
             SELECT
                 configuracao.fk_maquina,
-                MAX(captura.dtHr) AS dtHr
+                MAX(captura.dtHr_captura) AS dtHr_captura
             FROM captura
             INNER JOIN configuracao_maquina AS configuracao
                 ON configuracao.id = captura.fk_configuracao_maquina
@@ -41,7 +41,7 @@ function listarPorEmpresa(idEmpresa) {
         GROUP BY
             m.id, m.nome, m.hostname, m.mac, m.ip, m.sistema_operacional,
             m.situacao, m.dtHr_cadastro, m.dtHr_ativacao, ca.dtHr_expiracao,
-            ultima_captura.dtHr
+            ultima_captura.dtHr_captura
         ORDER BY m.nome;
     `;
 
@@ -91,7 +91,7 @@ function buscarPermissaoCadastro(idSolicitante, idEmpresa) {
         FROM usuario AS u
         INNER JOIN usuario_cargo AS uc
             ON uc.fk_usuario = u.id
-            AND uc.saida IS NULL
+            AND uc.dtHr_inativacao IS NULL
         INNER JOIN cargo AS c ON c.id = uc.fk_cargo
         WHERE u.id = ?
             AND u.fk_empresa = ?
