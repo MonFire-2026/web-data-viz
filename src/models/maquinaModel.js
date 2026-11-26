@@ -10,9 +10,9 @@ function listarPorEmpresa(idEmpresa) {
             m.ip,
             m.sistema_operacional AS sistemaOperacional,
             m.situacao,
-            DATE_FORMAT(m.dtHr_cadastro, '%Y-%m-%dT%H:%i:%s') AS dataCadastro,
+            DATE_FORMAT(m.dtHr_ativacao, '%Y-%m-%dT%H:%i:%s') AS dataCadastro,
             DATE_FORMAT(m.dtHr_ativacao, '%Y-%m-%dT%H:%i:%s') AS dataAtivacao,
-            DATE_FORMAT(ca.dtHr_expiracao, '%Y-%m-%dT%H:%i:%s') AS codigoExpiraEm,
+            DATE_FORMAT(ca.dtHr_inativacao, '%Y-%m-%dT%H:%i:%s') AS codigoExpiraEm,
             DATE_FORMAT(ultima_captura.dtHr_captura, '%Y-%m-%dT%H:%i:%s') AS ultimaCaptura,
             CASE
                 WHEN m.situacao = 'ATIVA'
@@ -40,7 +40,7 @@ function listarPorEmpresa(idEmpresa) {
         WHERE m.fk_empresa = ?
         GROUP BY
             m.id, m.nome, m.hostname, m.mac, m.ip, m.sistema_operacional,
-            m.situacao, m.dtHr_cadastro, m.dtHr_ativacao, ca.dtHr_expiracao,
+            m.situacao, m.dtHr_ativacao, m.dtHr_ativacao, ca.dtHr_inativacao,
             ultima_captura.dtHr_captura
         ORDER BY m.nome;
     `;
@@ -111,10 +111,10 @@ function cadastrarPendente(nome, idEmpresa, codigoHash, codigoExpiraEm, metricas
         `, [nome, idEmpresa]);
 
         await transacao.executar(`
-            INSERT INTO codigo_ativacao (
-                codigo_hash, dtHr_expiracao, fk_maquina
-            ) VALUES (?, ?, ?);
-        `, [codigoHash, codigoExpiraEm, resultadoMaquina.insertId]);
+    INSERT INTO codigo_ativacao (
+        codigo_hash, dtHr_inativacao, usado, fk_maquina
+    ) VALUES (?, ?, 0, ?);
+`, [codigoHash, codigoExpiraEm, resultadoMaquina.insertId]);
 
         for (var metrica of metricas) {
             var resultadoConfiguracao = await transacao.executar(`
@@ -155,9 +155,9 @@ function buscarMaquinaPorEmpresa(idMaquina, idEmpresa) {
             m.id, m.nome, m.hostname, m.mac, m.ip,
             m.sistema_operacional AS sistemaOperacional,
             m.situacao,
-            DATE_FORMAT(m.dtHr_cadastro, '%Y-%m-%dT%H:%i:%s') AS dataCadastro,
+            DATE_FORMAT(m.dtHr_ativacao, '%Y-%m-%dT%H:%i:%s') AS dataCadastro,
             DATE_FORMAT(m.dtHr_ativacao, '%Y-%m-%dT%H:%i:%s') AS dataAtivacao,
-            DATE_FORMAT(ca.dtHr_expiracao, '%Y-%m-%dT%H:%i:%s') AS codigoExpiraEm
+            DATE_FORMAT(ca.dtHr_inativacao, '%Y-%m-%dT%H:%i:%s') AS codigoExpiraEm
         FROM maquina AS m
         LEFT JOIN codigo_ativacao AS ca ON ca.fk_maquina = m.id
         WHERE m.id = ?
@@ -242,8 +242,8 @@ function regenerarCodigo(idMaquina, idEmpresa, codigoHash, codigoExpiraEm) {
         UPDATE codigo_ativacao AS ca
         INNER JOIN maquina AS m ON m.id = ca.fk_maquina
         SET ca.codigo_hash = ?,
-            ca.dtHr_geracao = CURRENT_TIMESTAMP,
-            ca.dtHr_expiracao = ?
+            ca.dtHr_ativacao = CURRENT_TIMESTAMP,
+            ca.dtHr_inativacao = ?
         WHERE ca.fk_maquina = ?
             AND m.fk_empresa = ?
             AND m.situacao = 'PENDENTE';
