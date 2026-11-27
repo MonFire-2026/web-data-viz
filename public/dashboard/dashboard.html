@@ -126,8 +126,12 @@
     window.onload = carregarDashboard;
 
     function abrirChamado() {
-        alert("A integração para abertura de chamados no Jira será disponibilizada em breve.");
-    }
+    window.open(
+        "https://sptech-team-apk2za12.atlassian.net/servicedesk/customer/portal/2",
+        "_blank",
+        "noopener,noreferrer"
+    );
+}
 
     async function carregarDashboard() {
         configurarFiltrosComponente();
