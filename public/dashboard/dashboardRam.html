@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MonFire | Diagnóstico RAM</title>
+    <link rel="shortcut icon" href="../assets/icon/LogoMonfire.png" type="image/x-icon">
+    <link rel="stylesheet" href="./../css/dashboard.css">
+    <link rel="stylesheet" href="./../css/dashboardRam.css">
+    <script src="../js/sessao.js"></script>
+    <script src="../js/dashboard-layout.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <aside class="sidebar" aria-label="Navegação principal">
+        <a class="brand" href="../index.html" aria-label="MonFire - Página inicial">
+            <img class="brand-logo" src="../assets/icon/LogoMonfire.png" alt="">
+            <span class="brand-name">Mon<span>Fire</span></span>
+        </a>
+
+        <nav class="nav" aria-label="Menu da dashboard">
+            <span class="nav-label">Painel</span>
+            <a href="./dashboard.html">Visão Geral</a>
+            <a href="./visaoEspecifica.html" class="ativo" aria-current="page">Visão Específica</a>
+            <a href="./dashboardFelipe.html">Disco</a>
+            <a href="./dashboard-rede.html">Rede</a>
+            <a href="./dashboardRam.html">RAM</a>
+            <a href="./usuarios.html">Usuários</a>
+            <a href="./maquinas.html">Máquinas</a>
+            <a href="./alertas.html">Alertas</a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <p><small>Sessão atual</small><strong data-nome-usuario>Usuário administrador</strong></p>
+            <button class="btn-sair" type="button" onclick="limparSessao()">Sair</button>
+        </div>
+    </aside>
+
+    <main class="conteudo visao-executiva">
+        <header class="topo topo-com-acoes">
+            <div>
+                <h1>Diagnóstico da Memória RAM</h1>
+                <p>Acompanhamento da utilização e do comportamento da memória do servidor.</p>
+            </div>
+            <span class="ram-topo-acoes">
+                <span class="ram-servidor"><i class="ram-bolinha" aria-hidden="true"></i>Servidor principal</span>
+                <button class="botao-topo" type="button" id="btnBaixarRelatorios">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M12 3v12M7 11l5 5 5-5M4 21h16" />
+                    </svg>
+                    Baixar relatórios
+                </button>
+            </span>
+        </header>
+
+        <section class="kpis" aria-label="Indicadores de memória RAM">
+            <div class="kpi ram-kpi">
+                <div class="kpi-valor"><span id="kpiUsoAtual">—</span><small>%</small></div>
+                <div class="ram-kpi-texto">
+                    <div class="kpi-rotulo">Uso atual da RAM</div>
+                    <span class="ram-kpi-detalhe" id="kpiVariacao"></span>
+                    <span class="selo" id="seloEstado">—</span>
+                </div>
+            </div>
+
+            <div class="kpi ram-kpi">
+                <div class="kpi-valor"><span id="kpiSwapEntrada">—</span><small>MB/s</small></div>
+                <div class="ram-kpi-texto">
+                    <div class="kpi-rotulo">Swap - Entrada</div>
+                    <span class="ram-kpi-detalhe">Transferência para a RAM</span>
+                </div>
+            </div>
+
+            <div class="kpi destaque ram-kpi">
+                <div class="kpi-valor"><span id="kpiSwapSaida">—</span><small>MB/s</small></div>
+                <div class="ram-kpi-texto">
+                    <div class="kpi-rotulo">Swap - Saída</div>
+                    <span class="ram-kpi-detalhe">Transferência para o disco</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="painel painel-principal">
+            <div class="cabecalho-painel">
+                <div>
+                    <h2>Evolução do consumo da RAM</h2>
+                    <p>Histórico de utilização da memória do servidor.</p>
+                </div>
+                <div class="ram-filtros" role="group" aria-label="Período do gráfico" id="grupoPeriodo">
+                    <button class="chip" type="button" data-periodo="6h">6 horas</button>
+                    <button class="chip ativo" type="button" data-periodo="24h">24 horas</button>
+                    <button class="chip" type="button" data-periodo="7d">7 dias</button>
+                </div>
+            </div>
+            <div class="area-grafico grafico-executivo-principal">
+                <canvas id="graficoEvolucao" role="img"
+                    aria-label="Evolução da utilização da RAM em relação ao limite de atenção"></canvas>
+            </div>
+        </section>
+
+        <section class="graficos-gerenciais ram-uma-coluna">
+            <div class="painel">
+                <div class="cabecalho-painel">
+                    <div>
+                        <h2>Pressão da memória</h2>
+                        <p>Tempo de espera dos processos por memória.</p>
+                    </div>
+                </div>
+
+                <div class="ram-pressao">
+                    <div class="ram-pressao-item">
+                        <div class="ram-pressao-linha">
+                            <div>
+                                <strong>PSI SOME</strong>
+                                <span>Alguns processos aguardando memória</span>
+                            </div>
+                            <div class="ram-pressao-valor" id="valorPsiSome">—</div>
+                        </div>
+                        <div class="ram-barra" role="progressbar" aria-label="PSI some" aria-valuemin="0"
+                            aria-valuemax="10" id="barraPsiSome">
+                            <div class="ram-barra-preenchimento some" id="preenchimentoPsiSome"></div>
+                        </div>
+                    </div>
+
+                    <div class="ram-pressao-item">
+                        <div class="ram-pressao-linha">
+                            <div>
+                                <strong>PSI FULL</strong>
+                                <span>Todos os processos não ociosos aguardando</span>
+                            </div>
+                            <div class="ram-pressao-valor" id="valorPsiFull">—</div>
+                        </div>
+                        <div class="ram-barra" role="progressbar" aria-label="PSI full" aria-valuemin="0"
+                            aria-valuemax="10" id="barraPsiFull">
+                            <div class="ram-barra-preenchimento full" id="preenchimentoPsiFull"></div>
+                        </div>
+                    </div>
+
+                    <div class="ram-pressao-rodape">
+                        <i class="ram-bolinha" aria-hidden="true"></i>
+                        Janela de 10 segundos. Barras na escala de 0% a 10%.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <p class="status-dashboard" id="statusRam" role="status" aria-live="polite"></p>
+    </main>
+
+    <script>
+        const NAVY = '#1a2438';
+        const VERMELHO = '#d62222';
+        const AMBAR = '#e0a100';
+        const AZUL = '#3568a8';
+
+        const ID_EMPRESA_ATUAL = Number(sessionStorage.ID_EMPRESA);
+        const LIMITE_ATENCAO = 70;   // % — linha tracejada do gráfico
+        const LIMITE_CRITICO = 85;   // % — a partir daqui o selo vira "Crítico"
+        const ESCALA_PSI = 10;       // % — valor que enche a barra de pressão
+
+        // Cada período: quantos pontos mostrar e de quantos em quantos minutos
+        const PERIODOS = {
+            '6h': { pontos: 36, passoMin: 10 },
+            '24h': { pontos: 48, passoMin: 30 },
+            '7d': { pontos: 84, passoMin: 120 }
+        };
+
+        let graficoEvolucao;
+        let periodoAtual = '24h';
+
+        Chart.defaults.font.family = "'Segoe UI', Tahoma, sans-serif";
+        Chart.defaults.color = '#5a6b85';
+
+        // Gráficos estáticos: sem animação de entrada, de atualização ou de hover
+        Chart.defaults.animation = false;
+        Chart.defaults.animations = false;
+        Chart.defaults.transitions = { active: { animation: { duration: 0 } } };
+
+        window.addEventListener('load', iniciar);
+
+        function iniciar() {
+            document.querySelectorAll('#grupoPeriodo .chip').forEach(function (botao) {
+                botao.addEventListener('click', function () {
+                    document.querySelectorAll('#grupoPeriodo .chip').forEach(function (b) {
+                        b.classList.remove('ativo');
+                    });
+                    botao.classList.add('ativo');
+                    periodoAtual = botao.dataset.periodo;
+                    carregarEvolucao();
+                });
+            });
+
+            document.getElementById('btnBaixarRelatorios').addEventListener('click', baixarRelatorios);
+
+            // carregarResumo() já chama carregarEvolucao() ao terminar
+            carregarResumo();
+        }
+
+        /* ------------------------------------------------------------
+           DADOS
+           Estas duas funções devolvem valores de exemplo.
+           Para usar dados reais, troque o corpo delas por fetch() nas
+           suas rotas (como a visaoEspecifica faz com /medidas/...),
+           mantendo o formato do objeto retornado.
+           ------------------------------------------------------------ */
+        async function buscarResumo() {
+            return {
+                usoAtual: 78,
+                variacaoUltimaHora: 8,
+                swapEntrada: 12.4,
+                swapSaida: 8.2,
+                psiSome: 5.2,
+                psiFull: 1.8
+            };
+        }
+
+        async function buscarEvolucao(periodo, usoAtual) {
+            var cfg = PERIODOS[periodo];
+            var agora = Date.now();
+            var pontos = [];
+
+            for (var i = 0; i < cfg.pontos; i++) {
+                var progresso = i / (cfg.pontos - 1);
+                var valor = 58 + progresso * (usoAtual - 58)
+                    + Math.sin(i / 3) * 4 + Math.sin(i / 1.3) * 1.5;
+                pontos.push({
+                    instante: new Date(agora - (cfg.pontos - 1 - i) * cfg.passoMin * 60000),
+                    valor: Number(Math.max(0, Math.min(100, valor)).toFixed(1))
+                });
+            }
+            pontos[pontos.length - 1].valor = usoAtual;
+            return pontos;
+        }
+
+        /* ------------------------------------------------------------ */
+
+        var usoAtualCache = 78;
+
+        async function carregarResumo() {
+            var status = document.getElementById('statusRam');
+            status.textContent = 'Carregando indicadores de memória...';
+
+            try {
+                var resumo = await buscarResumo();
+                usoAtualCache = resumo.usoAtual;
+
+                atualizarKpis(resumo);
+                atualizarPressao(resumo.psiSome, resumo.psiFull);
+                status.textContent = '';
+                carregarEvolucao();
+            } catch (erro) {
+                status.textContent = erro.message || 'Não foi possível carregar os dados de memória RAM.';
+            }
+        }
+
+        /* ------------------------------------------------------------
+           RELATÓRIOS (CSV das capturas de memória RAM)
+           Ainda sem os relatórios: o botão só avisa. Quando a rota do
+           back-end existir, descomente o bloco abaixo e ajuste a URL.
+           ------------------------------------------------------------ */
+        async function baixarRelatorios() {
+            var status = document.getElementById('statusRam');
+            status.textContent = 'Os relatórios de memória RAM ainda não estão disponíveis.';
+
+            /*
+            try {
+                status.textContent = 'Gerando relatório...';
+                var resposta = await fetch(`/medidas/ram/relatorio/${ID_EMPRESA_ATUAL}`, { cache: 'no-store' });
+                if (!resposta.ok) throw new Error(await resposta.text());
+
+                var arquivo = await resposta.blob();
+                var link = document.createElement('a');
+                link.href = URL.createObjectURL(arquivo);
+                link.download = 'relatorio-memoria-ram.csv';
+                document.body.appendChild(link);
+                link.click();
+                link.remove();
+                URL.revokeObjectURL(link.href);
+                status.textContent = '';
+            } catch (erro) {
+                status.textContent = erro.message || 'Não foi possível baixar o relatório.';
+            }
+            */
+        }
+
+        function classificar(uso) {
+            if (uso >= LIMITE_CRITICO) return { classe: 'critico', texto: 'Crítico' };
+            if (uso >= LIMITE_ATENCAO) return { classe: 'atencao', texto: 'Atenção' };
+            return { classe: 'ok', texto: 'Normal' };
+        }
+
+        function formatarNumero(valor) {
+            return Number(valor).toLocaleString('pt-BR', { maximumFractionDigits: 1 });
+        }
+
+        function atualizarKpis(resumo) {
+            document.getElementById('kpiUsoAtual').textContent = formatarNumero(resumo.usoAtual);
+            document.getElementById('kpiSwapEntrada').textContent = formatarNumero(resumo.swapEntrada);
+            document.getElementById('kpiSwapSaida').textContent = formatarNumero(resumo.swapSaida);
+
+            var variacao = resumo.variacaoUltimaHora;
+            var seta = variacao > 0 ? '▲' : variacao < 0 ? '▼' : '•';
+            document.getElementById('kpiVariacao').textContent =
+                seta + ' ' + Math.abs(variacao) + '% em relação à última hora';
+
+            var estado = classificar(resumo.usoAtual);
+            var selo = document.getElementById('seloEstado');
+            selo.className = 'selo ' + estado.classe;
+            selo.textContent = estado.texto;
+        }
+
+        function atualizarPressao(some, full) {
+            preencherBarra('PsiSome', some);
+            preencherBarra('PsiFull', full);
+        }
+
+        function preencherBarra(sufixo, valor) {
+            document.getElementById('valor' + sufixo).textContent = formatarNumero(valor) + '%';
+            document.getElementById('preenchimento' + sufixo).style.width =
+                Math.min(100, (valor / ESCALA_PSI) * 100) + '%';
+
+            var barra = document.getElementById('barra' + sufixo);
+            barra.setAttribute('aria-valuenow', valor);
+        }
+
+        async function carregarEvolucao() {
+            var status = document.getElementById('statusRam');
+
+            try {
+                var pontos = await buscarEvolucao(periodoAtual, usoAtualCache);
+                plotarEvolucao(pontos);
+            } catch (erro) {
+                status.textContent = erro.message || 'Não foi possível carregar a evolução do consumo.';
+            }
+        }
+
+        function formatarRotulo(data) {
+            if (periodoAtual == '7d') {
+                return data.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+            }
+            return data.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+        }
+
+        function plotarEvolucao(pontos) {
+            if (graficoEvolucao) graficoEvolucao.destroy();
+
+            var canvas = document.getElementById('graficoEvolucao');
+            var degrade = canvas.getContext('2d').createLinearGradient(0, 0, 0, 360);
+            degrade.addColorStop(0, 'rgba(214, 34, 34, 0.22)');
+            degrade.addColorStop(1, 'rgba(214, 34, 34, 0.01)');
+
+            graficoEvolucao = new Chart(canvas, {
+                type: 'line',
+                data: {
+                    labels: pontos.map(function (p) { return formatarRotulo(p.instante); }),
+                    datasets: [
+                        {
+                            label: 'Utilização da RAM',
+                            data: pontos.map(function (p) { return p.valor; }),
+                            borderColor: VERMELHO,
+                            backgroundColor: degrade,
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.3,
+                            pointRadius: 0,
+                            pointHoverRadius: 5
+                        },
+                        {
+                            label: 'Limite de atenção (' + LIMITE_ATENCAO + '%)',
+                            data: pontos.map(function () { return LIMITE_ATENCAO; }),
+                            borderColor: AMBAR,
+                            borderDash: [6, 5],
+                            borderWidth: 2,
+                            pointRadius: 0,
+                            pointHoverRadius: 0,
+                            fill: false
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: { mode: 'index', intersect: false },
+                    plugins: {
+                        legend: { position: 'bottom', labels: { usePointStyle: true, padding: 20 } },
+                        tooltip: {
+                            callbacks: {
+                                label: function (item) { return item.dataset.label + ': ' + item.parsed.y + '%'; }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: { grid: { display: false }, ticks: { maxTicksLimit: 8, maxRotation: 0 } },
+                        y: {
+                            min: 0,
+                            max: 100,
+                            ticks: { stepSize: 25, callback: function (v) { return v + '%'; } },
+                            title: { display: true, text: 'Uso da memória' },
+                            grid: { color: '#e2e5ea' }
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>

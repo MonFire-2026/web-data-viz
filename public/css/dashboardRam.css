@@ -1,0 +1,217 @@
+/* =========================================================
+   MonFire | Diagnóstico da Memória RAM
+   Carregue DEPOIS do dashboard.css.
+   Aqui ficam apenas classes novas (prefixo ram-). Nada do
+   dashboard.css é redefinido, então as outras telas não mudam.
+   ========================================================= */
+
+/* ---------- Topo: indicador do servidor + botão ---------- */
+.ram-topo-acoes {
+    display: flex;
+    align-items: center;
+    flex: 0 0 auto;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.ram-servidor {
+    display: inline-flex;
+    align-items: center;
+    flex: 0 0 auto;
+    gap: 9px;
+    padding: 8px 14px;
+    color: var(--dashboard-azul);
+    background: var(--dashboard-superficie);
+    border: 1px solid var(--dashboard-borda);
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.ram-bolinha {
+    display: inline-block;
+    width: 9px;
+    height: 9px;
+    flex: 0 0 auto;
+    background: #22a06b;
+    border-radius: 50%;
+    box-shadow: 0 0 0 3px rgba(34, 160, 107, 0.18);
+}
+
+/* ---------- KPIs: valor à esquerda, texto à direita ---------- */
+.kpi.ram-kpi {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.ram-kpi .kpi-valor small {
+    margin-left: 3px;
+    font-size: 0.45em;
+    font-weight: 800;
+}
+
+.ram-kpi-texto {
+    min-width: 0;
+    text-align: right;
+}
+
+.ram-kpi-texto .kpi-rotulo {
+    margin-top: 0;
+    font-weight: 700;
+}
+
+.ram-kpi-detalhe {
+    display: block;
+    margin-top: 6px;
+    color: var(--dashboard-texto-suave);
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+.kpi.destaque .ram-kpi-detalhe {
+    color: #ffe2e2;
+}
+
+.ram-kpi-texto .selo {
+    margin-top: 8px;
+}
+
+/* ---------- Filtros de período no cabeçalho do painel ---------- */
+.ram-filtros {
+    display: flex;
+    flex: 0 0 auto;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+/* ---------- Seção com um único painel ---------- */
+.graficos-gerenciais.ram-uma-coluna {
+    grid-template-columns: minmax(0, 1fr);
+}
+
+/* ---------- Altura fixa do gráfico de evolução ----------
+   O Chart.js redimensiona o canvas conforme o container. Se o container
+   não tiver altura fixa, o gráfico entra num laço de crescimento e trava
+   o navegador. A especificidade maior garante a altura mesmo se o
+   dashboard.css antigo (com o bloco de RAM) ainda estiver em uso. */
+.area-grafico.grafico-executivo-principal {
+    position: relative;
+    height: 360px;
+    max-height: 360px;
+    overflow: hidden;
+}
+
+/* ---------- Pressão da memória (PSI) ---------- */
+.ram-pressao {
+    display: grid;
+    gap: 20px;
+}
+
+.ram-pressao-item {
+    display: grid;
+    gap: 10px;
+}
+
+.ram-pressao-linha {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+}
+
+.ram-pressao-linha strong {
+    display: block;
+    color: var(--dashboard-azul);
+    font-size: 14px;
+}
+
+.ram-pressao-linha span {
+    display: block;
+    margin-top: 3px;
+    color: var(--dashboard-texto-suave);
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+.ram-pressao-valor {
+    flex: 0 0 auto;
+    color: var(--dashboard-azul);
+    font-size: 24px;
+    font-weight: 800;
+}
+
+.ram-barra {
+    width: 100%;
+    height: 10px;
+    overflow: hidden;
+    background: #e9edf3;
+    border-radius: 999px;
+}
+
+.ram-barra-preenchimento {
+    width: 0;
+    height: 100%;
+    border-radius: inherit;
+}
+
+.ram-barra-preenchimento.some {
+    background: #e0a100;
+}
+
+.ram-barra-preenchimento.full {
+    background: var(--dashboard-vermelho);
+}
+
+.ram-pressao-rodape {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-top: 14px;
+    color: var(--dashboard-texto-suave);
+    border-top: 1px solid var(--dashboard-borda);
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+@media (max-width: 900px) {
+    .topo-com-acoes {
+        flex-wrap: wrap;
+    }
+}
+
+@media (max-width: 640px) {
+    .ram-topo-acoes {
+        width: 100%;
+        justify-content: space-between;
+    }
+}
+
+@media (max-width: 640px) {
+    .kpi.ram-kpi {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .ram-kpi-texto {
+        text-align: left;
+    }
+
+    .ram-filtros {
+        width: 100%;
+    }
+}
+
+*,
+*::before,
+*::after {
+    transition: none !important;
+    animation: none !important;
+    scroll-behavior: auto !important;
+}
+
+.nav a:hover {
+    transform: none;
+}
