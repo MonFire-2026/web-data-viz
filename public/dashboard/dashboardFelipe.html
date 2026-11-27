@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MonFire | Monitoramento de Disco</title>
+    <link rel="shortcut icon" href="../assets/icon/LogoMonfire.png" type="image/x-icon">
+    <link rel="stylesheet" href="./../css/dashboard.css">
+    <link rel="stylesheet" href="./../css/dashboardFelipe.css">
+    <script src="../js/sessao.js"></script>
+    <script src="../js/dashboard-layout.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="../js/dashboardFelipe.js" defer></script>
+</head>
+
+<body>
+    <aside class="sidebar" aria-label="Navegação principal">
+        <a class="brand" href="../index.html" aria-label="MonFire - Página inicial">
+            <img class="brand-logo" src="../assets/icon/LogoMonfire.png" alt="">
+            <span class="brand-name">Mon<span>Fire</span></span>
+        </a>
+
+        <nav class="nav" aria-label="Menu da dashboard">
+            <span class="nav-label">Painel</span>
+            <a href="./dashboard.html">Visão Geral</a>
+            <a href="./visaoEspecifica.html">Visão Específica</a>
+            <a href="./dashboardFelipe.html" class="ativo" aria-current="page">Disco</a>
+            <a href="./usuarios.html">Usuários</a>
+            <a href="./maquinas.html">Máquinas</a>
+            <a href="./alertas.html">Alertas</a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <p><small>Sessão atual</small><strong data-nome-usuario>Usuário administrador</strong></p>
+            <button class="btn-sair" type="button" onclick="limparSessao()">Sair</button>
+        </div>
+    </aside>
+
+    <main class="conteudo disco">
+        <header class="topo topo-com-acoes">
+            <div>
+                <h1>Monitoramento de Disco</h1>
+                <p>Acompanhe a saúde e a capacidade dos servidores.</p>
+            </div>
+
+            <div class="disco-filtros">
+                <label class="filtro-campo" for="selServidor">
+                    <span>Servidor</span>
+                    <select id="selServidor" class="campo-edicao" disabled>
+                        <option>Carregando...</option>
+                    </select>
+                </label>
+
+                <div class="filtro-campo">
+                    <span id="rotuloPeriodo">Período</span>
+                    <div class="filtro-periodos" role="group" aria-labelledby="rotuloPeriodo">
+                        <button class="chip" type="button" data-periodo="24h">24h</button>
+                        <button class="chip" type="button" data-periodo="7d">7d</button>
+                        <button class="chip" type="button" data-periodo="30d">30d</button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <p class="status-dashboard" id="statusDisco" role="status" aria-live="polite"></p>
+
+        <section class="kpis disco-kpis" aria-label="Indicadores do disco">
+            <article class="kpi disco-kpi status-neutro" id="cardUso">
+                <div class="kpi-rotulo">Uso do disco</div>
+                <div class="kpi-valor" id="kpiUso">—</div>
+                <div class="kpi-detalhe" id="kpiUsoDetalhe"></div>
+            </article>
+
+            <article class="kpi disco-kpi status-neutro" id="cardDias">
+                <div class="kpi-rotulo">Dias até encher</div>
+                <div class="kpi-valor" id="kpiDias">—</div>
+                <div class="kpi-detalhe" id="kpiDiasDetalhe"></div>
+            </article>
+
+            <article class="kpi disco-kpi status-neutro" id="cardLatencia">
+                <div class="kpi-rotulo">Latência média</div>
+                <div class="kpi-valor" id="kpiLatencia">—</div>
+                <div class="kpi-detalhe" id="kpiLatenciaDetalhe"></div>
+            </article>
+
+            <article class="kpi disco-kpi status-neutro" id="cardSaude">
+                <div class="kpi-rotulo">Saúde do disco</div>
+                <div class="kpi-valor"><span class="selo inativo" id="seloSaude">Sem coleta</span></div>
+                <div class="kpi-detalhe" id="kpiSaudeDetalhe"></div>
+            </article>
+        </section>
+
+        <section class="disco-graficos">
+            <div class="painel">
+                <div class="cabecalho-painel">
+                    <div>
+                        <h2>Uso do disco e previsão</h2>
+                        <p>Histórico de ocupação e projeção até o limite.</p>
+                    </div>
+                    <span id="periodoUso">—</span>
+                </div>
+                <div class="area-grafico disco-grafico">
+                    <canvas id="graficoUso" role="img"
+                        aria-label="Gráfico do uso do disco ao longo do tempo, com linha de projeção e limites de atenção e crítico"></canvas>
+                    <p class="estado-vazio-grafico" id="vazioUso" hidden>Ainda não há capturas de uso de disco para este servidor.</p>
+                </div>
+            </div>
+
+            <div class="painel">
+                <div class="cabecalho-painel">
+                    <div>
+                        <h2>Leitura e escrita</h2>
+                        <p>Velocidade de transferência do disco em MB/s.</p>
+                    </div>
+                </div>
+                <div class="area-grafico disco-grafico">
+                    <canvas id="graficoRW" role="img"
+                        aria-label="Gráfico da velocidade de leitura e escrita do disco ao longo do tempo"></canvas>
+                    <p class="estado-vazio-grafico" id="vazioRW" hidden>A leitura e a escrita do disco ainda não são coletadas neste servidor.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="disco-base">
+            <div class="painel">
+                <div class="cabecalho-painel">
+                    <div>
+                        <h2>Resumo do armazenamento</h2>
+                    </div>
+                </div>
+                <div class="armazenamento-linha">
+                    <div class="barra-armazenamento" id="barraArmazenamento" role="progressbar" aria-label="Espaço utilizado"
+                        aria-valuemin="0" aria-valuemax="100" data-status="neutro">
+                        <span id="barraPreenchimento"></span>
+                    </div>
+                    <div class="armazenamento-percentual" id="armazenamentoPercentual">—</div>
+                </div>
+                <dl class="armazenamento-valores">
+                    <div>
+                        <dt>Utilizado</dt>
+                        <dd id="valUtilizado">—</dd>
+                    </div>
+                    <div>
+                        <dt>Livre</dt>
+                        <dd id="valLivre">—</dd>
+                    </div>
+                    <div>
+                        <dt>Total</dt>
+                        <dd id="valTotal">—</dd>
+                    </div>
+                </dl>
+            </div>
+
+            <div class="painel">
+                <div class="cabecalho-painel">
+                    <div>
+                        <h2>Últimos alertas</h2>
+                    </div>
+                </div>
+                <ul class="lista-alertas" id="listaAlertas">
+                    <li class="alerta-vazio">Carregando...</li>
+                </ul>
+            </div>
+        </section>
+    </main>
+</body>
+
+</html>

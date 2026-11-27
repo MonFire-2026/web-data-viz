@@ -98,7 +98,7 @@ function listarPorEmpresa(idEmpresa) {
                         WHERE uc_ativo.fk_usuario = u.id
                             AND uc_ativo.dtHr_inativacao IS NULL
                     )
-                    AND uc.saida = (
+                    AND uc.dtHr_inativacao = (
                         SELECT MAX(uc_anterior.dtHr_inativacao)
                         FROM usuario_cargo AS uc_anterior
                         WHERE uc_anterior.fk_usuario = u.id
@@ -174,8 +174,8 @@ function cadastrar(nome, email, senhaHash, idEmpresa, idCargo) {
         `, [nome, email, senhaHash, idEmpresa]);
 
         await transacao.executar(`
-            INSERT INTO usuario_cargo (fk_usuario, fk_cargo)
-            VALUES (?, ?);
+            INSERT INTO usuario_cargo (fk_usuario, fk_cargo, dtHr_inativacao)
+            VALUES (?, ?, NULL);
         `, [resultadoUsuario.insertId, idCargo]);
 
         return resultadoUsuario;

@@ -23,6 +23,7 @@ var aquariosRouter = require("./src/routes/aquarios");
 var empresasRouter = require("./src/routes/empresas");
 var maquinasRouter = require("./src/routes/maquinas");
 var redeRouter = require("./src/routes/rede");
+var dashboardFelipeRouter = require("./src/routes/dashboardFelipeRoutes");
 
 
 app.use(express.json());
@@ -39,6 +40,7 @@ app.use("/aquarios", aquariosRouter);
 app.use("/empresas", empresasRouter);
 app.use("/maquinas", maquinasRouter);
 app.use("/rede", redeRouter);
+app.use("/dashboardFelipe", dashboardFelipeRouter);
 
 app.listen(PORTA_APP, function () {
     console.log(`

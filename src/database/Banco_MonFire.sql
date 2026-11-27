@@ -231,8 +231,10 @@ INSERT INTO tipo_componente (codigo, nome, fk_metrica_componente) VALUES
     ('REDE_RECEBIDA', 'Rede - Recebidos', 6),
     ('REDE_ENVIADA', 'Rede - Enviados', 7);
 
+-- ORDER BY id garante componente.id = tipo_componente.id; sem ele o banco pode varrer
+-- um índice secundário e embaralhar os ids de configuracao_maquina (e seus limites).
 INSERT INTO componente (status_atividade, fk_tipo_componente)
-SELECT 1, id FROM tipo_componente;
+SELECT 1, id FROM tipo_componente ORDER BY id;
 
 INSERT INTO maquina (
     nome, hostname, mac, ip, sistema_operacional,
@@ -320,7 +322,7 @@ BEGIN
     INNER JOIN maquina AS m ON m.id = ca.fk_maquina
     WHERE ca.codigo_hash = SHA2(TRIM(p_codigo_ativacao), 256)
         AND m.situacao = 'PENDENTE'
-        AND ca.dtHr_expiracao >= CURRENT_TIMESTAMP
+        AND ca.dtHr_inativacao >= CURRENT_TIMESTAMP
     LIMIT 1
     FOR UPDATE;
 
@@ -591,6 +593,125 @@ AND NOT EXISTS (
     SELECT 1
     FROM configuracao_maquina cm
     WHERE cm.fk_maquina = @id_maquina
+      AND cm.fk_componente = comp.id
+);
+
+COMMIT;
+
+
+
+
+SET @id_maquina_disco = (
+    SELECT cm.fk_maquina
+    FROM configuracao_maquina cm
+    INNER JOIN componente comp
+        ON comp.id = cm.fk_componente
+    INNER JOIN tipo_componente tc
+        ON tc.id = comp.fk_tipo_componente
+    WHERE tc.codigo = 'DISCO_USO'
+      AND cm.ativa = 1
+      AND comp.status_atividade = 1
+    LIMIT 1
+);
+
+START TRANSACTION;
+
+-- CADASTRAR AS CINCO METRICAS
+
+INSERT INTO metrica_componente
+    (nome, unidade_medida, especificacao)
+
+SELECT novas.nome, novas.unidade, novas.especificacao
+FROM (
+    SELECT 'Leitura' AS nome, 'MB/s' AS unidade,
+        'Velocidade de leitura do disco' AS especificacao
+    UNION ALL
+    SELECT 'Escrita', 'MB/s',
+        'Velocidade de escrita do disco'
+    UNION ALL
+    SELECT 'Latência', 'ms',
+        'Latência média por operação de disco'
+    UNION ALL
+    SELECT 'Temperatura', '°C',
+        'Temperatura do disco'
+    UNION ALL
+    SELECT 'Saúde', 'status',
+        'S.M.A.R.T.: 1 = saudável, 0 = falha'
+) AS novas
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM metrica_componente mc
+    WHERE mc.nome = novas.nome
+      AND mc.unidade_medida = novas.unidade
+);
+
+-- CADASTRAR OS TIPOS DE COMPONENTE
+
+INSERT INTO tipo_componente
+    (codigo, nome, fk_metrica_componente)
+
+SELECT novas.codigo, 'Disco', mc.id
+FROM (
+    SELECT 'DISCO_LEITURA' AS codigo, 'Leitura' AS metrica, 'MB/s' AS unidade
+    UNION ALL
+    SELECT 'DISCO_ESCRITA', 'Escrita', 'MB/s'
+    UNION ALL
+    SELECT 'DISCO_LATENCIA', 'Latência', 'ms'
+    UNION ALL
+    SELECT 'DISCO_TEMPERATURA', 'Temperatura', '°C'
+    UNION ALL
+    SELECT 'DISCO_SMART', 'Saúde', 'status'
+) AS novas
+INNER JOIN metrica_componente mc
+    ON mc.nome = novas.metrica
+   AND mc.unidade_medida = novas.unidade
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM tipo_componente tc
+    WHERE tc.codigo = novas.codigo
+);
+
+-- CADASTRAR OS COMPONENTES
+
+INSERT INTO componente
+    (status_atividade, fk_tipo_componente)
+
+SELECT 1, tc.id
+FROM tipo_componente tc
+WHERE tc.codigo IN (
+    'DISCO_LEITURA',
+    'DISCO_ESCRITA',
+    'DISCO_LATENCIA',
+    'DISCO_TEMPERATURA',
+    'DISCO_SMART'
+)
+AND NOT EXISTS (
+    SELECT 1
+    FROM componente comp
+    WHERE comp.fk_tipo_componente = tc.id
+);
+
+-- VINCULAR OS COMPONENTES A MAQUINA
+
+INSERT INTO configuracao_maquina
+    (fk_maquina, fk_componente, ativa)
+
+SELECT @id_maquina_disco, comp.id, 1
+FROM componente comp
+INNER JOIN tipo_componente tc
+    ON tc.id = comp.fk_tipo_componente
+WHERE tc.codigo IN (
+    'DISCO_LEITURA',
+    'DISCO_ESCRITA',
+    'DISCO_LATENCIA',
+    'DISCO_TEMPERATURA',
+    'DISCO_SMART'
+)
+AND @id_maquina_disco IS NOT NULL
+AND NOT EXISTS (
+    SELECT 1
+    FROM configuracao_maquina cm
+    WHERE cm.fk_maquina = @id_maquina_disco
       AND cm.fk_componente = comp.id
 );
 
